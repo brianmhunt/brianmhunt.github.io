@@ -1,7 +1,8 @@
 ---
 layout: post
 title: Asynchronous client-side Javascript page loading
-description: "Code and ideas about the page-loading experience."
+description: >
+  Code and ideas about the client-side script-loading experience.
 modified: 2014-01-22 11:25:01
 category: articles
 tags: [performance ux]
@@ -13,45 +14,45 @@ comments: true
 share: true
 ---
 
-# Introduction
+# What
 
-Here are some things we have done that we believe positively affect the loading experience of our application. This has brought us closer to the experience we had hoped for and I thought you might find it interesting.
-
-We have a fairly hefty application. Every page loads about 2MB of Javascript, and around 200KB of HTML. We also load a number of third party services, such as Uservoice, Typekit and Stripe.
-
-The key to improving the user experience has been an aggressive caching scheme and parallelizing the loading of the Javascript, as we detail below.
-
-I would certainly be interested in others' experiences with and thoughts on the techniques below.
-
-## One javascript file to rule them all
-
-All our javascript is included or compiled from Coffeescript via [Browserify](http://browserify.org/). At the end of our main html file we have:
+Load our script resources asynchronously, with one `<script>` tag, like this:
 
 {% highlight html %}
 <script async src='/all.js-{% raw %}{{ cache_buster }}{% endraw %}'></script>
 {% endhighlight %}
 
-We are using Jinja2 to compile the html files. The `cache_buster` a variable set to the *mtime* of a file, and that *mtime* changes whenever we deploy to Google App Engine.
+This all.js file loads all our Javascript, external services, templates, and any RESTful resources from our server.
 
-Our `cache_buster` also changes locally whenever Browserify recompiles our scripts into `all.js`, so development can use caching.
+We discuss the `cache_buster` in [the next post](/articles/permanent-caching-and-busting).
 
-Our Google App Engine `app.yaml` contains:
+# Why
 
-{% highlight yaml %}
-- url: /all.js.*       # Matches all.js-{% raw %}{{ cache_buster }}{% endraw %}
-  expiration: 360d     # Specifies how long to cache the request
-  static_files: scripts/all.js
-  upload: scripts/all.js
-{% endhighlight %}
+Having one file for Javascript gives us:
 
-Our `all.js-*` resource effectly never expires. This has the advantage that the server is not polled for `Etags` or `Last-Modified` headers. The disadvantage is that the browser may keep stale versions of `all.js-*` locally, wasting space.
+1. one file to request;
+2. improved cachability;
+3. parallel requests;
+3. centralizing where we control our loading;
+4. fine-grained control of the loading process.
 
-While we are using the HTML5 `async` script attribute, it is worth noting that this probably has no effect. Since we are using *FOUT* CSS workaround below, the page is blank until the Typekit javascript finishes loading. We make the assumption that some page rendering that could not otherwise happen in parallel occurs when `async` is used, but that said we have not noticed any significant difference one way or the other.
+We have a fairly hefty application. Every page loads about 2MB of Javascript, and around 200KB of HTML templates. We also load a number of third party services, such as Uservoice, Typekit and Stripe.
 
+# How
+
+We compile all our Javascript using grunt and [Browserify](http://browserify.org/).
+
+The compiled Javascript loads the external services Uservoice, Typekit and Stripe, as well as our templates, as set out below.
 
 ## Third party services
 
-We load all our third party services from our main javascript file, as follows.
+Loading the third party services is usually done with `<script>` tags in the `<head>` tag or inline Javascript. We avoid inline javascript because it violates the Content Security Policy, and it's less organized.
+
+We avoid the script tags for external services because:
+
+1. they are synchronously loaded and slow down the page loading;
+2. we cannot tell when they have completed loading without polling; or
+3. they have mucked up the page completely and we want better control over their inclusion.
 
 ### Typekit
 
@@ -59,7 +60,7 @@ We load all our third party services from our main javascript file, as follows.
 load_typekit = (timeout=3000) ->
   LOADING_CLASS = 'wf-loading'
   FAIL_CLASS = "wf-inactive"
-  kitId = 'TYPEKIT-ID'
+  kitId = 'OUR-TYPEKIT-ID'
   url = "//use.typekit.net/#{kitId}.js"
 
   $.ajax(url, timeout: 1500, dataType: "script")
@@ -79,9 +80,7 @@ load_typekit = (timeout=3000) ->
   return
 {% endhighlight %}
 
-We have a much lower threshold for the timeout on Typekit because if
-it is slow or fails to load then the application is rendered unusable
-because the page never hides the loading screen to show the page.
+We have a much lower threshold for the timeout on Typekit than the other services below because if it is slow or fails to load then the application is rendered unusable because the page never hides the loading screen to show the page.
 
 We use the following CSS to get around the [Flash of Unstyled Text](http://help.typekit.com/customer/portal/articles/6852-controlling-the-flash-of-unstyled-text-or-fout-using-font-events):
 
@@ -103,7 +102,21 @@ We use the following CSS to get around the [Flash of Unstyled Text](http://help.
 
 This is essentially what Typekit suggested, but the transition is nicer.
 
-One of the neat observations of using the CSS FOUT is that the browser seems noticibly faster when loading the asynchronous resources. Without more analysis I can only speculate why, but I imagine because the processor is not rendering for the first 400ms of a page load it can concentrate on network tasks. Whatever the reason, we were very pleased with this unexpected benefit.
+A neat observation of using the CSS FOUT is that the browser seems noticibly faster when loading the asynchronous resources. Without more analysis I can only speculate why, but I imagine because the processor is not rendering for the first 400ms of a page load it can concentrate on network tasks. Whatever the reason, we were very pleased with this unexpected benefit.
+
+Typekit has been and remains the largest barrier to quickly displaying something on screen, since it must be loaded before the page displays any fonts. Nevertheless this is more than made up for in the improvement in typography and the unexpected benefit the FOUT CSS makes to load times.
+
+Before Typekit is loaded one could get an image out to the user with an animated background image, as described in [Avoid FOUT by Adding a Web Font Preloader](http://webdesign.tutsplus.com/tutorials/ux-tutorials/quick-tip-avoid-fout-by-adding-a-web-font-preloader/) like this:
+
+{% highlight css %}
+.wf-loading {
+  background: url('../images/ajax-loader.gif') no-repeat center center;
+  height: 100%;
+  overflow: hidden;
+}
+{% endhighlight %}
+
+If I were to do this I would prefer the page not display some arbitrary loading image, but an image that resembles what the rendered page will eventually look like. I feel the users would find that a more comfortable transition since I find blanking the page gives the impression of impermanence and a feeling of incontinuity to the service.
 
 ### Uservoice
 
@@ -171,11 +184,17 @@ initialize_page = ->
   cache_buster = $("body").attr("data-cache-buster")
   $.ajax("/templates.html-#{cache_buster}").done((html) ->
     $("body").append(html)
-    page_init()   # And so the journey begins.
+    page_init()              # And so the journey begins.
   )
 {% endhighlight %}
 
 The `cache_buster` here is the same as the variable in Jinja2.
+
+## The superfluous async attribute
+
+While we are using the HTML5 `async` script attribute on our `all.js` tag, it is worth noting that this probably has no effect. Since we are using *FOUT* CSS workaround below, the page is blank until the Typekit javascript finishes loading. We make the assumption that some page rendering that could not otherwise happen in parallel occurs when `async` is used, but that said we have not noticed any significant difference one way or the other.
+
+That said, because it is `async` the `<script>` tag can go in the `<head>` tag instead of at the end of the page.
 
 ## And in the darkness ...
 
@@ -193,16 +212,10 @@ $(->
 Note that we have deferred the loading of Uservoice. This was to work around a
 problem where Uservoice would push out code that broke jQuery.
 
-## HTML5 offline web application
-
-I experimented with putting the templates and Javascript into an [HTML5 offline web application](http://diveintohtml5.info/offline.html) but the benefits proved marginal compared to the above while the complexity went up significantly. Nevertheless, it is an interesting option worth bearing in mind.
-
 ## Results
 
 When our page was loading synchronously we were sometimes seeing ten seconds  before the page displayed anything at all. With everything being asynchronous we have a page typically displaying something within 700ms and everything loaded under 3 seconds.
 
-With the aggressive caching our page loads are reduced to around 25KB for the average page plus any JSON from the server for the page.
-
-Typekit was and remains the largest barrier to quickly displaying something on screen, since it must be loaded before the page displays anything. Nevertheless this is more than made up for in the improvement in typography and the unexpected benefit the FOUT CSS makes to load times.
+This combined with the caching discussed in [the next post](/articles/permanent-caching-and-busting) has allowed us to achieve a load time that we are comfortable with in terms of the user experience we hope to deliver.
 
 I hope you have enjoyed reading. Please feel free to comment.
