@@ -13,22 +13,22 @@ h1, h2, h3, h4, h5, h6 {
 
 // Links
 // --------------------------------------------------
-a { 
+a {
 	text-decoration: none;
-	color: @link-color; 
-	&:visited { 
-		color: lighten(@link-color, 20); 
+	color: @link-color;
+	&:visited {
+		color: lighten(@link-color, 20);
 	}
-	&:hover { 
-		color: darken(@link-color, 20); 
-	}
-	&:focus { 
-		outline: thin dotted; 
+	&:hover {
 		color: darken(@link-color, 20);
 	}
-	&:hover, 
-	&:active { 
-		outline: 0; 
+	&:focus {
+		outline: thin dotted;
+		color: darken(@link-color, 20);
+	}
+	&:hover,
+	&:active {
+		outline: 0;
 	}
 }
 
@@ -107,9 +107,9 @@ tt, code, kbd, samp, pre {
 	font-family: @code-font;
 }
 p,
-li { 
+li {
 	code {
-		.font(12);
+		.font(14);
 		white-space: nowrap;
 		margin: 0 2px;
 		padding: 0 5px;
@@ -119,6 +119,6 @@ li {
 	}
 }
 pre {
-	.font(12);
+	.font(14);
 	overflow-x: auto;
 }
