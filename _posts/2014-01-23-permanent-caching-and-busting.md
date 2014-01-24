@@ -5,7 +5,11 @@ description: >
   Code and ideas about permanent caches of changing resources.
 modified: 2014-01-23 11:25:01
 category: articles
-tags: [performance ux]
+tags:
+  - ux
+  - performance
+  - caching
+  - http
 image:
   feature: so-simple-sample-image-1.jpg
   credit: Michael Rose

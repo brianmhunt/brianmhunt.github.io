@@ -5,7 +5,11 @@ description: >
   Code and ideas about the client-side script-loading experience.
 modified: 2014-01-22 11:25:01
 category: articles
-tags: [performance ux]
+tags:
+  - performance
+  - ux
+  - javascript
+  - html
 image:
   feature: so-simple-sample-image-1.jpg
   credit: Michael Rose
