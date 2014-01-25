@@ -1,6 +1,6 @@
 ---
 layout: post
-title: Strong crypto Python password storage
+title: Storing passwords using Python
 description: >
   Using strong cryptography to store passwords with Python
 modified: 2014-01-22 11:25:01
@@ -23,16 +23,19 @@ Storing passwords with cryptographically recognized techniques, using Python.
 
 # Why
 
-Sometimes the passwords we store to authenticate people are inadvertently disclosed. When stored in plain text or without cryptographically sound techniques, this undermines the entire system of authentication.
+Sometimes the passwords we store to authenticate people are inadvertently disclosed. When stored without cryptographically sound techniques, this represents a failure of the authentication system.
+
+This is bad news for users, the authenticator, and it undermines trust in our systems for storing and accessing online data.
 
 When using cryptography it is possible that even if the values stored are
-disclosed that the secrets they reflect remains opaque.
+disclosed that the secrets they reflect remain opaque.
 
 # How
 
-Using the cypher [Password-Based Key Derivation Function 2](http://en.wikipedia.org/wiki/PBKDF2) or (even better) [scrypt](http://en.wikipedia.org/wiki/Scrypt) one can make it expensive to obtain secrets from stored values. These cyphers are known as [key derivation functions (KDF)](http://en.wikipedia.org/wiki/Key_derivation_function) and below is an example of using a KDF in Python on Google App Engine.
+Using the cypher [Password-Based Key Derivation Function 2](http://en.wikipedia.org/wiki/PBKDF2) or (even better) [scrypt](http://en.wikipedia.org/wiki/Scrypt) one can make it expensive to obtain secrets from stored values. These cyphers are known as [key derivation functions (KDF)](http://en.wikipedia.org/wiki/Key_derivation_function) and below is an example of using a KDF in Python on Google App Engine. A KDF is given a token (e.g. a password) and returns what is called a *derived key*, which is the value that one stores.
 
-With PBKDF2 it is computationally expensive to verify that a token is equal to a secret. That expense can be varied by changing the number of 'iterations' of the algorithm that are employed. With scrypt the number of iterations increases not only the computational intensity but the amount of memory necessary.
+With PBKDF2 it is computationally expensive to verify that a token is equal to a derived key. That expense is proportional to the number of *iterations* of the algorithm that they employe. With scrypt the number of iterations increases not only the computational intensity but the amount of memory needed.
+
 
 ## Vectors
 
@@ -63,9 +66,10 @@ Here is a KDF at work, with just an 8 byte key for illustration, and a salt of "
 |"password"| 2 | `12a3e0e9cd5360ba` |
 |"password"| 10000 | `5132aa11fb99782d` |
 
-You can [try PBKDF2 online](http://anandam.name/pbkdf2/). Note how the number of iterations significantly increases the time to produce the result. Changing the salt will similarly alter the outcome.
+You can [try PBKDF2 online](http://anandam.name/pbkdf2/). Note how the number of iterations significantly increases the time to produce the result. Changing the salt will alter the outcome, but not the computation time.
 
-Thus, even if one obtains the stored secrets it is computationally expensive to obtain the passwords that were used to authenticate individuals.
+Thus, even if one obtains the stored secrets it is computationally expensive to obtain the passwords that were used to authenticate individuals these secrets represent.
+
 
 ## Our implementation
 
@@ -82,29 +86,32 @@ As an aside, developing with `Crypto` onto App Engine used to be [something of a
 
 I am going to use a class in [App Engine's NDB](https://developers.google.com/appengine/docs/python/ndb/) to store the credentials. One can reference theses credentials by a key, or making them an internal property of another NDB model, and changing them to work in another data store context should be straightforward.
 
-Here is the opening of the class definition.
-
 
 ## class Credentials – definition
+
+Here is the opening of the class definition with the constants and stored values for each credential. Every user would have a corresponding instance of the `Credentials` class in the datastore that would be used to authenticate their identity.
 
 {% highlight python %}
 class Credentials(ndb.Model):
     """Credentials to authenticate a person.
     """
+    # --- Class Variables ---
     # Our pseudo-random stream - used for generating random bits for the
     # salt and for iterations entropy
     _randf = None
 
-    # Keep track of the basic number of iterations for our derived key, which
-    # is stored with the key.
+    # --- Constants ---
+    # Keep track of the basic number of iterations for our derived key,
+    # which is stored with the key.
     ITERATIONS_2013 = 60000
 
-    # An arbitrary, constant offset, not stored with the key but in the code.
+    # Arbitrary, constant offset, not stored with the key but in the code.
     ITER_OFFSET = -257
 
     # Length of the stored key.
     DK_LEN = 32
 
+    # --- Datastore variables ---
     # A derived key from e.g. PBKDF2 (or, future: scrypt)
     dk = ndb.BlobProperty(indexed=False)
 
@@ -275,7 +282,7 @@ When we receive a password (`token`) we run it through the algorithm with the pa
 
 ## Reservations
 
-Nothing is perfect. This is just a small piece of a security puzzle, and there are many other vectors one must bear in mind. Complexity increases the probability of inadvertent exposure.
+Nothing is perfect. This is just a small piece of a security puzzle, and there are many other vectors one must bear in mind.
 
 This does raise the bar for the specific concern where the stored secrets are divulged, and the risk then that the authentication they represent may be disclosed.
 
@@ -288,8 +295,10 @@ Inherent issues may exist in the pseudo-random number generator that reduce the 
 
 # Summary
 
-From the Wikipedia article on [Kerckoff's principle](http://en.wikipedia.org/wiki/Kerckhoffs's_principle), quoting [John Savard](http://www.quadibloc.com/crypto/mi0611.htm):
+From the Wikipedia article on [Kerckoff's principle](http://en.wikipedia.org/wiki/Kerckhoffs's_principle), I quote [John Savard](http://www.quadibloc.com/crypto/mi0611.htm):
 
 > Unlike a key, an algorithm can be studied and analyzed by experts to determine if it is likely to be secure. An algorithm that you have invented yourself and kept secret has not had the opportunity for such review.
 
-I hope that you take away from this some illumination, if not inspiration and curiosity, about the key elements of storing passwords.
+I hope that you take away from this some illumination, if not inspiration and curiosity, about some important elements of storing passwords.
+
+Any thoughts you have are most welcome!
