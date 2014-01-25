@@ -73,6 +73,8 @@ Thus, even if one obtains the stored secrets it is computationally expensive to 
 
 ## Our implementation
 
+The entire class below can be found in a [Github Gist](https://gist.github.com/brianmhunt/8621775).
+
 Here is what we include in Python:
 
 {% highlight python %}
