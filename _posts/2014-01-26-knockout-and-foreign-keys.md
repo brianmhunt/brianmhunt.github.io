@@ -1,6 +1,6 @@
 ---
 layout: post
-title: Knockout and foreign keys
+title: Knockout and foreign keys extender
 description: >
   A handy way to extend Knockout observables for storing keys.
 modified: 2014-01-26 11:25:01
