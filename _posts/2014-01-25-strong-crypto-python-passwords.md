@@ -21,27 +21,34 @@ share: true
 
 Storing passwords with cryptographically recognized techniques, using Python.
 
+
 # Why
 
-Sometimes the passwords we store to authenticate people are inadvertently disclosed. When stored without cryptographically sound techniques, this represents a failure of the authentication system.
+Stored passwords get disclosed from time to time.
 
 This is bad news for users, the authenticator, and it undermines trust in our systems for storing and accessing online data.
 
 When using cryptography it is possible that even if the values stored are
-disclosed that the secrets they reflect remain opaque.
+disclosed that the secrets they reflect remain opaque, or at least cost ineffective to discover.
+
 
 # How
 
-Using the cypher [Password-Based Key Derivation Function 2](http://en.wikipedia.org/wiki/PBKDF2) or (even better) [scrypt](http://en.wikipedia.org/wiki/Scrypt) one can make it expensive to obtain secrets from stored values. These cyphers are known as [key derivation functions (KDF)](http://en.wikipedia.org/wiki/Key_derivation_function) and below is an example of using a KDF in Python on Google App Engine. A KDF is given a token (e.g. a password) and returns what is called a *derived key*, which is the value that one stores.
+Using the cypher [Password-Based Key Derivation Function 2](http://en.wikipedia.org/wiki/PBKDF2) or (perhaps even better) [scrypt](http://en.wikipedia.org/wiki/Scrypt) or bcrypt one can make it expensive to obtain secrets from stored values. These cyphers are known as [key derivation functions (KDF)](http://en.wikipedia.org/wiki/Key_derivation_function) and below is an example of using a KDF in Python on Google App Engine.
 
-With PBKDF2 it is computationally expensive to verify that a token is equal to a derived key. That expense is proportional to the number of *iterations* of the algorithm that they employe. With scrypt the number of iterations increases not only the computational intensity but the amount of memory needed.
+A KDF is given a token (e.g. a password) and returns what is called a *derived key*, which is the value that one stores.
 
+With PBKDF2 it can be computationally expensive to verify that a token is equal to a derived key. The expense is proportional to the number of *iterations* given as a parameter. With scrypt the number of iterations increases not only the computational intensity but the amount of memory needed.
 
-## Vectors
+There is an excellent Q & A [Security.SE: How to securely hash passwords?](http://security.stackexchange.com/q/211/2914) that goes into detail how to do this. What is below is just an implementation that I hope adheres to the principles set out there.
 
-If someone slurps your database of passwords, there are a number of ways they can obtain the secret passwords from the stored values. If the passwords are stored in plain text then the gig is up. If the passwords are hashed, then there is more work that must be done.
+The entire class below can be found in a [Github Gist](https://gist.github.com/brianmhunt/8621775).
 
-One would typically start by comparing the values against a database of popular passwords, which may indicate the algorithm used to hash the values. For example
+## The vector
+
+The topic merits a little background. If someone slurps a database of passwords, there are a number of ways they can obtain the secret passwords from the stored values. If the passwords are stored in plain text then the gig is up. If the passwords are hashed, then there is more work that must be done.
+
+One would typically start by comparing the values against a database of popular passwords, which may indicate the algorithm used to hash the values. For example the following, with outcomes shortened for brievity:
 
 | Password | Hash | Outcome |
 |:---------|:-----|--------:|
@@ -50,13 +57,11 @@ One would typically start by comparing the values against a database of popular 
 | "password" | SHA1 | `5baa61e4c9b93f3f068...` |
 | "12345" | SHA1 |    `8cb2237d0679ca88db6...` |
 
-These indicators of underlying mechanisms and values are called *oracles*. Once one has an oracle that indicates the algorithm, one can quickly use a [dictionary attack](http://en.wikipedia.org/wiki/Dictionary_attack) to check for the presence of common passwords. These dictionary attacks are often very computationally cost effective, when employed with [rainbow tables](http://en.wikipedia.org/wiki/Rainbow_table).
+These indicators of underlying mechanisms and values are called *oracles*. Once one has an oracle that indicates the algorithm, one can use a [dictionary attack](http://en.wikipedia.org/wiki/Dictionary_attack) to check for the presence of common passwords. These dictionary attacks are often very computationally cost effective, when employed with [rainbow tables](http://en.wikipedia.org/wiki/Rainbow_table).
 
-That said, oracles of this sort are like slugs: you can kill them with [salts](http://en.wikipedia.org/wiki/Salt_(cryptography)).
+That said, oracles of this sort are like slugs: you can kill them with [salts](http://en.wikipedia.org/wiki/Salt_(cryptography)). That is not the end of the story though, since modern GPUs can calculate hashes such as SHA1 at a rate of around 2.3 billion per second.
 
-In addition to salts, the KDF makes the oracle much more expensive. The KDF
-increass the comparisons necessary – one for every potential value of the
-iterations – and one can vary the number of iterations, so even where one matches a password to a secret that match generally reveals the secret in that one instance. With a regular hash or where the KDF iterations are constant the match will reveal the number of iterations.
+The KDF requires a salt, but it also makes the oracle much more expensive. The KDF increass the comparisons necessary – one for every potential value of the iterations – and one can vary the number of iterations, so even where one matches a password to a secret that match generally reveals the secret in that one instance. With a regular hash or where the KDF iterations are constant the match will reveal the number of iterations.
 
 Here is a KDF at work, with just an 8 byte key for illustration, and a salt of "" (two double-quote characters):
 
@@ -66,14 +71,20 @@ Here is a KDF at work, with just an 8 byte key for illustration, and a salt of "
 |"password"| 2 | `12a3e0e9cd5360ba` |
 |"password"| 10000 | `5132aa11fb99782d` |
 
+The outcome is always the same length, but varies on the iterations. It similarly varies on the salt. Here is one iteration with different salts:
+
+| Password |  Salt | Outcome |
+|:---------|:-----------:|--------:|
+|"password"| X | `0dd67697c0626ce7` |
+|"password"| Y | `39adb360cdc543df` |
+|"password"| Z | `63bea2aa5e5468f1` |
+
 You can [try PBKDF2 online](http://anandam.name/pbkdf2/). Note how the number of iterations significantly increases the time to produce the result. Changing the salt will alter the outcome, but not the computation time.
 
 Thus, even if one obtains the stored secrets it is computationally expensive to obtain the passwords that were used to authenticate individuals these secrets represent.
 
 
 ## Our implementation
-
-The entire class below can be found in a [Github Gist](https://gist.github.com/brianmhunt/8621775).
 
 Here is what we include in Python:
 
@@ -84,7 +95,8 @@ from google.appengine.ext import ndb
 from datetime import datetime
 {% endhighlight %}
 
-As an aside, developing with `Crypto` onto App Engine used to be [something of a challenging](http://stackoverflow.com/questions/11788508). This issue has, with great thanks to the App Engine developers, been resolved.
+As an aside, developing with `Crypto` onto App Engine used to be [something of a challenging](http://stackoverflow.com/questions/11788508). This issue has, with great thanks to the App Engine developers, been resolved. The challenge of
+getting Crypto onto App Engine is why we settled on PBKDF2 instead of bcrypt or scrypt. It may be easy to get the below working for those KDFs as well, now.
 
 I am going to use a class in [App Engine's NDB](https://developers.google.com/appengine/docs/python/ndb/) to store the credentials. One can reference theses credentials by a key, or making them an internal property of another NDB model, and changing them to work in another data store context should be straightforward.
 
@@ -194,7 +206,12 @@ number being both unpredictable and increasing over time as computation power in
         # Increase exponentially, to grow with computation power
         base_iters = int(self.ITERATIONS_2013 * self._multiplier())
 
-        # Entropy is an int < 65536, limited to 6% of the base iters.
+        # Entropy is an integer bound by min(65536, 6% of the base iters).
+        # This is like a salt, but if the there is an attack that
+        # reduces the size of the space for comparing derived keys
+        # in spite of the salts proper, this variation not be so affected,
+        # thus potentially increasing our resilience. While probably a rare
+        # case, this is cheap.
         entropy = int(
             self.random_stream.read(2).encode('hex'), 16
         ) % int(base_iters * 0.06)
