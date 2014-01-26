@@ -1,5 +1,5 @@
 title:            Brian M Hunt
-description:      Tech blog
+description:      Developer log
 logo:             site-logo.png
 disqus_shortname: brianmhuntgithubio
 search:           true
@@ -33,6 +33,8 @@ bing_verify:
 # Links to include in top navigation
 # For external links add external: true
 links:
+  - title: About
+    url: /about
   - title: Articles
     url: /articles/
 
