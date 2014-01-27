@@ -17,26 +17,26 @@ comments: true
 share: true
 ---
 
-# What
+# What is it?
 
-Storing passwords with cryptographically recognized techniques, using Python.
+An implementation in Python for storing passwords with cryptographically recognized techniques.
 
 
-# Why
+# Why is it important?
 
-Stored passwords get disclosed from time to time.
+Stored passwords get disclosed from time to time. Good examples give us guidance and help us avoid mistakes.
 
-This is bad news for users, the authenticator, and it undermines trust in our systems for storing and accessing online data.
+Password disclosure is bad news for users and the authenticator. Worse it undermines the trust the public has in our systems for storing and accessing private, personal services.
 
 When using cryptography it is possible that even if the values stored are
 disclosed that the secrets they reflect remain opaque, or at least cost ineffective to discover.
 
 
-# How
+# How does it work?
 
 Using the cypher [Password-Based Key Derivation Function 2](http://en.wikipedia.org/wiki/PBKDF2) or (perhaps even better) [scrypt](http://en.wikipedia.org/wiki/Scrypt) or bcrypt one can make it expensive to obtain secrets from stored values. These cyphers are known as [key derivation functions (KDF)](http://en.wikipedia.org/wiki/Key_derivation_function) and below is an example of using a KDF in Python on Google App Engine.
 
-A KDF is given a token (e.g. a password) and returns what is called a *derived key*, which is the value that one stores.
+A KDF is given a token (e.g. a password) and returns what is called a **derived key**, which is the value that one stores.
 
 With PBKDF2 it can be computationally expensive to verify that a token is equal to a derived key. The expense is proportional to the number of *iterations* given as a parameter. With scrypt the number of iterations increases not only the computational intensity but the amount of memory needed.
 

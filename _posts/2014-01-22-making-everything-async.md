@@ -18,9 +18,9 @@ comments: true
 share: true
 ---
 
-# What
+# What is it?
 
-Load our script resources asynchronously, with one `<script>` tag, like this:
+A process for loading our script resources asynchronously, with one `<script>` tag, like this:
 
 {% highlight html %}
 <script async src='/all.js-{% raw %}{{ cache_buster }}{% endraw %}'></script>
@@ -30,7 +30,7 @@ This all.js file loads all our Javascript, external services, templates, and any
 
 We discuss the `cache_buster` in [the next post](/articles/permanent-caching-and-busting).
 
-# Why
+# Why is it important?
 
 Having one file for Javascript gives us:
 
@@ -42,9 +42,9 @@ Having one file for Javascript gives us:
 
 We have a fairly hefty application. Every page loads about 2MB of Javascript, and around 200KB of HTML templates. We also load a number of third party services, such as Uservoice, Typekit and Stripe.
 
-# How
+# How does it work?
 
-We compile all our Javascript using grunt and [Browserify](http://browserify.org/).
+We compile all our Javascript using [grunt](http://gruntjs.com) and [Browserify](http://browserify.org/).
 
 The compiled Javascript loads the external services Uservoice, Typekit and Stripe, as well as our templates, as set out below.
 

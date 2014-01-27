@@ -18,38 +18,91 @@ comments: true
 share: true
 ---
 
-# What
+# What is this?
 
-An extension of [Knockout](http://knockoutjs.com/) observables, so they become
-*keys* to a *model*, and that model and its loading status is added as a property to the *key* observable.
+An extension of [Knockout](http://knockoutjs.com/) observables, making the observables into *keys* to another *model*. The model and its loading status are added as part of a property, `.fk`, to the observable.
 
-# Why
+# Why is it important?
 
-It makes some hard things easy, and some things one impossible just hard.
+It makes some hard things easy, and some things once impossible just hard. In particular, it makes it easy to define models that load keys, and trivially access the models those keys represent.
 
-# How
+For example, suppose you have an `Employee` class and want to access its `Company`. When you load an instance of the `Employee` we load the key for its respective `Company` instance into `@company`. Here it is in coffeescript:
 
-Writing an extender for Knockout is [well documented](http://knockoutjs.com/documentation/extenders.html). This article is about extenders that I use
-to make handling models via their keys easier.
+{% highlight coffeescript %}
+class Employee
+  constructor: ->
+    @name = ko.observable()
+    @company = ko.observable().extend(foreignKey: "company_model_type")
 
-I expect if you are reading this that you have some familiarity with Knockout, since this is a somewhat involved example.
+class Company
+  constructor: ->
+    @id = ko.observable()
+{% endhighlight %}
 
-Just for my own convenience, I will be using CoffeeScript.
+Using the `foreignKey` class below, as an extender in this example, an employee instance `employee` can access its company instance like this:
+
+{% highlight javascript %}
+employee_company = employee.company.fk.model()
+{% endhighlight %}
+
+The `fk` property is added by the extender to the observable `@company`, and contains all the nuts and bolts of the foreign key extension (as documented below).
+
+This simplifies and makes consistent a great deal of the templating logic, particularly when that model needs to indicate the loading status of a given item.
+
+
+# How does it work?
+
+Writing an extender for Knockout is [well documented](http://knockoutjs.com/documentation/extenders.html). I expect if you are reading this that you have some familiarity with Knockout, and this may be a somewhat involved example.
+
+The one function that needs to be defined, and varies depending on how you define and load your models, is called `_load_model`. This function takes the name of a class and the key and (perhaps asynchronously) populates an observable with an instance of the model. There are more details on this below.
+
+Just for my own convenience, I will be using coffeescript to define the class.
+
 
 ## The `foreignKey` extender
 
-Extend an observable to make it a key to a foreign model.
+The `foreignKey` class extends an observable so that when a key is written to the observable a set of `fk` properties are updated to reflect the loading status of the model the key refers to. Once loaded, the model can be accessed at `observable_name.fk.model()`.
 
-Writing a key to the observable will cause it to update the foreign key property `fk` accordingly.
+### Properties of `fk`
 
-### Some includes
+Here are the properties of `fk`. Except for `model_class` they are all Knockout observables:
+
+| Property | Provides |
+|:---------|:----------|
+| `fk.key` | The `target` observable i.e. the observable extended
+| `fk.is_loading` | True when a key has been defined and the model is loading |
+| `fk.is_loaded` | True when there is a defined key and the respective model is loaded |
+| `fk.is_defined` | True when the key is defined |
+| `fk.model` | The model instance, when loaded, otherwise `undefined` |
+| `fk.model_class` | The name of the class, provided as an argument to the extender |
+
+I find this is particularly well suited to the asynchronous loading of multiple models, as we will see below.
+
+### Functions on `fk`
+
+The `fk` property also supports a few functions, being:
+
+`fk.attr(name, default=`undefined`)`
+: Return the attribute `attr` of the model, i.e. `model[name]`, if the model is loaded, or `default`. If the attribute is a function or observable, it will be called / unwrapped.
+
+`fk.rawAttr(name, default=`undefined`)`
+: Same as `attr` but does not unwrap an observable or call a function.
+
+`fk.on_load_callback(callback, owner)`
+: Call `callback(model, fk)` when the model has loaded. Runs synchronously if the model is already loaded. If it is provided the `owner` argument is bound as the `this` argument to `callback`.
+
+
+# Class `foreignKey` definition
+
+We start with some includes:
 
 {% highlight coffeescript %}
 _ = require 'lodash'
 ko = require 'knockout'
 {% endhighlight %}
 
-### Loading models
+
+### Loading models: `_load_model`
 
 We need some way to load models from a `class_name` and `key`, and this will
 vary depending on the implementation you use for models.
@@ -164,20 +217,6 @@ ko.extenders.foreignKey = (target, model_class_name) ->
   return target
 {% endhighlight %}
 
-## Properties of `fk`
-
-Here are the properties of `fk`. Except for `model_class` they are all Knockout observables:
-
-| Property | Provides |
-|:---------|:----------|
-| `fk.key` | The `target` observable i.e. the observable extended
-| `fk.is_loading` | True when a key has been defined and the model is loading |
-| `fk.is_loaded` | True when there is a defined key and the respective model is loaded |
-| `fk.is_defined` | True when the key is defined |
-| `fk.model` | The model instance, when loaded, otherwise `undefined` |
-| `fk.model_class` | The name of the class, provided as an argument to the extender |
-
-I find this is particularly well suited to the asynchronous loading of multiple models, as we will see below.
 
 ## Some examples
 
@@ -259,6 +298,7 @@ true
 
 The only prerequisite is that the `_load_model` function above populates `ee.company` with the `Company` instance for Monster's Inc.
 
+
 ### Using a model
 
 Knockout really shines when you get into its templating system. Suppose we
@@ -291,18 +331,6 @@ I find the above to be a particularly intuitive way to define how a user interfa
 
 *Caveat*: One has to be careful not to use `with: employee` since that will `ko.unwrap` the observable and we cannot then easily get at the `fk` property. I use a number of custom bindings to work around this sort of problem e.g. a `withModelFromKey`.
 
-### Functions on `fk`
-
-The `fk` property also supports a few functions, being:
-
-**attr(name, default=`undefined`)**
-: Return the attribute `attr` of the model, i.e. `model[name]`, if the model is loaded, or `default`. If the attribute is a function or observable, it will be called / unwrapped.
-
-**rawAttr(name, default=`undefined`)**
-: Same as `attr` but does not unwrap an observable or call a functio.
-
-**on_load_callback(callback, owner)**
-: Call `callback(model, fk)` when the model has loaded. Runs synchronously if the model is already loaded. If it is provided the `owner` argument is bound as the `this` argument to `callback`.
 
 ### Multiple keys: `foreignKeyMap`
 
@@ -376,10 +404,27 @@ Populating the `@employees` property with keys will create a list of models as
 Showing the employees of a company is done like this:
 
 {% highlight html %}
-<ul data-bind='foreach: company.employees.fkm.models()'>
+<ul data-bind='foreach: company.employees.fkm.models'>
   <li data-bind='text: name'></li>
 </ul>
 {% endhighlight %}
+
+The above will show the items as they load. If you wish to show the loading status of each item you could do something like this:
+
+{% highlight html %}
+<ul data-bind='foreach: company.employees.fkm'>
+  <!-- ko if: is_loaded -->
+    <li data-bind='text: model().name'></li>
+  <!-- /ko -->
+  <!-- ko if: is_loading -->
+    <li>
+      <i class='fa fa-lg fa-spin fa-spinner'></i>
+    </li>
+  <!-- /ko -->
+</ul>
+{% endhighlight %}
+
+Again for this to work the only thing that a user of `foreignKey` needs to define is the `_load_model` function.
 
 
 ## Drawbacks

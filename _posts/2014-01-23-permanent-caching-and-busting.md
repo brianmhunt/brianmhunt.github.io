@@ -1,6 +1,6 @@
 ---
 layout: post
-title: Permanent caching and busting
+title: Permanent HTTP caching and busting
 description: >
   Code and ideas about permanent caches of changing resources.
 modified: 2014-01-23 11:25:01
@@ -18,24 +18,25 @@ comments: true
 share: true
 ---
 
-# What
+# What is it?
 
-Reduce server load and improve the user experience by speeding up load time with an aggressive caching scheme.
+Permanent caching is part of the HTTP protocol, a way to reduce server load and improve the user experience by speeding up load time.
 
-# Why
+# Why does it matter?
 
-It makes us and users happy. We get less load on our servers, and it's a significant speedup for load times.
+Caches make us and users happy. We get less load on our servers, and it's a significant speedup for load times.
 
-# How
+The busting is important because without it the resource may not be downloaded by a browser even though it has been updated on the server.
 
-We cache a number of "static" resources by identifying them like this:
+# How does it work?
+
+One can make a "bustable" cache a number of "static" resources that are loaded like this:
 
 {% highlight html %}
 <script async src='/all.js-{% raw %}{{ cache_buster }}{% endraw %}'></script>
 {% endhighlight %}
 
-By "static" I mean that **it changes when we deploy** our software. In addition
-to the Javascript files this caching model applies to our CSS and HTML template files.
+By "static" I mean that **it changes at most when we deploy** our software. In addition to Javascript files this caching model can apply to our CSS and HTML template files, and any other static resources including images.
 
 I discussed putting all our asynchronous loading via one file in the [previous post](/articles/making-everything-async/).
 
@@ -43,7 +44,7 @@ The `cache_buster` is a variable set to **the *mtime* of an arbitrary file,** an
 
 ## Adding a long-term cache
 
-The **header** we use to achieve a long-term cache is `cache-control`. We set its value to `max-age=31536000`. The `expires` header can also be used to
+The **HTTP header** we use to achieve a long-term cache is `cache-control`. We set its value to `max-age=31536000`. The `expires` header can also be used to
 determine cachability, but the `cache-control` header overrides it.
 
 In Flask we achieve the above for `all.js-*` with the following view:
