@@ -104,7 +104,7 @@ value       ::= <identifier> | <expression> | object | array | string |
 operator    ::= + | - | * | / | % | ! | & | || | && | & | | | ^ |
                 == | === | !== | !=== | < | <= | > | >=
 name        ::= [A-Za-z_0-9$]+
-dereference ::= "()" | "[" + <expression> + "]"
+dereference ::= "()" | "[" + <value> + "]"
 identifier  ::= <name> <dereference>* (. <identifier>)?
 unary       ::= (! | !! | ~) <identifier>
 expression  ::= unary | <identifier> <operator> <identifier>
