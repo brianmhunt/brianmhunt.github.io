@@ -1,10 +1,10 @@
 ---
 layout: post
-title: Knockout + Content Security Policy = Knockout Secure Binding
+title: Knockout Secure Binding
 description: >
-  KSB is a drop-in binder for Knockout that does not violate a
+  KSB is a drop-in binding provider for Knockout that does not violate a
   Content Security Policy that prohibs eval.
-modified: 2014-01-22 11:25:01
+modified: 2014-02-03 11:25:01
 category: articles
 tags:
   - javascript
@@ -25,7 +25,9 @@ is a [custom binding provider](http://www.knockmeout.net/2011/09/ko-13-preview-p
 # Why does it matter?
 
 The regular binding provider calls `new Function`, which throws an exception
-when you have a Content Security Policy that prohibits `eval`.
+when you have a Content Security Policy that prohibits `unsafe-eval`.
+
+These security policies are mandatory in some circumstances, such as Chrome Web Apps.
 
 # How does it work?
 
@@ -94,16 +96,18 @@ When a binding `init` or `update` calls its `valueAccessor()` argument it will g
 
 ## The parser
 
-As parsers go KSB recognizes essentially a superset of JSON that includes identifiers and expressions. If one were to describe it in [BNF](http://en.wikipedia.org/wiki/Backus%E2%80%93Naur_Form) it would basically look something like this:
+As parsers go KSB recognizes essentially a superset of JSON that includes identifiers and expressions. If one were to describe it in a [BNF](http://en.wikipedia.org/wiki/Backus%E2%80%93Naur_Form)-like way it would basically look something like this:
 
 ~~~
-value      ::= <identifier> | <expression> | object | array | string |
-               number | true | false | undefined | null
-operator   ::= + | - | * | / | % | ! | & | || | && | & | | | ^ |
-               == | === | !== | !=== | < | <= | > | >=
-identifier ::= [A-Za-z_0-9$]+
-unary      ::= (! | !! | ~) <identifier>
-expression ::= unary | <identifier> <operator> <identifier>
+value       ::= <identifier> | <expression> | object | array | string |
+                number | true | false | undefined | null
+operator    ::= + | - | * | / | % | ! | & | || | && | & | | | ^ |
+                == | === | !== | !=== | < | <= | > | >=
+name        ::= [A-Za-z_0-9$]+
+dereference ::= "()" | "[" + <expression> + "]"
+identifier  ::= <name> <dereference>* (. <identifier>)?
+unary       ::= (! | !! | ~) <identifier>
+expression  ::= unary | <identifier> <operator> <identifier>
 ~~~
 
 The parser is originally based on Douglas Crockford's [json_parse.js](https://github.com/douglascrockford/JSON-js/blob/master/json_parse.js).
@@ -164,7 +168,7 @@ The expression tree has at most two children and an operation. The node construc
 
 The parser generates an array of identifiers and operators (using `undefined` as filler for unary operators), and the Expression lazily builds a tree from this array that honours the expected operator precedence.
 
-While the algorithm is beyond the scope of this article, when building the tree it rebases the root node if the precedence of the operator being looked at is greater than the precedence of the root operator. The result is that building the tree requires only one pass through the array.
+The algorithm is beyond the scope of this article. The gist though is that when building the tree it rebases the root node if the precedence of the operator being looked at is greater than the precedence of the root operator. The result is that building the tree requires only one pass through the array.
 
 When the Expression value is looked up the tree is traversed with the operator function being called on the respective values of the left and right side nodes. It is simply:
 
