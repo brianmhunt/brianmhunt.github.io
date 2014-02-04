@@ -4,7 +4,7 @@ title: Knockout Secure Binding
 description: >
   KSB is a drop-in binding provider for Knockout that does not violate a
   Content Security Policy that prohibs eval.
-modified: 2014-02-03 11:25:01
+modified: 2014-02-04 11:25:01
 category: articles
 tags:
   - javascript
@@ -99,20 +99,26 @@ When a binding `init` or `update` calls its `valueAccessor()` argument it will g
 As parsers go KSB recognizes essentially a superset of JSON that includes identifiers and expressions. If one were to describe it in a [BNF](http://en.wikipedia.org/wiki/Backus%E2%80%93Naur_Form)-like way it would basically look something like this:
 
 ~~~
-value       ::= <identifier> | <expression> | object | array | string |
-                number | true | false | undefined | null
-operator    ::= + | - | * | / | % | ! | & | || | && | & | | | ^ |
-                == | === | !== | !=== | < | <= | > | >=
+native      ::= Object | Array | string | number | true | false |
+                undefined | null
+value       ::= <identifier> | <expression> | <native>
+operator    ::= "+" | "-" | "*" | "/" | "%" | "!" | "&" | "||" | "&&" |
+                "&" | "|" | "^" | "==" | "===" | "!==" | "!===" | "<" |
+                "<=" | ">" | ">="
 name        ::= [A-Za-z_0-9$]+
 dereference ::= "()" | "[" + <value> + "]"
-identifier  ::= <name> <dereference>* (. <identifier>)?
-unary       ::= (! | !! | ~) <identifier>
-expression  ::= unary | <identifier> <operator> <identifier>
+identifier  ::= <name> + <dereference>* + ("." + <identifier>)?
+unary       ::= ("!" | "!!" | "~") + <identifier>
+expression  ::= (<value> + <operator> | <unary>)? + <value>
+binding     ::= <name> + ":" + <value> + ("," + <binding>)?
 ~~~
+
+
+When run on the contents of a `data-bind` attribute the parser will produce an
+object that maps the binding names to values. Those values may be a primitive, an array, an object, a function, an `Identifier` or an `Expression`. A primitive is one of Javascript's native variable types, namely a number, string, `true`, `false`, `undefined` or `null`.
 
 The parser is originally based on Douglas Crockford's [json_parse.js](https://github.com/douglascrockford/JSON-js/blob/master/json_parse.js).
 
-When run on the contents of a `data-bind` attribute it will produce a value, i.e. a primitive, an array, an object, a function, an `Identifier` or an `Expression`. A primitive is one of Javascript's native variable types, namely a number, string, `true`, `false`, `undefined` or `null`.
 
 ## Native values
 
