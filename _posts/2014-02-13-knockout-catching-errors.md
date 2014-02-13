@@ -202,7 +202,7 @@ Alternatively, there is also the helpful [Knockout Context Debugger](https://chr
 
 Here is what it looks like when you put it all together.
 
-<iframe width="100%" height="350" src="http://jsfiddle.net/bmh_ca/sBMs2/1/embedded/result,js,resources,html,css" allowfullscreen="allowfullscreen" frameborder="0"></iframe>
+<iframe width="100%" height="350" src="http://jsfiddle.net/bmh_ca/sBMs2/1/embedded/result,html,js,css,resources" allowfullscreen="allowfullscreen" frameborder="0"></iframe>
 
 ## Summary
 
