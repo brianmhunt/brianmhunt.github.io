@@ -198,6 +198,12 @@ When elements have the `binding-error`, I often right-click them in Chrome and c
 
 Alternatively, there is also the helpful [Knockout Context Debugger](https://chrome.google.com/webstore/detail/knockoutjs-context-debugg/oddcpmchholgcjgjdnfjmildmlielhof).
 
+## jsFiddle example
+
+Here is what it looks like when you put it all together.
+
+<iframe width="100%" height="350" src="http://jsfiddle.net/bmh_ca/sBMs2/1/embedded/result,js,resources,html,css" allowfullscreen="allowfullscreen" frameborder="0"></iframe>
+
 ## Summary
 
 With the above techniques it becomes quite a bit simpler to root out and resolve issues with Knockout bindings. I hope you find the above helpful, and of course I would be grateful if you could please comment if you have other thoughts on debugging with Knockout.
