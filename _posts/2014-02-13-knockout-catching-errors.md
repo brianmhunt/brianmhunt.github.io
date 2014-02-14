@@ -91,7 +91,9 @@ ErrorHandlingBindingProvider = ->
 ko.bindingProvider.instance = new ErrorHandlingBindingProvider()
 {% endhighlight %}
 
-As a matter of interest this started back with [Knockout issue #793](https://github.com/SteveSanderson/knockout/issues/792), with the credit for this technique owing to [Ryan Niemeyer](http://www.knockmeout.net/).
+As a matter of interest this started back with [Knockout issue #793](https://github.com/SteveSanderson/knockout/issues/792), with the credit for this technique owing to [Ryan Niemeyer](http://www.knockmeout.net/). Speaking
+of which, while you are at it you may want to check out Ryan's post
+[Knockout.js Troubleshooting Strategies](http://www.knockmeout.net/2013/06/knockout-debugging-strategies-plugin.html).
 
 
 ## Wrapping custom bindings
