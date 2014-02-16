@@ -87,7 +87,7 @@ The latest projects have the greatest uncertainty. Have they been vetted with ma
 For years NetPleadings was based on **Django**, but I ended up **replacing every piece** of it over time until I switched entirely to Flask and Jinja2. It turns out others have [experienced exactly this](http://stackoverflow.com/a/3293509/19212).
 
 > If you go with django, then in the long term, you will have to replace almost every single component of django with something else, the only remaining part will be the url mapper.
->  — hasenj
+>  — [hasenj](http://stackoverflow.com/users/35364/hasenj)
 
 Django is a fabulous framework, but it turns out it was **unsuitable to the
 style** of development I had. For how I work, Flask and
