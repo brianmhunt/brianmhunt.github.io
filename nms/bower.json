@@ -11,7 +11,6 @@
     "bespoke-progress": "~0.1.0",
     "bespoke-state": "~0.2.0",
     "bespoke-forms": "~0.1.0",
-    "jquery": "~2.1.0",
     "prism": "gh-pages"
   }
 }
