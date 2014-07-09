@@ -44,7 +44,7 @@ given a promise `promise` and an observable `obs`:
   promise.then(obs)
 {% endhighlight %}
 
-When the promise completes it passes the value to the observable.
+When the promise completes it passes the promised value to the observable.
 
 
 # `resolve_when` something is published
@@ -96,7 +96,7 @@ function resolve_when(obs, test) {
 
 # Conclusion
 
-Of course this just scratches the surface, but I find myself integrating
-this particular promise regularly.
+Of course this just scratches the surface, but I hope this highlights the
+conceptual elements of publish and subscribe and promises.
 
 I hope you find the above useful, and please feel free to comment.
