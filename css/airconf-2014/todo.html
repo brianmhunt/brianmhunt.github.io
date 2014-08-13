@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>AirConf 2014 - Knockout</title>
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+
+  <h1>Dynamic HTML with Knockout</h1>
+
+  <ol data-bind='foreach: part_keys'>
+    <li>
+      <part params='part_key: $data'></part>
+    </li>
+  </ol>
+
+  <template id='todo'>
+    <cite>({{type}})</cite>
+    <div class='step'>
+      <details>
+        <summary>
+          {{name}}
+        </summary>
+        <pre>{{ body }}</pre>
+      </details>
+    </div>
+  </template>
+
+  <template id='part'>
+    <strong>{{ title }}</strong>
+    <ol data-bind='foreach: steps'>
+      <li>
+        <todo params='step: $data'></todo>
+      </li>
+    </ol>
+  </template>
+
+  <!-- Snippets
+    Build steps.js with:
+    snippets/ $ coffee -b -c -e "snippets = `cat steps.cson`" > steps.js
+  -->
+  <script src='../snippets/steps.js'></script>
+
+  <!-- SCRIPTS -->
+  <script src='../lib/knockout.js'></script>
+  <script src='../lib/lodash.js'></script>
+  <script src='../lib/knockout-projections.js'></script>
+  <script src='../lib/knockout.punches.js'></script>
+  <!-- Our javascript (we'll be editing) -->
+  <script src="./todo.js"></script>
+</body>
+</html>
