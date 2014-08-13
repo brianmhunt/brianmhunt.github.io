@@ -6,6 +6,8 @@ body {
   font-family: 'Open Sans', sans-serif;
   font-size: 18px;
   padding: 4em 0px;
+  width: 80%;
+  margin: 0px auto;
 }
 
 input {
@@ -98,7 +100,6 @@ pre {
 }
 
 article {
-  text-align: center;
   margin: 2em;
 }
 

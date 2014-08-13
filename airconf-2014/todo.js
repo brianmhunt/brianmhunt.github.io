@@ -30,9 +30,6 @@ Step = function(params) {
     seen(true);
     return true;
   }
-  this.reset_click = function () {
-    seen(false);
-  };
 };
 
 

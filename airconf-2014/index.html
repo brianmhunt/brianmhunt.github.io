@@ -16,15 +16,22 @@
   </h2>
 
   <article>
+    Brian's Blog:
     <a href='https://brianmhunt.github.io'>
       brianmhunt.github.io
     </a><br/>
     Presentation repository:
     <a href='https://github.com/brianmhunt/Airconf-2014-Knockout'>
-      github.com/brianmhunt/Airconf-2014-Knockout
+      brianmhunt/Airconf-2014-Knockout
     </a>
   </article>
 
+  <p>
+    The following are the steps and respective excerpts from the Atom.io
+    <a href='https://github.com/brianmhunt/Airconf-2014-Knockout/blob/master/snippets/steps.cson'>
+    snippets/snippets.cson</a>,
+    used to generate the code during the presentation.
+  </p>
 
   <ol data-bind='foreach: part_keys'>
     <li>
@@ -35,13 +42,10 @@
   <template id='todo'>
     <cite>
       ({{type}})
-      <!-- ko if: seen -->
-        <em data-bind='click: reset_click'>un-see</em>
-      <!-- /ko -->
     </cite>
     <div class='step' data-bind='click: seen_click'>
       <details>
-        <summary  data-bind='css: details_class'>
+        <summary data-bind='css: details_class'>
           {{name}}
         </summary>
         <pre>{{ body }}</pre>
