@@ -22,6 +22,17 @@ Step = function(params) {
   this.name = params.step.title;
   this.type = params.step.type;
   this.body = params.step.body;
+  var seen = this.seen = ko.observable(false);
+  this.details_class = ko.computed(function () {
+    return seen() ? 'seen' : '';
+  });
+  this.seen_click = function () {
+    seen(true);
+    return true;
+  }
+  this.reset_click = function () {
+    seen(false);
+  };
 };
 
 

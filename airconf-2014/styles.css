@@ -76,9 +76,17 @@ ol ol {
 }
 
 ol cite {
-  color: blue;
+  color: #AAA;
   font-size: 0.9em;
   float: right;
+}
+
+ol cite em {
+  color: #88A;
+  text-decoration: underline;
+  font-style: normal;
+  cursor: pointer;
+  padding: 0px 0.3em;
 }
 
 pre {
@@ -97,4 +105,14 @@ article {
 small {
   font-size: 0.5em;
   color: #888;
+}
+
+.seen {
+  color: #aaa;
+}
+
+
+summary {
+  cursor: pointer;
+  outline: none;
 }
