@@ -6,7 +6,25 @@
 </head>
 <body>
 
-  <h1>Dynamic HTML with Knockout</h1>
+  <h1>
+    Dynamic HTML with Knockout
+    <small>AirConf 2014</small>
+  </h1>
+
+  <h2>
+    Brian M Hunt<br/>
+  </h2>
+
+  <article>
+    <a href='https://brianmhunt.github.io'>
+      brianmhunt.github.io
+    </a><br/>
+    Presentation repository:
+    <a href='https://github.com/brianmhunt/Airconf-2014-Knockout'>
+      github.com/brianmhunt/Airconf-2014-Knockout
+    </a>
+  </article>
+
 
   <ol data-bind='foreach: part_keys'>
     <li>
@@ -39,13 +57,13 @@
     Build steps.js with:
     snippets/ $ coffee -b -c -e "snippets = `cat steps.cson`" > steps.js
   -->
-  <script src='../snippets/steps.js'></script>
+  <script src='./steps.js'></script>
 
   <!-- SCRIPTS -->
-  <script src='../lib/knockout.js'></script>
-  <script src='../lib/lodash.js'></script>
-  <script src='../lib/knockout-projections.js'></script>
-  <script src='../lib/knockout.punches.js'></script>
+  <script src='./knockout.js'></script>
+  <script src='./lodash.js'></script>
+  <script src='./knockout-projections.js'></script>
+  <script src='./knockout.punches.js'></script>
   <!-- Our javascript (we'll be editing) -->
   <script src="./todo.js"></script>
 </body>
