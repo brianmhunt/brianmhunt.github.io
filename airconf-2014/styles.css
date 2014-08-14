@@ -2,6 +2,10 @@
 @import url(http://fonts.googleapis.com/css?family=Open+Sans:400,700);
 @import url(http://fonts.googleapis.com/css?family=Source+Code+Pro);
 
+* {
+  text-rendering: optimizeLegibility;
+}
+
 body {
   font-family: 'Open Sans', sans-serif;
   font-size: 18px;
@@ -93,14 +97,15 @@ ol cite em {
 
 pre {
   font-family: 'Source Code Pro', monospace;
-  font-size: 0.9em;
+  font-size: 0.7em;
   background-color: #DDD;
   border: 1px solid gray;
   padding: 0.3em;
 }
 
 article {
-  margin: 2em;
+  margin: 2em auto;
+  max-width: 36em;
 }
 
 small {
@@ -116,4 +121,9 @@ small {
 summary {
   cursor: pointer;
   outline: none;
+}
+
+p {
+  max-width: 36em;
+  margin: 4ex auto;
 }
