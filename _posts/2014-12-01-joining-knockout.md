@@ -3,7 +3,7 @@ layout: post
 title: Joining Knockout.js maintainers
 description: >
   Just a note about joining the Knockout.js core maintainers
-modified: 2014-08-13 16:00:00
+modified: 2014-12-01 16:00:00
 category: articles
 tags:
   - javascript
