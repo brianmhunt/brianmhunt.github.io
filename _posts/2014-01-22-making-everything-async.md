@@ -22,9 +22,9 @@ share: true
 
 A process for loading our script resources asynchronously, with one `<script>` tag, like this:
 
-{% highlight html %}
+```html
 <script async src='/all.js-{% raw %}{{ cache_buster }}{% endraw %}'></script>
-{% endhighlight %}
+```
 
 This all.js file loads all our Javascript, external services, templates, and any RESTful resources from our server.
 
@@ -62,7 +62,7 @@ We avoid the script tags for external services because:
 
 Here is the Coffeescript I use to load Typekit. The real trick here is in catching the exceptions and timeouts so that the user can still get stuff done, ugly though the fonts may be.
 
-{% highlight coffeescript %}
+```coffeescript
 load_typekit = (timeout=3000) ->
   LOADING_CLASS = 'wf-loading'
   FAIL_CLASS = "wf-inactive"
@@ -84,13 +84,13 @@ load_typekit = (timeout=3000) ->
       return
     )
   return
-{% endhighlight %}
+```
 
 We have a much lower threshold for the timeout on Typekit than the other services below because if it is slow or fails to load then the application is rendered unusable because the page never hides the loading screen to show the page.
 
 We use the following CSS to get around the [Flash of Unstyled Text](http://help.typekit.com/customer/portal/articles/6852-controlling-the-flash-of-unstyled-text-or-fout-using-font-events):
 
-{% highlight css %}
+```css
 /* html */.wf-loading {
   opacity: 0;
   visibility: hidden;
@@ -104,7 +104,7 @@ We use the following CSS to get around the [Flash of Unstyled Text](http://help.
        -o-transition: opacity 0.55s ease-in-out;
           transition: opacity 0.55s ease-in-out;
 }
-{% endhighlight %}
+```
 
 This is essentially what Typekit has suggested, but with a pleasant opacity transition.
 
@@ -114,14 +114,14 @@ Typekit has been and remains the largest barrier to quickly displaying something
 
 Before Typekit is loaded one could get an image out to the user with an animated background image, as described in [Avoid FOUT by Adding a Web Font Preloader](http://webdesign.tutsplus.com/tutorials/ux-tutorials/quick-tip-avoid-fout-by-adding-a-web-font-preloader/) like this:
 
-{% highlight css %}
+```css
 .wf-loading {
   /* ... */
   background: url('../images/ajax-loader.gif') no-repeat center center;
   height: 100%;
   overflow: hidden;
 }
-{% endhighlight %}
+```
 
 If I were to do this I would prefer the page not display some arbitrary loading image, but an image that resembles what the rendered page will eventually look like. I feel the users would find that a more comfortable transition since I find blanking the page gives the impression of impermanence and a feeling of incontinuity and fragility to the service.
 
@@ -129,7 +129,7 @@ If I were to do this I would prefer the page not display some arbitrary loading 
 
 Uservoice is straightforward. Note that we are doing our best to become [Content-Security-Policy (CSP)](http://www.w3.org/TR/CSP/) compliant, so page-specific attributes such as the current-user email and key are added as attributes to the `<body>` tag.
 
-{% highlight coffeescript %}
+```coffeescript
 load_uservoice = ->
   url = '//widget.uservoice.com/OUR-WIDGET-URL.js'
 
@@ -163,14 +163,14 @@ load_uservoice = ->
   ]
 
   UserVoice.push ['autoprompt', {}]
-{% endhighlight %}
+```
 
 
 ### Stripe
 
 Like Uservoice, Stripe via [Stripe.js](https://stripe.com/docs/stripe.js) is straightforward. Again we have added our stripe key to the `<body>` tag so that we remain CSP-compliant.
 
-{% highlight coffeescript %}
+```coffeescript
 initialize_stripe = ->
   url = "https://js.stripe.com/v1/"
   pub_key = $("body").attr("data-stripe-pubkey")
@@ -179,21 +179,21 @@ initialize_stripe = ->
     .fail((jqxhr, settings, exception) ->
       console.error("Problem getting Stripe at #{url}", jqxhr, settings, exception)
     )
-{% endhighlight %}
+```
 
 
 ### Templates
 
 We use a lot of templates on the page, in the form of Bootstrap modals and Knockout templates. Rather than putting these reusable templates into every page we follow the same caching mechanism as for `all.js`.
 
-{% highlight coffeescript %}
+```coffeescript
 initialize_page = ->
   cache_buster = $("body").attr("data-cache-buster")
   $.ajax("/templates.html-#{cache_buster}").done((html) ->
     $("body").append(html)
     page_init()              # Or whatever function starts your journey.
   )
-{% endhighlight %}
+```
 
 ## The superfluous async attribute
 
@@ -205,14 +205,14 @@ That said, because it is `async` the `<script>` tag can go in the `<head>` tag i
 
 I put all the above together like this:
 
-{% highlight coffeescript %}
+```coffeescript
 $(->
   load_typekit()
   initialize_stripe()
   initialize_page()
   _.defer load_uservoice
 )
-{% endhighlight %}
+```
 
 Note that we have deferred the loading of Uservoice. This was to work around a
 problem where Uservoice would push out code that broke jQuery.
