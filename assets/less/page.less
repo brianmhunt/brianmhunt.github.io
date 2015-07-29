@@ -294,10 +294,16 @@ span + .entry-title {
 	@media @large {
 		float: left;
 	}
+  p:hover > a,
+  li:hover > a {
+		color: darken(blue, 10);
+    border-color: darken(blue, 10);
+  }
 	p > a,
 	li > a {
 		border-bottom: 1px dotted lighten(@link-color, 50);
 		&:hover {
+      color: blue;
 			border-bottom-style: solid;
 		}
 	}
