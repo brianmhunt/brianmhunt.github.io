@@ -23,7 +23,7 @@ Without further ado, let's get into the details.
 
 ## Overall page strategy
 
-We create a single instance of an object, [`Page`](https://github.com/brianmhunt/knockout/blob/gh-pages/src/Page.js) that [Knockout binds to the `<body>`](https://github.com/brianmhunt/knockout/blob/gh-pages/src/entry.js#L93-L98) and thereafter determines the state of the entire page. When an anchor is clicked it is [intercepted](https://github.com/brianmhunt/knockout/blob/gh-pages/src/events.js#L28) then, if the browser supports HTML5 history and the user has not disabled the single-page functionality, the page rewrite boils down to Knockout changing the `body` template of the `Page` instance.
+We create a single instance of an object, [`Page`](https://github.com/brianmhunt/knockout/blob/gh-pages/src/Page.js) that [Knockout binds to the `<body>`](https://github.com/brianmhunt/knockout/blob/gh-pages/src/entry.js#L93-L98) and thereafter determines the state of the entire page. When an anchor is clicked the event is [intercepted](https://github.com/brianmhunt/knockout/blob/gh-pages/src/events.js#L28) then, if the browser supports HTML5 history and the user has not disabled the single-page functionality, the page rewrite boils down to Knockout changing the `body` template of the `Page` instance. If the browser does not support HTML5 or the user turns off the single-page functionality, then the link is followed (though it may have been [rewritten](https://github.com/brianmhunt/knockout/blob/gh-pages/src/events.js#L12)).
 
 When the body template changes the template shown changes. As well, `body` change [triggers](https://github.com/brianmhunt/knockout/blob/gh-pages/src/Page.js#L10) a page title update to the `data-title` attribute of the template being changed to.
 
