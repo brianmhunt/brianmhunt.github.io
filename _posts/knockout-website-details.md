@@ -33,7 +33,7 @@ All our pages are stored as markdown and also [compiled into a single file](http
 
 ## History
 
-I opted for HTML5 history support instead of [HTML5-History-API](https://github.com/devote/HTML5-History-API) or [history.js](https://github.com/browserstate/history.js/). Those are excellent plugins, but the aim here is to keep it simple and aim for the future.
+I opted for HTML5 history support instead of [HTML5-History-API](https://github.com/devote/HTML5-History-API) or [history.js](https://github.com/browserstate/history.js/). Those are excellent plugins, but the idea here is to keep it simple and aim for the future.
 
 As you can see from [the anchor click intercept and `popstate` handler](https://github.com/brianmhunt/knockout/blob/gh-pages/src/events.js#L28-L58) manipulating the history is pretty trivial when used in conjunction with Knockout.
 
