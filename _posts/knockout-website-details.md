@@ -17,7 +17,7 @@ These are a selection of the many really cool features that underly the future o
 
 The site uses Knockout along with a number of other packages, as you can see in our [bower.json](https://github.com/brianmhunt/knockout/blob/gh-pages/bower.json#L20) and [package.json](https://github.com/brianmhunt/knockout/blob/gh-pages/package.json#L6).
 
-That said, the compiled [unminified source code](https://github.com/brianmhunt/knockout/blob/gh-pages/build/app.js) is pretty lean, coming in at under a thousand lines. That said, we are relying on [over a MB](https://github.com/brianmhunt/knockout/blob/gh-pages/build/libs.js) of Javascript libraries. Much of that can and will be minified down when it comes time to deploy more broadly.
+The compiled [unminified source code](https://github.com/brianmhunt/knockout/blob/gh-pages/build/app.js) is pretty lean, coming in at under a thousand lines. While demonstratign the concept we are relying on [over a MB](https://github.com/brianmhunt/knockout/blob/gh-pages/build/libs.js) of Javascript libraries. Much of that can and will be minified down when it comes time to deploy more broadly.
 
 Without further ado, let's get into the details.
 
