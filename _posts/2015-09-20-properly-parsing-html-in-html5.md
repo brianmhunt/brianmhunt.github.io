@@ -33,8 +33,7 @@ parent nodes that are required.  There are a few HTML elements that need
 parents of a specific sort: `area`, `thead`, `tbody`, `tr`, `td`, and
  [others](https://github.com/brianmhunt/knockout/blob/1880--template-html-parser/src/utils.domManipulation.js#L11-L26).
 
-Two popular parsing implementations, the jQuery and Knockout parser, have
-problems.
+Two popular parsing implementations, jQuery and Knockout, have problems.
 
 The `$.parseHTML` method of
 jQuery v1.11.3 and v2.1.4 incorrectly parse custom elements that start with one
@@ -87,3 +86,6 @@ workarounds that aspire to but do not quite reach compliance with the HTML spec.
 Most browsers in their most recent incarnations
 [support the template tag](http://caniuse.com/#feat=template), including
 Internet Explorer Edge 13.
+Until the latest browsers are more widespread we will have to live with some
+compromises, but the future of HTML parsing with Javascript in browsers looks
+bright.
