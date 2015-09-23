@@ -81,7 +81,7 @@ document.body.appendChild(clone);
 The result is that you have access to the browser's native HTML parsing,
 without those relatively complex (and possibly
   [slow](https://github.com/knockout/knockout/issues/1880#issuecomment-141083904))
-workarounds that aspire to but do not quite reach compliance with the HTML spec.
+workarounds that aspire to but do not quite reach parity with builtin browser parser.
 
 Most browsers in their most recent incarnations
 [support the template tag](http://caniuse.com/#feat=template), including
