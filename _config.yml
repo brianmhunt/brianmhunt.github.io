@@ -6,8 +6,8 @@ search:           true
 # Change url to your domain. Leave localhost server or blank when working locally.
 #url:              http://localhost:4000
 url:
-gems:
-  - jekyl-feed
+# gems:
+#   - jekyll-feed
 
 # Owner/author information
 owner:
@@ -44,7 +44,7 @@ links:
 timezone:    America/New_York
 future:      true
 highlighter: pygments
-markdown:    redcarpet
+markdown:    kramdown
 
 redcarpet:
   extensions: []
