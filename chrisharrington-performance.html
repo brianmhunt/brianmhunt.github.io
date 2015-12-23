@@ -19,7 +19,7 @@
 
         <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/knockout/3.4.0/knockout-min.js"></script>
         <script type='text/javascript'
-          src='https://rawgit.com/brianmhunt/knockout-fast-foreach/master/dist/knockout-fast-foreach.min.js'></script>
+          src='https://rawgit.com/brianmhunt/knockout-fast-foreach/master/dist/knockout-fast-foreach.js'></script>
         <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.3.3/angular.min.js"></script>
         <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/react/0.12.1/react.js"></script>
         <script type="text/javascript">
@@ -50,21 +50,24 @@
             }
 
             function _knockout() {
+                var date
                 ko.applyBindings({
                     selected: ko.observable(),
                     data: ko.observableArray(),
-
-                    select: function(item) {
-                        this.selected(item.id);
+                    select: function(vm, evt) {
+                      var item = ko.dataFor(evt.target)
+                      this.selected(item.id);
                     },
-
                     run: function() {
-                        var data = _buildData(),
-                            date = new Date();
-
+                        var data = _buildData();
                         this.selected(null);
                         this.data(data);
-						document.getElementById("run-knockout").innerHTML = (new Date() - date) + " ms";
+                    },
+                    start: function () {
+                      date = new Date()
+                    },
+                    complete: function () {
+                      document.getElementById("run-knockout").innerHTML = (new Date() - date) + " ms";
                     }
                 }, document.getElementById("knockout"));
 
@@ -150,13 +153,6 @@
 					document.getElementById("run-raw").innerHTML = (new Date() - date) + " ms";
                 });
             }
-
-            ko.observableArray.fn.reset = function(values) {
-                var array = this();
-                this.valueWillMutate();
-                ko.utils.arrayPushAll(array, values);
-                this.valueHasMutated();
-            };
         </script>
     </head>
     <body ng-controller="controller">
@@ -200,10 +196,10 @@
                     </div>
                     <div class="col-md-5 text-right time" id="run-knockout" data-bind="click: run">Run</div>
                 </div>
-                <div data-bind="fastForEach: data">
+                <div data-bind="fastForEach: {data: data, afterQueueFlush: complete, beforeQueueFlush: start, noIndex: true }, click: select">
                     <div class="row">
                         <div class="col-md-12 test-data">
-                            <span data-bind="click: $root.select.bind($root, $data), text: $data.label, css: { selected: $data.id === $root.selected() }"></span>
+                            <span data-bind="text: $data.label, css: { selected: $data.id === $root.selected() }"></span>
                         </div>
                     </div>
                 </div>
