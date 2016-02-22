@@ -1,7 +1,21 @@
 ---
 layout: "post"
 title: "Let's Encrypt - ACME on AppEngine"
+description: >
+    An example of how to mostly-automate the use of ACME TLS keys
+    on Google App Engine
 date: "2016-02-22 14:09"
+category: articles
+tags:
+ - appengine
+ - tls
+ - acme
+image:
+ feature: so-simple-sample-image-1.jpg
+ credit: Michael Rose
+ creditlink: http://mademistakes.com
+comments: true
+share: true
 ---
 
 # What is this?
