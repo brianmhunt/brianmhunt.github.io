@@ -93,10 +93,18 @@ To set up the module and dispatch one must run, once,
 
 ## Getting a new key
 
-So to mostly-automate the process I have created a couple `gulp` tasks, as
-seen here:
+So to mostly-automate the process I have created a couple [`gulp`](http://gulpjs.com/) tasks, as
+seen in the next code snippet.
+
+*On reflection, I realized I am taking for granted familiarity with Gulp.  In
+short, it is a task runner built on javascript/node.  To get that up and
+running you'll need [node](https://nodejs.org), a `package.json` and a
+`gulpfile.js`, but that's beyond the scope of this article. Nonetheless I hope
+the following proves interesting and sufficiently illustrative of the intended
+task to be helpful if you are following a similar path.*
 
 <script src="https://gist.github.com/brianmhunt/7c647dce3e43d886f1d2.js?file=acme.js"></script>
+
 
 After making the appropriate changes to the config (which in this task is
 exposed as a global), one can obtain a signed key by following these steps:
