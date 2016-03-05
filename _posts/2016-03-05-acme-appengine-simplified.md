@@ -10,7 +10,9 @@ with minimal user input.
 
 In particular, the following script will extract the challenge from STDOUT of
 Let's Encrypt, write the challenges to the given directory, call `appcfg.py`
-to upload the challenges, before Let's Encrypt performs its validation.
+to upload the challenges, before Let's Encrypt performs its validation.  If all
+goes well, the private key is converted to a format usable by AppEngine and
+both it and the certificate chain are printed to the terminal.
 
 Accordingly, I have updated [my gist](https://gist.github.com/brianmhunt/7c647dce3e43d886f1d2), notably replacing all the Node/JS with
 [a single Python script](https://gist.github.com/brianmhunt/7c647dce3e43d886f1d2#file-regen-py):
