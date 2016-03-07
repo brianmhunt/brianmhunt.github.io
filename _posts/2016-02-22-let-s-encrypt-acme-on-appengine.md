@@ -23,6 +23,14 @@ share: true
 This is a bit of process that I use to get TLS keys to use on AppEngine
 using Let's Encrypt.
 
+## <span style='color: red'>Update</span>
+
+*I have a streamlined process described below,
+removing dependencies on Node and Javascript,
+and reducing the amount of user-input needed,
+as described* [in my next post](/acme-appengine-simplified/).
+
+
 # Why's it matter?
 
 There are a number of quirks in Let's Encrypt and TLS on AppEngine that
@@ -70,11 +78,11 @@ integration, and minimize any exposure across the system.
 
 To set up a module, one needs a `dispatch.yaml`, something like this:
 
-<script src="https://gist.github.com/brianmhunt/7c647dce3e43d886f1d2.js?file=dispatch.yaml"></script>
+<script src="https://gist.github.com/brianmhunt/7c647dce3e43d886f1d2/b884b8486e7e299a9dfdc373c6d5a2a7abca6125.js?file=dispatch.yaml"></script>
 
 Then one needs a `module.yaml`, something like this:
 
-<script src="https://gist.github.com/brianmhunt/7c647dce3e43d886f1d2.js?file=module.yaml"></script>
+<script src="https://gist.github.com/brianmhunt/7c647dce3e43d886f1d2/b884b8486e7e299a9dfdc373c6d5a2a7abca6125.js?file=module.yaml"></script>
 
 The directory setup looks like this:
 
@@ -93,10 +101,18 @@ To set up the module and dispatch one must run, once,
 
 ## Getting a new key
 
-So to mostly-automate the process I have created a couple `gulp` tasks, as
-seen here:
+So to mostly-automate the process I have created a couple [`gulp`](http://gulpjs.com/) tasks, as
+seen in the next code snippet.
 
-<script src="https://gist.github.com/brianmhunt/7c647dce3e43d886f1d2.js?file=acme.js"></script>
+*On reflection, I realized I am taking for granted familiarity with Gulp.  In
+short, it is a task runner built on javascript/node.  To get that up and
+running you'll need [node](https://nodejs.org), a `package.json` and a
+`gulpfile.js`, but that's beyond the scope of this article. Nonetheless I hope
+the following proves interesting and sufficiently illustrative of the intended
+task to be helpful if you are following a similar path.*
+
+<script src="https://gist.github.com/brianmhunt/7c647dce3e43d886f1d2/b884b8486e7e299a9dfdc373c6d5a2a7abca6125.js?file=acme.js"></script>
+
 
 After making the appropriate changes to the config (which in this task is
 exposed as a global), one can obtain a signed key by following these steps:
