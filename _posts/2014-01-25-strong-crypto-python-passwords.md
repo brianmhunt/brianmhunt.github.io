@@ -12,7 +12,7 @@ tags:
 image:
   feature: so-simple-sample-image-1.jpg
   credit: Michael Rose
-  creditlink: http://mademistakes.com
+  creditlink: https://mademistakes.com
 comments: true
 share: true
 ---
@@ -34,13 +34,13 @@ disclosed that the secrets they reflect remain opaque, or at least cost ineffect
 
 # How does it work?
 
-Using the cypher [Password-Based Key Derivation Function 2](http://en.wikipedia.org/wiki/PBKDF2) or (perhaps even better) [scrypt](http://en.wikipedia.org/wiki/Scrypt) or bcrypt one can make it expensive to obtain secrets from stored values. These cyphers are known as [key derivation functions (KDF)](http://en.wikipedia.org/wiki/Key_derivation_function) and below is an example of using a KDF in Python on Google App Engine.
+Using the cypher [Password-Based Key Derivation Function 2](https://en.wikipedia.org/wiki/PBKDF2) or (perhaps even better) [scrypt](https://en.wikipedia.org/wiki/Scrypt) or bcrypt one can make it expensive to obtain secrets from stored values. These cyphers are known as [key derivation functions (KDF)](https://en.wikipedia.org/wiki/Key_derivation_function) and below is an example of using a KDF in Python on Google App Engine.
 
 A KDF is given a token (e.g. a password) and returns what is called a **derived key**, which is the value that one stores.
 
 With PBKDF2 it can be computationally expensive to verify that a token is equal to a derived key. The expense is proportional to the number of *iterations* given as a parameter. With scrypt the number of iterations increases not only the computational intensity but the amount of memory needed.
 
-There is an excellent Q & A [Security.SE: How to securely hash passwords?](http://security.stackexchange.com/q/211/2914) that goes into detail how to do this. What is below is just an implementation that I hope adheres to the principles set out there.
+There is an excellent Q & A [Security.SE: How to securely hash passwords?](https://security.stackexchange.com/q/211/2914) that goes into detail how to do this. What is below is just an implementation that I hope adheres to the principles set out there.
 
 The entire class below can be found in a [Github Gist](https://gist.github.com/brianmhunt/8621775).
 
@@ -57,9 +57,9 @@ One would typically start by comparing the values against a database of popular 
 | "password" | SHA1 | `5baa61e4c9b93f3f068...` |
 | "12345" | SHA1 |    `8cb2237d0679ca88db6...` |
 
-These indicators of underlying mechanisms and values are called *oracles*. Once one has an oracle that indicates the algorithm, one can use a [dictionary attack](http://en.wikipedia.org/wiki/Dictionary_attack) to check for the presence of common passwords. These dictionary attacks are often very computationally cost effective, when employed with [rainbow tables](http://en.wikipedia.org/wiki/Rainbow_table).
+These indicators of underlying mechanisms and values are called *oracles*. Once one has an oracle that indicates the algorithm, one can use a [dictionary attack](https://en.wikipedia.org/wiki/Dictionary_attack) to check for the presence of common passwords. These dictionary attacks are often very computationally cost effective, when employed with [rainbow tables](https://en.wikipedia.org/wiki/Rainbow_table).
 
-That said, oracles of this sort are like slugs: you can kill them with [salts](http://en.wikipedia.org/wiki/Salt_(cryptography)). That is not the end of the story though, since modern GPUs can calculate hashes such as SHA1 at a rate of around 2.3 billion per second.
+That said, oracles of this sort are like slugs: you can kill them with [salts](https://en.wikipedia.org/wiki/Salt_(cryptography)). That is not the end of the story though, since modern GPUs can calculate hashes such as SHA1 at a rate of around 2.3 billion per second.
 
 The KDF requires a salt, but it also makes the oracle much more expensive. The KDF increass the comparisons necessary – one for every potential value of the iterations – and one can vary the number of iterations, so even where one matches a password to a secret that match generally reveals the secret in that one instance. With a regular hash or where the KDF iterations are constant the match will reveal the number of iterations.
 
@@ -79,7 +79,7 @@ The outcome is always the same length, but varies on the iterations. It similarl
 |"password"| Y | `39adb360cdc543df` |
 |"password"| Z | `63bea2aa5e5468f1` |
 
-You can [try PBKDF2 online](http://anandam.name/pbkdf2/). Note how the number of iterations significantly increases the time to produce the result. Changing the salt will alter the outcome, but not the computation time.
+You can [try PBKDF2 online](https://anandam.name/pbkdf2/). Note how the number of iterations significantly increases the time to produce the result. Changing the salt will alter the outcome, but not the computation time.
 
 Thus, even if one obtains the stored secrets it is computationally expensive to obtain the passwords that were used to authenticate individuals these secrets represent.
 
@@ -95,7 +95,7 @@ from google.appengine.ext import ndb
 from datetime import datetime
 {% endhighlight %}
 
-As an aside, developing with `Crypto` onto App Engine used to be [something of a challenging](http://stackoverflow.com/questions/11788508). This issue has, with great thanks to the App Engine developers, been resolved. The challenge of
+As an aside, developing with `Crypto` onto App Engine used to be [something of a challenging](https://stackoverflow.com/questions/11788508). This issue has, with great thanks to the App Engine developers, been resolved. The challenge of
 getting Crypto onto App Engine is why we settled on PBKDF2 instead of bcrypt or scrypt. It may be easy to get the below working for those KDFs as well, now.
 
 I am going to use a class in [App Engine's NDB](https://developers.google.com/appengine/docs/python/ndb/) to store the credentials. One can reference theses credentials by a key, or making them an internal property of another NDB model, and changing them to work in another data store context should be straightforward.
@@ -314,7 +314,7 @@ Inherent issues may exist in the pseudo-random number generator that reduce the 
 
 # Summary
 
-From the Wikipedia article on [Kerckoff's principle](http://en.wikipedia.org/wiki/Kerckhoffs's_principle), I quote [John Savard](http://www.quadibloc.com/crypto/mi0611.htm):
+From the Wikipedia article on [Kerckoff's principle](https://en.wikipedia.org/wiki/Kerckhoffs's_principle), I quote [John Savard](https://www.quadibloc.com/crypto/mi0611.htm):
 
 > Unlike a key, an algorithm can be studied and analyzed by experts to determine if it is likely to be secure. An algorithm that you have invented yourself and kept secret has not had the opportunity for such review.
 

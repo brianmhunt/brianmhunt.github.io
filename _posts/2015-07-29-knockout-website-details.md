@@ -4,7 +4,7 @@ title: "Details on the new Knockout Website"
 date: "2015-07-29 11:11:11"
 ---
 
-Here are some things that make the [new proposal](https://github.com/knockout/knockout/issues/1827) for a [new Knockout website](http://brianmhunt.github.io/knockout/) pretty darned cool, in our opinion.
+Here are some things that make the [new proposal](https://github.com/knockout/knockout/issues/1827) for a [new Knockout website](https://brianmhunt.github.io/knockout/) pretty darned cool, in our opinion.
 
 1. Single-page app
 2. Auto-reloading Application Cache

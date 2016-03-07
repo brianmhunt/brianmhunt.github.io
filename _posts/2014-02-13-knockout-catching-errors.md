@@ -12,7 +12,7 @@ tags:
 image:
   feature: so-simple-sample-image-5.jpg
   credit: Michael Rose
-  creditlink: http://mademistakes.com
+  creditlink: https://mademistakes.com
 comments: true
 share: true
 ---
@@ -41,7 +41,7 @@ The wrapping of custom bindings lets you track what is happening when a binding 
 
 ## Any tools needed?
 
-I am using [`lodash`](http://lodash.com), [`jQuery`](http://jquery.com), on Google Chrome. I am also writing the below in Coffeescript, just for my own convenience. If you are not able to use these, I hope the following is nevertheless illustrative.
+I am using [`lodash`](https://lodash.com), [`jQuery`](https://jquery.com), on Google Chrome. I am also writing the below in Coffeescript, just for my own convenience. If you are not able to use these, I hope the following is nevertheless illustrative.
 
 
 ##  Custom Binding Provider
@@ -91,9 +91,9 @@ ErrorHandlingBindingProvider = ->
 ko.bindingProvider.instance = new ErrorHandlingBindingProvider()
 {% endhighlight %}
 
-As a matter of interest this started back with [Knockout issue #793](https://github.com/SteveSanderson/knockout/issues/792), with the credit for this technique owing to [Ryan Niemeyer](http://www.knockmeout.net/). Speaking
+As a matter of interest this started back with [Knockout issue #793](https://github.com/SteveSanderson/knockout/issues/792), with the credit for this technique owing to [Ryan Niemeyer](https://www.knockmeout.net/). Speaking
 of which, while you are at it you may want to check out Ryan's post
-[Knockout.js Troubleshooting Strategies](http://www.knockmeout.net/2013/06/knockout-debugging-strategies-plugin.html).
+[Knockout.js Troubleshooting Strategies](https://www.knockmeout.net/2013/06/knockout-debugging-strategies-plugin.html).
 
 
 ## Wrapping custom bindings
@@ -204,7 +204,7 @@ Alternatively, there is also the helpful [Knockout Context Debugger](https://chr
 
 Here is what it looks like when you put it all together.
 
-<iframe width="100%" height="350" src="http://jsfiddle.net/bmh_ca/sBMs2/1/embedded/result,html,js,css,resources" allowfullscreen="allowfullscreen" frameborder="0"></iframe>
+<iframe width="100%" height="350" src="https://jsfiddle.net/bmh_ca/sBMs2/1/embedded/result,html,js,css,resources" allowfullscreen="allowfullscreen" frameborder="0"></iframe>
 
 ## Summary
 

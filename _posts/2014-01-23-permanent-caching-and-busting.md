@@ -13,7 +13,7 @@ tags:
 image:
   feature: so-simple-sample-image-1.jpg
   credit: Michael Rose
-  creditlink: http://mademistakes.com
+  creditlink: https://mademistakes.com
 comments: true
 share: true
 ---
@@ -75,9 +75,9 @@ Any resource with this cache header may be **permanently cached** for up to a ye
 
 ## Avoiding conditional tags e.g. *etag*
 
-If you add a [header](http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html) like `etag` or the conditional headers `if-(un)modified-since`, `if-range` and `if(-none)-match` then the browser *may* make a request [even if the item is cached](http://stackoverflow.com/questions/499966). Since we define the resource by its `mtime` a conditional cache header would be redundant.
+If you add a [header](https://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html) like `etag` or the conditional headers `if-(un)modified-since`, `if-range` and `if(-none)-match` then the browser *may* make a request [even if the item is cached](https://stackoverflow.com/questions/499966). Since we define the resource by its `mtime` a conditional cache header would be redundant.
 
-While it does not make sense for our model, if one wanted to **implement etags** in Flask, there is [a helpful snippet](http://flask.pocoo.org/snippets/95/).
+While it does not make sense for our model, if one wanted to **implement etags** in Flask, there is [a helpful snippet](https://flask.pocoo.org/snippets/95/).
 
 ## Avoiding app.yaml
 
@@ -96,7 +96,7 @@ It is possible that one could **customize** the `headers` setting of the static 
 
 ## HTML5 offline web application
 
-I experimented with putting the templates and Javascript into an [HTML5 offline web application](http://diveintohtml5.info/offline.html) but the benefits proved marginal compared to the above while the complexity went up significantly. Nevertheless, it is an interesting option worth bearing in mind.
+I experimented with putting the templates and Javascript into an [HTML5 offline web application](https://diveintohtml5.info/offline.html) but the benefits proved marginal compared to the above while the complexity went up significantly. Nevertheless, it is an interesting option worth bearing in mind.
 
 # Drawbacks
 

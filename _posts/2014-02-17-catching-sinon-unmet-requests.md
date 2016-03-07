@@ -10,7 +10,7 @@ tags:
 image:
   feature: so-simple-sample-image-3.jpg
   credit: Michael Rose
-  creditlink: http://mademistakes.com
+  creditlink: https://mademistakes.com
 comments: true
 share: true
 ---
@@ -27,7 +27,7 @@ It can be difficult to figure out whether a request has been responded to. Figur
 
 # How do we do it?
 
-I am using [Mocha](http://visionmedia.github.io/mocha/) and [Chai](http://chaijs.com/), but this should work as well with other frameworks' equivalent hooks.
+I am using [Mocha](https://visionmedia.github.io/mocha/) and [Chai](https://chaijs.com/), but this should work as well with other frameworks' equivalent hooks.
 
 I use a global `xhr_server` variable to create the Sinon.js server like this:
 

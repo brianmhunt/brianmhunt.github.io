@@ -12,7 +12,7 @@ tags:
 image:
   feature: so-simple-sample-image-5.jpg
   credit: Michael Rose
-  creditlink: http://mademistakes.com
+  creditlink: https://mademistakes.com
 comments: true
 share: true
 ---
@@ -20,9 +20,9 @@ share: true
 
 # What is it?
 
-This is just a few notes about using [Knockout](http://knockoutjs.com)
+This is just a few notes about using [Knockout](https://knockoutjs.com)
 observables with
-[ES6 Promises](http://www.html5rocks.com/en/tutorials/es6/promises/).
+[ES6 Promises](https://www.html5rocks.com/en/tutorials/es6/promises/).
 
 
 # Why is it important?
@@ -72,7 +72,7 @@ Here is a jsFiddle in Coffeescript with a function,
 `resolve_when` that accomplishes this:
 
 <iframe width="100%" height="300"
-  src="http://jsfiddle.net/bmh_ca/7KLPc/3/embedded/"
+  src="https://jsfiddle.net/bmh_ca/7KLPc/3/embedded/"
   allowfullscreen="allowfullscreen" frameborder="0"></iframe>
 
 For convenience, here is an equivalent `resolve_when` function in Javascript:

@@ -12,7 +12,7 @@ tags:
 image:
   feature: so-simple-sample-image-4.jpg
   credit: Michael Rose
-  creditlink: http://mademistakes.com
+  creditlink: https://mademistakes.com
 comments: true
 share: true
 ---
@@ -29,20 +29,20 @@ workarounds for IE < 9.
 
 A more comprehensive suite (and from whose work I derive many of my
 answers) is [rangy.js](https://github.com/timdown/rangy) by
-[Tim Down](http://stackoverflow.com/users/96100).
+[Tim Down](https://stackoverflow.com/users/96100).
 
 
 # Why is it important?
 
 The `contentEditable` flag is one of the few ways to get WYSIWYG styling on the
 web. Many editors are based on it, such as
-[bootstrap-wysiwyg](http://mindmup.github.io/bootstrap-wysiwyg/) among others.
+[bootstrap-wysiwyg](https://mindmup.github.io/bootstrap-wysiwyg/) among others.
 
 However, `contentEditable` has numerous fundamental problems, as Nick Santos
 highlights in
 [Why ContentEditable is Terrible Or: How the Medium Editor Works](https://medium.com/medium-eng/why-contenteditable-is-terrible-122d8a40e480).
 
-Arguably the [polymer-project](http://www.polymer-project.org/) will provide
+Arguably the [polymer-project](https://www.polymer-project.org/) will provide
 us with an alternative, but we do not appear to be there yet.
 
 So for the moment we are stuck with this beast. So here are some jQuery
@@ -53,7 +53,7 @@ There is nothing limiting these examples to jQuery, of course.
 # What is a contentEditable?
 
 One can turn a DOM element into a `contentEditable` one by setting the
-[`contentEditable` attribute](http://html5doctor.com/the-contenteditable-attribute/).
+[`contentEditable` attribute](https://html5doctor.com/the-contenteditable-attribute/).
 
 So once you have the `contentEditable` attribute set, you can edit the
 content.
@@ -94,7 +94,7 @@ obvious how to determine where said caret is.
 
 {% highlight coffeescript %}
 is_caret_at_start_of_node = (node, range) ->
-  # See: http://stackoverflow.com/questions/7451468
+  # See: https://stackoverflow.com/questions/7451468
   pre_range = document.createRange()
   pre_range.selectNodeContents(node)
   pre_range.setEnd(range.startContainer, range.startOffset)
@@ -179,7 +179,7 @@ $.fn.editableCaretOnLastLine = ->
 Here it is all fiddled together:
 
 <iframe width="100%" height="400"
-  src="http://jsfiddle.net/bmh_ca/abB6b/5/embedded/"
+  src="https://jsfiddle.net/bmh_ca/abB6b/5/embedded/"
   allowfullscreen="allowfullscreen" frameborder="0"></iframe>
 
 # Moving the Caret about

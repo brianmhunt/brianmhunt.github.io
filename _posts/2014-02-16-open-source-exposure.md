@@ -11,7 +11,7 @@ tags:
 image:
   feature: so-simple-sample-image-2.jpg
   credit: Michael Rose
-  creditlink: http://mademistakes.com
+  creditlink: https://mademistakes.com
 comments: true
 share: true
 ---
@@ -24,7 +24,7 @@ a core concept used on a daily basis. I have found that the lingo and concept of
 exposure is a handy tool in deciding whether and how to include open source
 software in a project.
 
-[Black's Law Dictionary](http://en.wikipedia.org/wiki/Black's_Law_Dictionary), 7th edition, defines "**exposure**" as:
+[Black's Law Dictionary](https://en.wikipedia.org/wiki/Black's_Law_Dictionary), 7th edition, defines "**exposure**" as:
 
 > The amount of liability or other risk to which a person is
 > subject &lt;the client wanted to know its exposure before it made a
@@ -32,7 +32,7 @@ software in a project.
 
 The concept roughly translates into the **potential cost of a contingency**. Exposure says nothing about the probability of the contingency, just the cost should it come to pass.
 
-As a matter of interest, in the insurance industry the [law of large numbers](http://en.wikipedia.org/wiki/Law_of_large_numbers) helps insurers produce accurate predictions of their aggregate exposure across a set of claims by essentially multiplying the exposure of each claim by the probability of that exposure. In doing so they can set aside a predictable set of reserves, the funds necessary to cover the cost of future claims.
+As a matter of interest, in the insurance industry the [law of large numbers](https://en.wikipedia.org/wiki/Law_of_large_numbers) helps insurers produce accurate predictions of their aggregate exposure across a set of claims by essentially multiplying the exposure of each claim by the probability of that exposure. In doing so they can set aside a predictable set of reserves, the funds necessary to cover the cost of future claims.
 
 The notion of exposure translates into the **potential costs** associated with using open source software when developing and designing a project. The exposure that can crystallize from choosing open source software includes project delay, introduction of bugs and complexity, distraction from our core focus, loss of client confidence, investor wariness. Below is a cross-section of some of my experiences.
 
@@ -59,7 +59,7 @@ There are essentially two reasons software ceases to be developed: deprecation a
 
 The best example I can think of for deprecation is **Bootstrap Typeahead**. Bootstrap Typeahead provided an elegant and simple solution to the problem of automatically suggesting options for users to enter data into `<input>` and `<textarea>` fields. It was simply fabulous, but it was explicitly deprecated.
 
-As of version 3.0, [Bootstrap](http://getbootstrap.com/) **removed its builtin Typeahead plugin**. Twitter came out with an independent plugin [Typeahead.js](http://twitter.github.io/typeahead.js/), but it was
+As of version 3.0, [Bootstrap](https://getbootstrap.com/) **removed its builtin Typeahead plugin**. Twitter came out with an independent plugin [Typeahead.js](https://twitter.github.io/typeahead.js/), but it was
 [not entirely compatible](https://github.com/twitter/typeahead.js/issues/119) with its predecessor from Bootstrap. An alternative
 plugin was developed, [Twitter Bootstrap Typeahead Plugin](https://github.com/tcrosen/twitter-bootstrap-typeahead), but I experienced issues with it and it is now abandoned.
 
@@ -78,7 +78,7 @@ Curiously **Typeahead.js** also gives **an example** of abandonment. In addition
 
 Abandonment is the arguably the **most common occurrence** with all open source software as an aggregate production. People get busy and wander off once the glow, novelty and interest wanes. Developers get sick, die, change jobs, have families and children. The suitability of a project for a developer changes. Picking a project with longevity is a real art – you are really betting on the tenacity and capacity of the developers. The ecology of open source means that it is auto-correcting to a certain extent, though.
 
-A truly useful project that is abandoned often has **the simplest cure: time**. If there is demand for the project, someone will pick up the torch and run with it. A great example is the now dead [git-flow](https://github.com/nvie/gitflow) project and its spiritual successor [git-flow-avh](https://github.com/petervanderdoes/gitflow). Another example: Jinja2 was [idle for quite some time](http://lucumr.pocoo.org/2013/5/21/porting-to-python-3-redux/), as Armin Ronacher (its author) was frustrated by making it simultaneously compatible with Python 2.x and 3.x. Over time Armin came back to the project. That said, the time between abandonment and a successor can be troublesome. Even temporary abandonment can have a cost.
+A truly useful project that is abandoned often has **the simplest cure: time**. If there is demand for the project, someone will pick up the torch and run with it. A great example is the now dead [git-flow](https://github.com/nvie/gitflow) project and its spiritual successor [git-flow-avh](https://github.com/petervanderdoes/gitflow). Another example: Jinja2 was [idle for quite some time](https://lucumr.pocoo.org/2013/5/21/porting-to-python-3-redux/), as Armin Ronacher (its author) was frustrated by making it simultaneously compatible with Python 2.x and 3.x. Over time Armin came back to the project. That said, the time between abandonment and a successor can be troublesome. Even temporary abandonment can have a cost.
 
 Unfortunately in the case of Bootstrap Typeahead no successor suitable for our use has yet come to pass. I ended up **redesigning** our typeahead-equivalent functionalty entirely **in-house**. What we now have is much cleaner, simpler, and tailored to the experience we want to deliver. The time I dedicated to it gave me a much better understanding of the essential features of the user experience for automatically making suggestions on user input. That said, not everyone will have the luxury of taking the time for such a redesign.
 
@@ -87,19 +87,19 @@ Unfortunately in the case of Bootstrap Typeahead no successor suitable for our u
 
 The latest projects generally have the greatest **uncertainty**. Have they been vetted with major platforms? Do they solve a pain that inspires a community?
 
-An example of the **novelty problem** is the really awesome [Hubspot/Drop](https://github.com/HubSpot/drop) plugin. Though it is fabulous, it does [not yet work with Bootstrap modals](https://github.com/HubSpot/drop/issues/9). It is new, promises exellent functionality similar to [jQueryUI's position](http://jqueryui.com/position/), but without the heft of jQueryUI. It is aluring, but unproven. The only way to find out if it works is to dedicate the time to **experimenting** with it. Only time will really tell.
+An example of the **novelty problem** is the really awesome [Hubspot/Drop](https://github.com/HubSpot/drop) plugin. Though it is fabulous, it does [not yet work with Bootstrap modals](https://github.com/HubSpot/drop/issues/9). It is new, promises exellent functionality similar to [jQueryUI's position](https://jqueryui.com/position/), but without the heft of jQueryUI. It is aluring, but unproven. The only way to find out if it works is to dedicate the time to **experimenting** with it. Only time will really tell.
 
 
 # Imprecision
 
-For years NetPleadings was based on **Django**, but I ended up **replacing every piece** of it over time until I switched entirely to Flask and Jinja2. This [quote rang true with me](http://stackoverflow.com/a/3293509/19212):
+For years NetPleadings was based on **Django**, but I ended up **replacing every piece** of it over time until I switched entirely to Flask and Jinja2. This [quote rang true with me](https://stackoverflow.com/a/3293509/19212):
 
 > If you go with django, then in the long term, you will have to replace almost every single component of django with something else, the only remaining part will be the url mapper.
->  — [hasenj](http://stackoverflow.com/users/35364/hasenj)
+>  — [hasenj](https://stackoverflow.com/users/35364/hasenj)
 
 Django is a fabulous framework, but it turns out it was **unsuitable to the
 style** of development I had. For how I work, Flask and
-[Jinja2](http://stackoverflow.com/questions/4336713/) was a better – and narrower – fit.
+[Jinja2](https://stackoverflow.com/questions/4336713/) was a better – and narrower – fit.
 
 Of course we had to rework our application to Flask from Django, but in reality this only took a couple days. It was well **worth the cost**; I used to fight with Django on a regular basis, using my very limited mental faculties on what should have been trite problems. Flask worked the way my mind thinks, and it provided a framework that matched our design aspirations so the bickering went away entirely. The psychological relief is a compelling consideration, worthy of a blog post on its own.
 
@@ -119,7 +119,7 @@ time consuming.
 
 # Hard choices
 
-It can often be **impossible to predict** the outcome of choosing between two similar open source solutions for a complex system. Back in 2008-09, who knew [jQuery would beat out Prototype](http://stackoverflow.com/questions/2644556)? One would hardly have expected at the time that jQuery would become ubiquitous, particularly since Prototype was the first to market. Both were so young and vibrant, solving real problems in elegant ways. Now Prototype seems to be is a dead project.
+It can often be **impossible to predict** the outcome of choosing between two similar open source solutions for a complex system. Back in 2008-09, who knew [jQuery would beat out Prototype](https://stackoverflow.com/questions/2644556)? One would hardly have expected at the time that jQuery would become ubiquitous, particularly since Prototype was the first to market. Both were so young and vibrant, solving real problems in elegant ways. Now Prototype seems to be is a dead project.
 
 Hind-sight is 20-20, but at the time I chose jQuery for NetPleadings it was really a **coin-toss**, with perhaps just the slightest touch of intuition. The choice saved ourselves substantial exposure refactoring from Prototype to jQuery – or relying on a dead project.
 

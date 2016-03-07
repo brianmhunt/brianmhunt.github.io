@@ -13,14 +13,14 @@ tags:
 image:
   feature: so-simple-sample-image-4.jpg
   credit: Michael Rose
-  creditlink: http://mademistakes.com
+  creditlink: https://mademistakes.com
 comments: true
 share: true
 ---
 
 # What is this?
 
-An extension of [Knockout](http://knockoutjs.com/) observables, making the observables into *keys* to another *model*. The model and its loading status are added as part of a property, `.fk`, to the observable.
+An extension of [Knockout](https://knockoutjs.com/) observables, making the observables into *keys* to another *model*. The model and its loading status are added as part of a property, `.fk`, to the observable.
 
 # Why is it important?
 
@@ -52,7 +52,7 @@ This simplifies and makes consistent a great deal of the templating logic, parti
 
 # How does it work?
 
-Writing an extender for Knockout is [well documented](http://knockoutjs.com/documentation/extenders.html). I expect if you are reading this that you have some familiarity with Knockout, and this may be a somewhat involved example.
+Writing an extender for Knockout is [well documented](https://knockoutjs.com/documentation/extenders.html). I expect if you are reading this that you have some familiarity with Knockout, and this may be a somewhat involved example.
 
 The one function that needs to be defined, and varies depending on how you define and load your models, is called `_load_model`. This function takes the name of a class and the key and (perhaps asynchronously) populates an observable with an instance of the model. There are more details on this below.
 
@@ -308,7 +308,7 @@ bind the `Employee` instance `ee` above to the following HTML i.e.
   ko.applyBindings(ee, document.querySelector("#ee"))
 {% endhighlight %}
 
-The following bindings will do what is expected, with some references to the tremendous [FontAwesome](http://fontawesome.io) icon set.
+The following bindings will do what is expected, with some references to the tremendous [FontAwesome](https://fontawesome.io) icon set.
 
 {% highlight html %}
 <div id='ee'>
@@ -336,7 +336,7 @@ I find the above to be a particularly intuitive way to define how a user interfa
 
 If the value of the above is not immediately apparent, I found this particularly compelling:
 
-Using the excellent [knockout projections](http://blog.stevensanderson.com/2013/12/03/knockout-projections-a-plugin-for-efficient-observable-array-transformations/) addon ([github](https://github.com/stevesanderson/knockout-projections)), one can map a set of keys in an `observableArray` with an extender like this `foreignKeyMap`:
+Using the excellent [knockout projections](https://blog.stevensanderson.com/2013/12/03/knockout-projections-a-plugin-for-efficient-observable-array-transformations/) addon ([github](https://github.com/stevesanderson/knockout-projections)), one can map a set of keys in an `observableArray` with an extender like this `foreignKeyMap`:
 
 {% highlight coffeescript %}
 _ = require 'lodash'

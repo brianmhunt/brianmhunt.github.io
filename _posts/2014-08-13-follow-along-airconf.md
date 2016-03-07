@@ -12,7 +12,7 @@ tags:
 image:
   feature: so-simple-sample-image-5.jpg
   credit: Michael Rose
-  creditlink: http://mademistakes.com
+  creditlink: https://mademistakes.com
 comments: true
 share: true
 ---
@@ -20,7 +20,7 @@ share: true
 # Airconf 2014
 
 I will be presenting at [10:00 AM EST on August 14, 2014](
-http://www.airpair.com/knockout/workshops/dynamic-html-with-knockout) by
+https://www.airpair.com/knockout/workshops/dynamic-html-with-knockout) by
 Google Hangout.
 
 The repository for the presentation is

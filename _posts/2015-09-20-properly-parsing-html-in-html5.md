@@ -23,7 +23,7 @@ HTML parsing.  But you'd be wrong, and here is an example of why:
 
 The problem is that the `<tr>` tag in HTML requires a parent of `<table>` or
 `<tbody>` or `<thead>` or `<tfoot>`, according to the
-[W3C HTML5 spec](http://www.w3.org/html/wg/drafts/html/master/semantics.html#the-tr-element).
+[W3C HTML5 spec](https://www.w3.org/html/wg/drafts/html/master/semantics.html#the-tr-element).
 
 What this means is that in HTML a `<tr>` is never a child of a `<div>`
 tag, and the browser automatically fixes this for you.
@@ -64,7 +64,7 @@ but using a template tag:
 // ^^ Happy dance?
 ```
 
-This works because [the template tag spec](http://www.w3.org/html/wg/drafts/html/master/semantics.html#the-template-element)
+This works because [the template tag spec](https://www.w3.org/html/wg/drafts/html/master/semantics.html#the-template-element)
 permits its content to be nodes of any of the elements that require us working
 around.
 
@@ -84,7 +84,7 @@ without those relatively complex (and possibly
 workarounds that aspire to but do not quite reach parity with builtin browser parser.
 
 Most browsers in their most recent incarnations
-[support the template tag](http://caniuse.com/#feat=template), including
+[support the template tag](https://caniuse.com/#feat=template), including
 Internet Explorer Edge 13.
 Until the latest browsers are more widespread we will have to live with some
 compromises, but the future of HTML parsing with Javascript in browsers looks

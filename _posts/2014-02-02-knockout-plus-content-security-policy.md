@@ -12,7 +12,7 @@ tags:
 image:
   feature: so-simple-sample-image-2.jpg
   credit: Michael Rose
-  creditlink: http://mademistakes.com
+  creditlink: https://mademistakes.com
 comments: true
 share: true
 ---
@@ -20,7 +20,7 @@ share: true
 # What is it?
 
 [Knockout Secure Binding](https://github.com/brianmhunt/knockout-secure-binding)
-is a [custom binding provider](http://www.knockmeout.net/2011/09/ko-13-preview-part-2-custom-binding.html) for [Knockout](http://knockout.js.com).
+is a [custom binding provider](https://www.knockmeout.net/2011/09/ko-13-preview-part-2-custom-binding.html) for [Knockout](https://knockout.js.com).
 
 # Why does it matter?
 
@@ -37,7 +37,7 @@ At its core, KSB is two things:
 
 2. A process for converting the values produced by the parser into the `valueAccessor` argument that is given to Knockout bindings.
 
-Knockout's built-in and [custom](http://knockoutjs.com/documentation/custom-bindings.html) bindings are objects with at least one of two function-properties: `init` and `update`. These functions have the same set of arguments, with the first being the DOM `element` to which the binding is bound and the second the `valueAccessor` that looks up the value given to the binding in the `data-bind` attribute (or similarly for virtual elements).
+Knockout's built-in and [custom](https://knockoutjs.com/documentation/custom-bindings.html) bindings are objects with at least one of two function-properties: `init` and `update`. These functions have the same set of arguments, with the first being the DOM `element` to which the binding is bound and the second the `valueAccessor` that looks up the value given to the binding in the `data-bind` attribute (or similarly for virtual elements).
 
 A typical binding looks like this:
 
@@ -96,7 +96,7 @@ When a binding `init` or `update` calls its `valueAccessor()` argument it will g
 
 ## The parser
 
-As parsers go KSB recognizes essentially a superset of JSON that includes identifiers and expressions. If one were to describe it in a [BNF](http://en.wikipedia.org/wiki/Backus%E2%80%93Naur_Form)-like way it would basically look something like this:
+As parsers go KSB recognizes essentially a superset of JSON that includes identifiers and expressions. If one were to describe it in a [BNF](https://en.wikipedia.org/wiki/Backus%E2%80%93Naur_Form)-like way it would basically look something like this:
 
 ~~~
 native      ::= Object | Array | string | number | true | false |
@@ -194,4 +194,4 @@ As a bonus when an observable is part of an expression it is automatically unwra
 
 At NetPleadings we seriously use Knockout. On a given page we can sometimes have thousands of bindings, we have close to a hundred custom bindings, and we have at least 500 unique `data-bind` attributes throughout the project. We also take security seriously, so we want a robust Content Security Policy (CSP). So KSB had to work with the plethora of bindings we have, work while under a CSP restriction on `unsafe-eval`, and be reasonably performant.
 
-With the implementation I have put up [at Github](https://github.com/brianmhunt/knockout-secure-binding/), KSB has been designed to work in spite of the `unsafe-eval` CSP restriction, it works with most of our expressions or they have been easily modified to work with KSB, and appears to be reasonably performant – at around 7 – 15% slower than Knockout according to [a jsperf example](http://jsperf.com/knockout-secure-binding) I put together. The loss of performance and restrictions on expressions seems a reasonable compromise for the additional protection offered by being able to use a Content Security Policy that prohibits unsafe evaluation of code.
+With the implementation I have put up [at Github](https://github.com/brianmhunt/knockout-secure-binding/), KSB has been designed to work in spite of the `unsafe-eval` CSP restriction, it works with most of our expressions or they have been easily modified to work with KSB, and appears to be reasonably performant – at around 7 – 15% slower than Knockout according to [a jsperf example](https://jsperf.com/knockout-secure-binding) I put together. The loss of performance and restrictions on expressions seems a reasonable compromise for the additional protection offered by being able to use a Content Security Policy that prohibits unsafe evaluation of code.

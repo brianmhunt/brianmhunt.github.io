@@ -46,7 +46,7 @@ and annotated `loader.js`:
   libs.src = '/libs.js-' + window._build;
   document.head.appendChild(libs);
   // When the libraries have loaded, we load our application.
-  // Note IE8 workaround at http://stackoverflow.com/a/15437678/19212
+  // Note IE8 workaround at https://stackoverflow.com/a/15437678/19212
   libs.onload = function () {
     var app = document.createElement('script');
     app.src = "/app.js-" + window._build;
@@ -112,9 +112,9 @@ Google does a good job of serving up static files with a long-term cache.
 
 This is a "poor man's" alternative to (and in some respects a potential
 compliment of) the
-[Application Cache](http://www.html5rocks.com/en/tutorials/appcache/beginner/),
+[Application Cache](https://www.html5rocks.com/en/tutorials/appcache/beginner/),
 which is more involved and comes with a number of
-[gotchas](http://www.html5rocks.com/en/tutorials/appcache/beginner/).
+[gotchas](https://www.html5rocks.com/en/tutorials/appcache/beginner/).
 
 I hope this gives some insight into a possible caching strategy
 that will work for you.

@@ -13,7 +13,7 @@ tags:
 image:
   feature: so-simple-sample-image-1.jpg
   credit: Michael Rose
-  creditlink: http://mademistakes.com
+  creditlink: https://mademistakes.com
 comments: true
 share: true
 ---
@@ -44,7 +44,7 @@ We have a fairly hefty application. Every page loads about 2MB of Javascript, an
 
 # How does it work?
 
-We compile all our Javascript using [grunt](http://gruntjs.com) and [Browserify](http://browserify.org/).
+We compile all our Javascript using [grunt](https://gruntjs.com) and [Browserify](https://browserify.org/).
 
 The compiled Javascript loads the external services Uservoice, Typekit and Stripe, as well as our templates, as set out below.
 
@@ -88,7 +88,7 @@ load_typekit = (timeout=3000) ->
 
 We have a much lower threshold for the timeout on Typekit than the other services below because if it is slow or fails to load then the application is rendered unusable because the page never hides the loading screen to show the page.
 
-We use the following CSS to get around the [Flash of Unstyled Text](http://help.typekit.com/customer/portal/articles/6852-controlling-the-flash-of-unstyled-text-or-fout-using-font-events):
+We use the following CSS to get around the [Flash of Unstyled Text](https://help.typekit.com/customer/portal/articles/6852-controlling-the-flash-of-unstyled-text-or-fout-using-font-events):
 
 ```css
 /* html */.wf-loading {
@@ -112,7 +112,7 @@ A neat observation of using the CSS FOUT is that the browser seems noticibly fas
 
 Typekit has been and remains the largest barrier to quickly displaying something on screen, since it must be loaded before the page displays any fonts. Nevertheless this is more than made up for in the improvement in our typographic options and the unexpected benefit the FOUT CSS makes to load times.
 
-Before Typekit is loaded one could get an image out to the user with an animated background image, as described in [Avoid FOUT by Adding a Web Font Preloader](http://webdesign.tutsplus.com/tutorials/ux-tutorials/quick-tip-avoid-fout-by-adding-a-web-font-preloader/) like this:
+Before Typekit is loaded one could get an image out to the user with an animated background image, as described in [Avoid FOUT by Adding a Web Font Preloader](https://webdesign.tutsplus.com/tutorials/ux-tutorials/quick-tip-avoid-fout-by-adding-a-web-font-preloader/) like this:
 
 ```css
 .wf-loading {
@@ -127,7 +127,7 @@ If I were to do this I would prefer the page not display some arbitrary loading 
 
 ### Uservoice
 
-Uservoice is straightforward. Note that we are doing our best to become [Content-Security-Policy (CSP)](http://www.w3.org/TR/CSP/) compliant, so page-specific attributes such as the current-user email and key are added as attributes to the `<body>` tag.
+Uservoice is straightforward. Note that we are doing our best to become [Content-Security-Policy (CSP)](https://www.w3.org/TR/CSP/) compliant, so page-specific attributes such as the current-user email and key are added as attributes to the `<body>` tag.
 
 ```coffeescript
 load_uservoice = ->

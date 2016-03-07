@@ -12,7 +12,7 @@ tags:
 image:
   feature: so-simple-sample-image-1.jpg
   credit: Michael Rose
-  creditlink: http://mademistakes.com
+  creditlink: https://mademistakes.com
 comments: true
 share: true
 ---
@@ -21,9 +21,9 @@ You have no doubt **thought about the font** you use to communicate your written
 
 This issue is important to me as the founder of NetPleadings because our goal is to raise the effectiveness of the written communications our clients produce in our system. Below is an overview of some **evidence and opinion** about the impact typography can have on the **effectiveness** of written communication.
 
-In an illuminating blog post, entitled ["The Secret Lives of Fonts"](http://web.archive.org/web/20100403022212/http://fadtastic.net/2006/03/12/the-secret-lives-of-fonts/), Phil Renaud details how University essays he submitted were on average graded based upon the font he chose: A- for eleven essays printed in Times New Roman, B- for 18 essays printed in Trebuchet MS, and A for 23 essays in Georgia. While not exactly a scientifically rigorous study, it touches upon a notion of typography suspected by most: that **the appearance of our writings influences** the meaning communicated to the reader.
+In an illuminating blog post, entitled ["The Secret Lives of Fonts"](https://web.archive.org/web/20100403022212/https://fadtastic.net/2006/03/12/the-secret-lives-of-fonts/), Phil Renaud details how University essays he submitted were on average graded based upon the font he chose: A- for eleven essays printed in Times New Roman, B- for 18 essays printed in Trebuchet MS, and A for 23 essays in Georgia. While not exactly a scientifically rigorous study, it touches upon a notion of typography suspected by most: that **the appearance of our writings influences** the meaning communicated to the reader.
 
-In a more comprehensive study that flowed from Phil Renaud's post, Errol Morris for the NY Times wrote the article ["Hear, All Ye People; Hearken, O Earth"](http://opinionator.blogs.nytimes.com/2012/08/08/hear-all-ye-people-hearken-o-earth/). Errol's article compares the persuasiveness of the fonts Baskerville, Computer Modern, Georgia, Helvetica, Comic Sans and Trebuchet.  It concluded with statistical significance that **certain fonts are more persuasive** than others, in particular:
+In a more comprehensive study that flowed from Phil Renaud's post, Errol Morris for the NY Times wrote the article ["Hear, All Ye People; Hearken, O Earth"](https://opinionator.blogs.nytimes.com/2012/08/08/hear-all-ye-people-hearken-o-earth/). Errol's article compares the persuasiveness of the fonts Baskerville, Computer Modern, Georgia, Helvetica, Comic Sans and Trebuchet.  It concluded with statistical significance that **certain fonts are more persuasive** than others, in particular:
 
 > Baskerville is different from the rest. I’d call it a 1.5% advantage, in that that’s how much higher agreement is with it relative to the average of the other fonts. That advantage may seem small, but if that was a bump up in sales figures, many online companies would kill for it. The fact that font matters at all is a wonderment.
 
@@ -37,7 +37,7 @@ If you are in the business of persuasive writing, and in particular advocating o
 
 The choice of font is one of many components of writing that influences its effectiveness.  Most humans can read newspapers front–to–back, or books from cover–to–cover, and ingest the contents.  These communications are encoded in such a way that the human brain and muscles can discern the messages with virtually no fatigue.  The messages in these typesettings are encapsulated in a format that exhibits **known principles of typography**, and in doing so they approach a communication that is **nearly effortless to comprehend** and is limited only by the permutations of thoughts that can be expressed by the language in which the message is written.
 
-The history of typography spans millennia.  The practices that make for effective written communication have evolved independently in multiple civilizations towards universal principles, adhering as much to conclusions of an **aesthetic nature** as to mathematical proportions such as the [**golden ratio**](http://en.wikipedia.org/wiki/Golden_ratio).
+The history of typography spans millennia.  The practices that make for effective written communication have evolved independently in multiple civilizations towards universal principles, adhering as much to conclusions of an **aesthetic nature** as to mathematical proportions such as the [**golden ratio**](https://en.wikipedia.org/wiki/Golden_ratio).
 
 Sadly, the advent of the **information age ushered out** many of the principles of typography.  Simple principles that had been universally accepted for centuries, such as the use of a double-space (or "em-quadrat") after a period — a concept that gave a spatial dignity analogous to the pause when sentences are spoken, broke paragraphs into identifiably comprehensible components at a glance, and provided visual markers that allowed our peripheral vision lead our focus across lines — have not only been forgotten but are now condemned by even many professional typographers.  This is one example of many principles **once accepted** universally by professional typesetters that have been **reduced to antiquated notions** of style in the digital era.  Yet if these principles, or **their absence**, affect the meaningful outcome of the communication, they are not simply stylistic choices but **substantively affect** the reader's thoughts.
 
@@ -62,7 +62,7 @@ Some of the **technical principles** of typography that make a writing effective
 6. double-spacing after a period that ends a sentence [1.];
 7. a well designed serif font, for example Baskerville, Frutiger Next or Warnock Pro.
 
-These are the choices that were made by **thousands of individuals** employed as professional typographers over centuries. There are innumerable consistent examples of typesetting from the 1700s onwards available on [Google Books](http://books.google.ca/books?id=MQIwAAAAYAAJ&dq=charles%20dickens%20great%20expectations&pg=PA3#v=onepage&q&f=false) that exemplify these principles. Another source of elegant typesetting following these principles is the historical legislation available from the **Queen's Printer**, whose artful mastery of the presentation of written letters mirrored the legal significance of the words contained therein.
+These are the choices that were made by **thousands of individuals** employed as professional typographers over centuries. There are innumerable consistent examples of typesetting from the 1700s onwards available on [Google Books](https://books.google.ca/books?id=MQIwAAAAYAAJ&dq=charles%20dickens%20great%20expectations&pg=PA3#v=onepage&q&f=false) that exemplify these principles. Another source of elegant typesetting following these principles is the historical legislation available from the **Queen's Printer**, whose artful mastery of the presentation of written letters mirrored the legal significance of the words contained therein.
 
 It is a curiosity that deviation from typographic principles reduces the effectiveness of a writing. There are a few **theories** about why this is the case, but they all seem to come down to the simple problem that typography has evolved in response to the desire to make the process of reading easier for the brain and eyes to functionally digest the letters, words, punctuation, and form them into sentences, paragraphs and the ultimately the thoughts intended by the writer.
 
@@ -80,9 +80,9 @@ I hope you have enjoyed this article, and whether or not you use our service tha
 
 For the interested, here is a little further reading:
 
-1. [Why two spaces after a period isn’t wrong (or, the lies typographers tell about history)](http://www.heracliteanriver.com/?p=324)
+1. [Why two spaces after a period isn’t wrong (or, the lies typographers tell about history)](https://www.heracliteanriver.com/?p=324)
 2. Robert Bringhurst, The Elements of Typographic Style (ISBN: 0-88179-110-5)
-3. [Lazy Eyes: How we read online. By Michael Agger](http://www.slate.com/articles/technology/the_browser/2008/06/lazy_eyes.single.html)
-4. [Optimal characters per line](http://mikeyanderson.com/optimal_characters_per_line)
-5. ["The science behind fonts (and how they make you feel)"  (23 Dec 2013)](http://thenextweb.com/dd/2013/12/23/science-behind-fonts-make-feel/#!rNycf)
-6. ["The Aesthetics of Reading" by Kevin Larson (Microsoft) & Rosalind Picard (MIT) <http://affect.media.mit.edu/pdfs/05.larson-picard.pdf>](http://affect.media.mit.edu/pdfs/05.larson-picard.pdf)
+3. [Lazy Eyes: How we read online. By Michael Agger](https://www.slate.com/articles/technology/the_browser/2008/06/lazy_eyes.single.html)
+4. [Optimal characters per line](https://mikeyanderson.com/optimal_characters_per_line)
+5. ["The science behind fonts (and how they make you feel)"  (23 Dec 2013)](https://thenextweb.com/dd/2013/12/23/science-behind-fonts-make-feel/#!rNycf)
+6. ["The Aesthetics of Reading" by Kevin Larson (Microsoft) & Rosalind Picard (MIT) <https://affect.media.mit.edu/pdfs/05.larson-picard.pdf>](https://affect.media.mit.edu/pdfs/05.larson-picard.pdf)
