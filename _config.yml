@@ -45,24 +45,29 @@ links:
   - title: Articles
     url: /articles/
 
-# http://en.wikipedia.org/wiki/List_of_tz_database_time_zones
 timezone:    America/New_York
 future:      true
 highlighter: rouge
 markdown:    kramdown
 
-redcarpet:
-  extensions: []
+# From : https://help.github.com/articles/configuring-jekyll/
+lsi: false
+safe: true
+incremental: false
+gist:
+  noscript: false
 
 # https://github.com/mojombo/jekyll/wiki/Permalinks
 permalink:   /:categories/:title/
 
 kramdown:
   auto_ids: true
-  footnote_nr: 1
+  enable_coderay: true
   entity_output: as_char
+  footnote_nr: 1
+  hard_wrap: false
+  input: GFM
   toc_levels: 1..6
-  enable_coderay: false
 
   coderay:
     coderay_line_numbers: true
