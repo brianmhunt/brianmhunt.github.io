@@ -5,7 +5,7 @@ disqus_shortname: brianmhuntgithubio
 search:           true
 # Change url to your domain. Leave localhost server or blank when working locally.
 #url:              http://localhost:4000
-url:
+url:  https://brianmhunt.github.io
 # gems:
 #   - jekyll-feed
 
@@ -21,7 +21,7 @@ owner:
   email:          brianmhunt@gmail.com
   # Social networking links used in footer. Update and remove as you like.
   github:         brianmhunt
-  stackexchange:  http://stackoverflow.com/users/19212
+  stackexchange:  https://stackoverflow.com/users/19212
   linkedin:       brianmhunt
   twitter:
   facebook:
