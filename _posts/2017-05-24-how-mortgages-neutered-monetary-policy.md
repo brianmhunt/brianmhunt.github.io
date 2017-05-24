@@ -28,13 +28,15 @@ As a result, more Canadians are paying larger mortgages, on houses ever further 
 
 Millenials in particular, as it comes to real estate, are [“generation screwed”](https://www.thestar.com/opinion/commentary/2017/02/22/millennials-are-generation-screwed-on-real-estate.html) and generally [living at home](http://fortune.com/2017/04/20/millennials-living-with-parents/), with soaring unemployment in that age group.
 
-Further, half of Canadian homeowners [lack an emergency fund](http://globalnews.ca/news/3085917/nearly-half-of-canadian-homeowners-lack-proper-emergency-fund-survey/) and [could not survive an emergency](http://business.financialpost.com/personal-finance/canadians-raid-rainy-day-funds-but-many-still-struggle-to-cover-unexpected-costs-bmo-survey-says), and [a third of Canadians are relying on the lottery to retire](http://www.canadianbusiness.com/blogs-and-comment/retirement-lottery/).
+Further, half of Canadian homeowners [lack a proper emergency fund](http://globalnews.ca/news/3085917/nearly-half-of-canadian-homeowners-lack-proper-emergency-fund-survey/) and [could not survive an emergency](http://business.financialpost.com/personal-finance/canadians-raid-rainy-day-funds-but-many-still-struggle-to-cover-unexpected-costs-bmo-survey-says), and [a third of Canadians are relying on the lottery to retire](http://www.canadianbusiness.com/blogs-and-comment/retirement-lottery/).
 
 Boomers, likewise, are indebted and [have saved poorly](https://www.theglobeandmail.com/globe-investor/retirement/retire-planning/high-debt-loads-weigh-on-baby-boomers-and-their-retirement-plans/article27169889/), with even the high earners heading for [“a massive wall of disappointment in retirement”](https://www.theglobeandmail.com/globe-investor/retirement/retire-lifestyle/how-boomers-living-the-high-life-are-at-risk-in-retirement/article34394783/)
 
-It would seem that most people have fewer resources, living worse lives than predecessors.  One might blame automation and outsourcing abroad. However, while [unemployment plagues half of millenials](http://business.financialpost.com/news/economy/canadian-millennials-still-stuck-in-the-basement-as-youth-unemployment-surges), it has otherwise [been quite steady across the economy for years](http://www.tradingeconomics.com/canada/unemployment-rate).
+Oh for the 1980's.  One might blame automation and outsourcing abroad.  However, while [unemployment plagues half of millenials](http://business.financialpost.com/news/economy/canadian-millennials-still-stuck-in-the-basement-as-youth-unemployment-surges), it has otherwise [been quite steady across the economy for years](http://www.tradingeconomics.com/canada/unemployment-rate).
 
-Which is all a bit of an aside and context to the main point of this article, namely that monetary policy is failing.  Arguably all long-term economic trends are based on culture, incentivization, and fiscal policy, but there's a seemingly overlooked cycle between mortgages and monetary policy, and I would argue that it has neutered monetary policy.
+Which is all a bit of an aside and context to the main point of this article, namely that one of the main tools we have to maintain the standard of living is monetary policy, and it's clearly failing.  Arguably all long-term economic trends are based on culture, incentivization, and fiscal policy, and monetary policy can only do so much.  However, there's a seemingly overlooked cycle between mortgages and monetary policy, and I would argue that it has neutered monetary policy.
+
+### People Buy The Most Expensive Home They Can Afford
 
 The primary determinant of price for a house is affordability by a buyer.  In general, people equate that with monthly payments.  Ultra-low interest rates, for example around 2%, dramatically increase affordability.
 
@@ -56,19 +58,25 @@ One would be hard pressed to actually find a home for $360,000 anywhere near Tor
 
 <b>The cycle</b>:  The Bank of Canada cannot raise interest rates, and it'd be hard pressed to lower them.  If Canada raises interest rates, many homeowners may not be able to afford it, and certainly their expendable income decreases.  Lowering interest rates would devalue the loonie and make houses even more expensive.  People would spend any supplemental income coming from lower interest rates on buying a better abode.
 
+### Bringing Home Prices Back To Earth
+
 To drive down home prices, out of the stratosphere and back to affordability, one solution is to separate monetary policy from affordability.  The Canadian government started this by shortening the length of amortization from 30 to 25 years, but the logical extension of this solution would be to shorten or lengthen the term of amortization based upon how much the average person earns and can reasonably afford, with the expectation that they should also be saving and spending at substantial portion of their income.
 
-Such a policy would have to be gradually implemented to avoid shock, and should be regulated based on emperical evidence by an apolitical institution, such as the Bank of Canada.  However, the standard of living, especially for those the age of millenials, is the worst in living memory, and one of the first steps to improving their lot is making home ownership affordable.
+As the amortization period shortens, the monthly payments increase and affordability goes down.  With $1,500 in income and 2% interest, a buyer could afford $360,000 over 25 years.  If the longest available mortgage were 20 years, then that affordability drops to $300,000.  At 15 years, $240,000.
 
-It's worth noting that foreign investment continues to drive demand for real estate in Canada, however that can be curbed with vacancy tax or a foreign owner tax.
+A side benefit is that equity grows faster with shorter amortization periods.  Homeowners will have more equity sooner, giving them greater leverage to deal with financial stress and shock.
 
-We are as a society asking a group of mostly unemployed youth living in basements to become the backbone of the economy someday, service the public debt, while supporting a retiring generation.  That's not going to happen without some fairly substantial changes, both in home affordability and across the economy generally.
+Decreases in the amortization would have to be gradually implemented to avoid shock, and should be regulated based on emperical evidence by an apolitical institution, such as the Bank of Canada.  However, the standard of living, especially for those the age of millenials, is the worst in living memory, and one of the first steps to improving their lot is making home ownership affordable.
 
-With monetary policy separated from home affordability, it can get back to its core functions, without the fear of knocking the wind out of over-leveraged homeowners.  In so doing, we may be able to change the interest rates, so that individuals can make investment decisions with more confidence, encouraging longer-term investment in the economy, and contributing to sustained job creation and greater productivity.  Leading, in turn, to improvements in our standard of living.
+It's worth noting that while foreign investment continues to drive demand for real estate in Canada, it can be curbed with vacancy tax or a foreign owner tax.
+
+As a society we are asking a group of mostly unemployed youth living in basements to become the backbone of the economy someday, service the public debt, while supporting a retiring generation.  That's not going to happen without some fairly substantial changes, both in home affordability and across the economy generally.
+
+With monetary policy separated from home affordability, it can gradually get back to its core functions without the fear of knocking the wind out of over-leveraged homeowners.  In so doing, we may be able to change the interest rates, so that individuals can make investment decisions with more confidence, encouraging longer-term investment in the economy, and contributing to sustained job creation and greater productivity.  Leading, in turn, to improvements in our standard of living.
 
 <b>To recap</b>:
 
 - Monetary policy is no longer performing its desired functions, in part because:
   - Raising interest rates has ominous knock-on consequences for a huge segment of the population's mortgage payments
   - Lowering interest rates increases housing prices
-- The relationship between monetary policy and mortgages can be separated by governing the amortization period of new mortgages based on monthly affordability and the average income
+- The relationship between monetary policy and mortgages can be separated by regulation of the amortization period of mortgages, based on monthly affordability and the average income
