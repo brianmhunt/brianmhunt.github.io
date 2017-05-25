@@ -58,7 +58,7 @@ The $1,500/month makes sense because, at $18,000/year, it approximates the 33% o
 
 One would be hard–pressed to find a home for $360,000 anywhere near Toronto.  As a result, anyone living in or around Toronto is likely paying a substantially greater portion of their salary to their  mortgage than the recommended one-third.  It appears much the same near most population centres in Canada.
 
-<b>The cycle</b>:  The Bank of Canada cannot raise interest rates, and it would be hard–pressed to lower them.  Many homeowners cannot afford an even modest increase in interest rates, and so it could jolt the economy with a shocking number of mortgage defaults.  Lowering interest rates would devalue the loonie and make houses even more affordable and expensive.
+<b>The cycle</b>:  The Bank of Canada cannot raise interest rates, and it would be hard–pressed to lower them.  Many homeowners cannot afford an even modest increase in interest rates, and so it could jolt the economy with a shocking number of mortgage defaults.  Lowering interest rates would devalue the loonie and make houses even more expensive.
 
 ### Bringing Home Prices Back To Earth
 
