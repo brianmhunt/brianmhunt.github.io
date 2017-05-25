@@ -36,7 +36,7 @@ A substantial portion of Canadian homeowners are [financially unprepared for](ht
 
 Oh for the 1980's.  One might blame automation and outsourcing abroad.  However, while [unemployment plagues half of millenials](http://business.financialpost.com/news/economy/canadian-millennials-still-stuck-in-the-basement-as-youth-unemployment-surges), it has [been quite steady across the economy for years](http://www.tradingeconomics.com/canada/unemployment-rate).
 
-However this is an aside. The point of this article is the discussion of evidence that one of the main tools used to maintain a standard of living is monetary policy… a tool which currently is evidently failing.  Arguably all long-term economic trends are based on culture, incentivization, and fiscal policy, and monetary policy can only do so much.  However, there is an overlooked cycle between mortgages and monetary policy.
+However this is an aside. The point of this article is that one of the main tools used to maintain a standard of living is monetary policy, and it is evidently failing.  Arguably all long-term economic trends are based on culture, incentivization, and fiscal policy, and monetary policy can only do so much.  However, properly wielded monetary policy can change the direction of an economy.  There is an overlooked cycle between mortgages and monetary policy.
 
 ### People Buy The Most Expensive Home They Can Afford
 
