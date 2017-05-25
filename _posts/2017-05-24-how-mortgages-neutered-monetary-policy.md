@@ -68,15 +68,15 @@ As the amortization period shortens, monthly payments increase and affordability
 
 Equity will grow faster with shorter amortization periods.  This gives homeowners, and the economy, greater capacity to deal with financial stress and shock.
 
-Decreases in the amortization would have to be gradually implemented to avoid shock, and regulated based on emperical evidence by an apolitical institution, such as the Bank of Canada.  
+Decreases in the amortization period would have to be gradually implemented to avoid shock, and regulated based on emperical evidence by an apolitical institution, such as the Bank of Canada.  
 
 As a society we are asking a group of mostly unemployed youth living in basements to become the backbone of the economy someday, service the public debt, while supporting a retiring generation.  That's not going to happen without some fairly substantial changes, both in home affordability and general economic conditions.
 
-With monetary policy separated from home affordability, it can gradually get back to its core functions without the fear of knocking the wind out of over-leveraged homeowners.  In so doing, interest rates could be wielded to enable individuals to make investment decisions with more confidence, encourage longer-term investment in the economy, and contribute to sustained job creation and greater productivity.  Leading, in turn, to improvements in our standard of living.
+With monetary policy freed of home affordability, it can gradually get back to its core functions without the fear of knocking the wind out of over-leveraged homeowners.  In so doing, interest rates could be wielded to enable individuals to make investment decisions with more confidence, encourage longer-term investment in the economy, and contribute to sustained job creation and greater productivity.  Leading, in turn, to improvements in our standard of living.
 
 <b>To recap</b>:
 
 - Monetary policy is no longer performing its desired functions, in part because:
   - Raising interest rates has ominous knock-on consequences for a huge segment of the population's mortgage payments
   - Lowering interest rates increases housing prices
-- The relationship between monetary policy and mortgages can be separated by regulation of the amortization period of mortgages, based on monthly affordability based on the average income
+- The relationship between monetary policy and mortgages can be separated by regulation of the amortization period of mortgages
