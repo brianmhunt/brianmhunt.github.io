@@ -62,7 +62,7 @@ permalink:   /:categories/:title/
 
 kramdown:
   auto_ids: true
-  enable_coderay: true
+  enable_coderay: false
   entity_output: as_char
   footnote_nr: 1
   hard_wrap: false
