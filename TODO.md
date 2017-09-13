@@ -1,6 +1,9 @@
 Upcoming
 --------
 
+- Exposition, Prescription, Execution
+- Solar Realms
+
 AI
 - Amygdala - AI evolution - Equilibrium
 - Kasparov's Razor Pt. 2
