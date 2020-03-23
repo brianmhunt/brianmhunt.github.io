@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>AirConf 2014 - Knockout</title>
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+
+  <h1>
+    Dynamic HTML with Knockout
+    <small>AirConf 2014</small>
+  </h1>
+
+  <h2>
+    Brian M Hunt<br/>
+  </h2>
+
+  <article>
+    Brian's Blog:
+    <a href='https://brianmhunt.github.io'>
+      brianmhunt.github.io
+    </a><br/>
+    Presentation repository:
+    <a href='https://github.com/brianmhunt/Airconf-2014-Knockout'>
+      brianmhunt/Airconf-2014-Knockout
+    </a>
+  </article>
+
+  <p>
+    The following are the steps and respective excerpts from the Atom.io
+    <a href='https://github.com/brianmhunt/Airconf-2014-Knockout/blob/master/snippets/steps.cson'>
+    snippets/snippets.cson</a>,
+    used to generate the code during the presentation.
+  </p>
+
+  <ol data-bind='foreach: part_keys'>
+    <li>
+      <part params='part_key: $data'></part>
+    </li>
+  </ol>
+
+  <p>
+    This page is also using Knockout with web components. Check out 
+    <code>todo.js</code> and <code>index.html</code> at
+    <a href='https://github.com/brianmhunt/brianmhunt.github.io/tree/master/airconf-2014'>
+    github.com/brianmhunt/brianmhunt.github.io/tree/master/airconf-2014
+    </a>
+  </p>
+
+  <template id='todo'>
+    <cite>
+      ({{type}})
+    </cite>
+    <div class='step' data-bind='click: seen_click'>
+      <details>
+        <summary data-bind='css: details_class'>
+          {{name}}
+        </summary>
+        <pre>{{ body }}</pre>
+      </details>
+    </div>
+  </template>
+
+  <template id='part'>
+    <strong>{{ title }}</strong>
+    <ol data-bind='foreach: steps'>
+      <li>
+        <todo params='step: $data'></todo>
+      </li>
+    </ol>
+  </template>
+
+  <!-- Snippets
+    Build steps.js with:
+    snippets/ $ coffee -b -c -e "snippets = `cat steps.cson`" > steps.js
+  -->
+  <script src='./steps.js'></script>
+
+  <!-- SCRIPTS -->
+  <script src='./knockout.js'></script>
+  <script src='./lodash.js'></script>
+  <script src='./knockout-projections.js'></script>
+  <script src='./knockout.punches.js'></script>
+  <!-- Our javascript (we'll be editing) -->
+  <script src="./todo.js"></script>
+</body>
+</html>

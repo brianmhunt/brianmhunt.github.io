@@ -1,0 +1,129 @@
+
+@import url(http://fonts.googleapis.com/css?family=Open+Sans:400,700);
+@import url(http://fonts.googleapis.com/css?family=Source+Code+Pro);
+
+* {
+  text-rendering: optimizeLegibility;
+}
+
+body {
+  font-family: 'Open Sans', sans-serif;
+  font-size: 18px;
+  padding: 4em 0px;
+  width: 80%;
+  margin: 0px auto;
+}
+
+input {
+  display: block;
+  width: 80%;
+  padding: 5px 0.5em;
+  border-radius: 12px;
+  margin: 2ex auto;
+  font-size: 18px;
+  outline: none;
+  text-align: center;
+}
+
+input:focus {
+  background-color: #a8f1ff;
+}
+
+
+h1, h2 {
+  text-align: center;
+  font-weight: normal;
+}
+
+table {
+  width: 80%;
+  margin: 15px auto;
+}
+
+th {
+  border-bottom: 1px solid gray;
+}
+
+div.sort {
+  text-align: center;
+}
+
+button {
+  cursor: pointer;
+  font-size: 18px;
+  padding: 8px 1em;
+  background-color: #2e50d8;
+  color: white;
+  border-radius: 15px;
+  outline: none;
+  border: 1px solid gray;
+  box-shadow: 3px 3px 3px #888;
+}
+
+button:active {
+  box-shadow: none;
+}
+
+.todo {
+  border-top: 1px solid gray;
+  margin-top: 50px;
+  background-color: blue;
+  color: yellow;
+}
+
+ol {
+  max-width: 600px;
+  margin: 12px auto;
+}
+
+ol ol {
+  list-style-type: none;
+  padding-left: 0px;
+}
+
+ol cite {
+  color: #AAA;
+  font-size: 0.9em;
+  float: right;
+}
+
+ol cite em {
+  color: #88A;
+  text-decoration: underline;
+  font-style: normal;
+  cursor: pointer;
+  padding: 0px 0.3em;
+}
+
+pre {
+  font-family: 'Source Code Pro', monospace;
+  font-size: 0.7em;
+  background-color: #DDD;
+  border: 1px solid gray;
+  padding: 0.3em;
+}
+
+article {
+  margin: 2em auto;
+  max-width: 36em;
+}
+
+small {
+  font-size: 0.5em;
+  color: #888;
+}
+
+.seen {
+  color: #aaa;
+}
+
+
+summary {
+  cursor: pointer;
+  outline: none;
+}
+
+p {
+  max-width: 36em;
+  margin: 4ex auto;
+}

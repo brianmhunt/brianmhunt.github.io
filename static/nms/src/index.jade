@@ -1,0 +1,184 @@
+doctype html
+html
+  head
+    meta(charset='utf-8')
+    meta(name='viewport', content='width=device-width, initial-scale=1, maximum-scale=1')
+    title No More Secrets
+
+    // build:css styles/styles.css
+    //- Check out 'src/bower_components/prism/themes/' for available themes
+    link(rel='stylesheet', type='text/css', href='bower_components/prism/themes/prism-tomorrow.css')
+    link(rel='stylesheet', type='text/css', href='styles/main.css')
+    // endbuild
+
+    script(src='//use.typekit.net/gdm7was.js')
+    script.
+      try{Typekit.load();}catch(e){}
+
+  body
+
+    article
+
+      section
+        h1 No More Secrets
+        h2 Legal advice in the information age
+
+      section
+        h2 Dawn of signals intelligence
+        h3.bullet Computers evolved with electronics espionage
+        ul
+          li Alan Turing and Colossus at Bletchley Park – Lorenz cypher (Enigma)
+          li U.S. Navy OP-20-G (1922-24) -> Signal Security Agency -> Armed Forces Security Agency -> National Security Agency
+          li Electronic surveillance: low cost, high value intelligence
+
+      section
+        h2 "SIGINT"
+        h3.bullet The Signals Intelligence family
+        ul
+          li ELINT - Electronics Intelligence
+          li COMINT - Communications Intelligence
+          li COMSEC - Communications Security
+             ul
+               li Crypto
+               li Emission
+               li Transmission
+               li Physical
+
+      section
+        h2 National Security Agency
+        h3.bullet Who are they
+        ul
+          li Largest SIGINT player, $10–16bn
+          li Military and non-military uses
+          li Answers directly to USA Sec. of Defence
+          li Exclusive jurisdiction over SIGINT
+
+      section
+        h2 National Security Agency
+        h3.bullet Agency
+        ul
+          li USA Government (all branches)
+          li British commonwealth
+          li NATO governments
+          li SEATO governments
+
+      section
+        h2 National Security Agency
+        h3.bullet Wartime purpose
+        ul
+          li Code-breaking and analysis
+          li Conflict avoidance
+          li Protect resources
+          li Negotiation facilitation
+
+      section
+        h2 National Security Agency
+        h3.bullet Peacetime purpose
+        ul
+          li Struggle for validity
+          li Upend commercial playing field - distrust, resentment, frustration
+          li Unclear and conflicting hiearchy
+          li <em>Boeing v Airbus</em>, <em>Raytheon v Thomson-CSF</em>
+          li Spying on U.N., World Bank, IMF, Angela Merkel, CIA,
+             state governors, military chiefs of staff
+          li Breach privilege (Mayer Brown, etc.)
+          li Shift to dragnet after 9/11
+
+      section
+        h2 Vectors
+        h3.bullet Tools of trade
+        ul
+          li Private-sector strong-arm agreements (Google, Apple, Microsoft, Facebook ...)
+          li Back-doors (Windows 95+, Cisco, Juniper, Dell, Skype, Apple, ...)
+          li Specialized hardware (cables, USB sticks/radio transmitters, cell phone towers, ...)
+          li Target commercial vendors
+          li Interdiction
+          li Mathematical magic?
+
+      section
+        h2 What do you trust?
+        h3 Math and Public Scrutiny
+
+      section
+        h2 Kerchkoff's Principle
+        blockquote.bullet A cryptosystem should be secure even if everything about the system, except the key, is public knowledge.
+
+      section
+        h2 Shannon's Maxim
+        blockquote The enemy knows the system.
+
+      section
+        h2 Counter-intelligence
+        h3.bullet Concepts
+        ul
+          li Identity (KDF)
+          li Authenticity (digest)
+          li Secrecy (encryption)
+          li Plausible deniability (steganography)
+          li Peer review (open source)
+
+      section
+        h2 Exploits
+        h3.bullet Code with holes
+        ul
+          li Heartbleed
+          li Goto fail
+          li Debian <code>apt-get</code>
+
+      section
+        h2 Challenges and opportunities
+        h3 Identifying and scaling a response
+        ul
+          li Exploits are cheap
+          li Humans prefer features
+          li Security is expensive but unseen
+          li If big SIGINT wants in ...
+          li ... but tools can make dragnet prohibitively expensive.
+
+      section
+        h2 SIGINT <em>Modus Operandi</em>
+        h3.bullet Theirs is not to reason why.
+        ul
+          li Incentivized reviewing and selling dragnet results to "customers"
+          li No brakes: Extralegal, extra-territorial, <em>ex-parte</em>, private, quasi-judicial review with arbitrary and inconsistent reviews
+          li Absence of transparency, accountability, clarity of purpose, scope and balancing of interests
+          li God complex
+
+      section
+        h2 Legal intelligence
+        h3.bullet Communication is lifeblood
+        ul
+          li Peculiar vulnerability – perception of clients
+          li Consult vulnerable clients and evaluate needs
+          li Co-operation on open-source for cost sharing, peer-review
+          li Leverage strong crypto and open source peer review
+          li Identify and promote rational, palpable SIGINT boundaries
+
+      section
+        h2 Balancing interests
+        h3.bullet Secrets versus security
+        ul
+          li Security ↔︎ Cost ↔︎ Convenience
+          li National security scope ↔︎ Fair playing field
+          li Cost of acquisition ↔︎ SIGINT value
+
+      section
+        h2 More info
+        ul
+          li
+            a(href='https://www.youtube.com/user/ArtOfTheProblem') Youtube: Art Of The Problem
+            a(href='http://www.brookings.edu/research/essays/2014/big-snoop') Brookings Institute: The Big Snoop
+
+    // build:js scripts/scripts.js
+    script(src='bower_components/bespoke.js/dist/bespoke.min.js')
+    script(src='bower_components/bespoke-keys/dist/bespoke-keys.min.js')
+    script(src='bower_components/bespoke-touch/dist/bespoke-touch.min.js')
+    script(src='bower_components/bespoke-bullets/dist/bespoke-bullets.min.js')
+    script(src='bower_components/bespoke-scale/dist/bespoke-scale.min.js')
+    script(src='bower_components/bespoke-hash/dist/bespoke-hash.min.js')
+    script(src='bower_components/bespoke-progress/dist/bespoke-progress.min.js')
+    script(src='bower_components/bespoke-state/dist/bespoke-state.min.js')
+    script(src='bower_components/bespoke-forms/dist/bespoke-forms.min.js')
+    script(src='bower_components/prism/prism.js')
+    script(src='scripts/main.js')
+    // endbuild
