@@ -1,6 +1,6 @@
 ---
 date: "2020-03-23T00:00:00Z"
-title: COVID Calculator
+title: COVID Exponential Growth Estimator
 ---
 
 I had posted my accurate estimations to friends and colleagues on Facebook, but
@@ -18,47 +18,12 @@ Starting Date Cases: <input type='text' data-bind='textInput: currentCases' />
 
 Days to Double: <input type='text' data-bind='textInput: doublingRate' />
 
-
+<div data-bind='foreach: estimates'>
+  <div>
+    <span data-bind='text: daysFromNow'></span> day:
+    <span data-bind='text: formatted'></span>
+  </div>
+</div>
 Hello, world.
 
-<script>
-const root = window.root = {
-  currentCases: ko.observable(1),
-  doublingRate: ko.observable(4),
-  startDate: ko.observable(new Date().toISOString().substr(0,10)),
-}
-
-function estimate (current, doubling, daysFromNow) {
-  console.log(`daysFromNow`, daysFromNow, doubling)
-  const doubles = daysFromNow / doubling
-  console.log(`current`, current, doubles)
-  return current * 2 ** doubles
-}
-
-root.estimation = ko.computed(() => {
-  console.log(`
-    current: ${root.currentCases()}
-    doubling: ${root.doublingRate()}
-    start: ${root.startDate()}
-  `)
-
-  const estimations = [
-    estimate(root.currentCases(), root.doublingRate(), 1),
-    estimate(root.currentCases(), root.doublingRate(), 2),
-    estimate(root.currentCases(), root.doublingRate(), 7),
-    estimate(root.currentCases(), root.doublingRate(), 14),
-    estimate(root.currentCases(), root.doublingRate(), 30),
-    estimate(root.currentCases(), root.doublingRate(), 60),
-    estimate(root.currentCases(), root.doublingRate(), 90),
-    estimate(root.currentCases(), root.doublingRate(), 120),
-    estimate(root.currentCases(), root.doublingRate(), 365),
-  ]
-
-  console.log(`estimations`, estimations)
-
-  return '?'
-})
-
-ko.applyBindings(root)
-console.log(`Bindings applied`)
-</script>
+<script src="/covid.js"></script>

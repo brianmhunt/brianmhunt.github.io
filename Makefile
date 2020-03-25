@@ -1,7 +1,8 @@
 
 serve:
 	# hugo server --theme=herring-cove
-	hugo server --theme=simple-style
+	# hugo server --theme=simple-style
+	hugo server --theme=local
 
 setup:
 	git clone https://github.com/spf13/herring-cove.git ./themes/herring-cove

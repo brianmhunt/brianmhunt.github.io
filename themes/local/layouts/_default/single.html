@@ -1,0 +1,11 @@
+{{ template "partials/header.html" . }}
+
+<article>
+  <div class="title">{{ .Title }}</div>
+  <div class="date">{{ .Date.Format  "2006-01-02" }}</div>
+  <div class="content">
+    {{ .Content }}
+  </div>
+</article>
+
+{{ template "partials/footer.html" . }}

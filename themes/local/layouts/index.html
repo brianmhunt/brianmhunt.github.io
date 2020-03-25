@@ -1,0 +1,35 @@
+<html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>{{ .Title }}</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="{{ .Description }}">
+  <link href="{{ .RSSLink }}" rel="alternate" type="application/rss+xml" title="{{ .Site.Title }}" />
+  <link href="{{ .Site.BaseURL }}/css/local.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://use.typekit.net/gdm7was.css">
+</head>
+
+	<body>
+	{{ if eq .Site.Params.enableLandingPage true}}
+	<div class="circular">
+		<img src="{{ .Site.Params.ProfilePicture }}" alt="" />
+			<div id="landing-about">
+				<a href="{{ .Site.Params.landingPageRedirectUrl }}">Find out more about <b>{{ .Site.Params.AuthorName }}</b> </a>
+		</div>
+	</div>
+	{{ else }}
+		{{ template "partials/header.html" . }}
+  <div id="article">
+      <h1>{{.Title}}</h1>
+  <ul class="posts">
+      {{ range .Data.Pages }}
+      <li><span><a href="{{ .RelPermalink }}">{{ .Title }}</a><time class="pull-right post-list">{{ .Date.Format "Mon, Jan 2, 2006" }}</h4></time></span></span></li>
+      {{ end }}
+  </ul>
+	{{ template "partials/footer.html" }}
+	{{ end }}
+
+	</body>
+</html>

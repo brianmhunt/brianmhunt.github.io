@@ -1,0 +1,16 @@
+  <footer>
+    {{ with .Site.Params.Copyright }}{{.}}{{ else }}&copy; {{now.Format "2014-2020"}}.  {{end}}
+
+
+    <div class="pager">
+      {{with .Prev}}
+        <div class="previous"><a href="{{.Permalink}}">{{ .Title }}</a></div>
+      {{end}}
+      {{with .Next}}
+        <div class="next"><a href="{{.Permalink}}">{{ .Title }}</a></div>
+      {{end}}
+    </div>
+
+  </footer>
+</body>
+</html>
