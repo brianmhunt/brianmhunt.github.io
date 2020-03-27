@@ -1,9 +1,12 @@
 {{ template "partials/header.html" . }}
-  <div id="article">
-      <h1>{{.Title}}</h1>
-  <ul class="posts">
-      {{ range .Data.Pages }}
-      <li><span><a href="{{ .RelPermalink }}">{{ .Title }}</a><time class="pull-right post-list">{{ .Date.Format "Mon, Jan 2, 2006" }}</h4></time></span></span></li>
-      {{ end }}
-  </ul>
-{{ template "partials/footer.html" . }}
+
+
+<div class='posts-list'>
+  <div class='post-title'>{{.Title}}</div>
+  {{ range .Data.Pages }}
+  <div class='post-list-item'>
+    <a href="{{ .RelPermalink }}">{{ .Title }}</a>
+    <time class="post-time">{{ .Date.Format "Jan 2 2006" }}</time>
+  </div>
+  {{ end }}
+</div>

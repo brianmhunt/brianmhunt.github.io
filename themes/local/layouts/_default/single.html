@@ -2,10 +2,11 @@
 
 <article>
   <div class="title">{{ .Title }}</div>
-  <div class="date">{{ .Date.Format  "2006-01-02" }}</div>
+  <div class="date">{{ .Date.Format  "Jan 2, 2006" }}</div>
   <div class="content">
     {{ .Content }}
   </div>
+  <div class='copyright'> &copy; {{ .Date.Format  "2006" }} </div>
 </article>
 
 {{ template "partials/footer.html" . }}

@@ -11,16 +11,31 @@
   <link href="{{ .Site.BaseURL }}/css/local.css" rel="stylesheet">
   <link rel="stylesheet" href="https://use.typekit.net/gdm7was.css">
   
+  <script type="text/javascript" src="https://ssl.google-analytics.com/ga.js"></script>
+  <script>
+    var _gaq = _gaq || [];
+    var pluginUrl = 
+    '//www.google-analytics.com/plugins/ga/inpage_linkid.js';
+    _gaq.push(['_require', 'inpage_linkid', pluginUrl]);
+    _gaq.push(['_setAccount', 'UA-47448402-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
 </head>
 <body>
 
 <header>
-  <div class='me'>Brian M Hunt</div>
+  <a class='me' href='/post'>Brian M Hunt</a>
 </header>
 
 <picture class='splash'>
   <source srcset="https://unsplash.it/1602/534?random" media="(min-width: 1600px)">
   <source srcset="https://unsplash.it/1200/400?random" media="(min-width: 1200px)">
   <source srcset="https://unsplash.it/801/267?random" media="(min-width: 800px)">
-  <img class='splash' src='https://unsplash.it/600/200?random' alt='Splash!' />
+  <img class='splash' src='https://unsplash.it/600/200?random' alt='Splash by unsplash.it' />
 </picture>
