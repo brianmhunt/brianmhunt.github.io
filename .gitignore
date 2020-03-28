@@ -2,8 +2,5 @@ node_modules
 .DS_store
 *.swp
 
-# Hugo default output dir
-/public
-
 themes/*
 !themes/local
