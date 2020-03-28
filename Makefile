@@ -1,23 +1,7 @@
 
-jekyll-version := 3.8
-
-update:
-	docker run \
-		--rm \
-		--volume="$$PWD:/srv/jekyll" \
-		-it jekyll/jekyll:$(jekyll-version) \
-		bundle update
+build:
+	hugo --theme=local -s src
 
 serve:
-	docker run \
-		--rm \
-		--volume="$$PWD:/srv/jekyll" \
-		-it jekyll/jekyll:$(jekyll-version) \
-		bundle exec serve
+	cd src; hugo --theme=local server
 
-install:
-	docker run \
-		--rm \
-		--volume="$$PWD:/srv/jekyll" \
-		-it jekyll/jekyll:$(jekyll-version) \
-		bundle install
