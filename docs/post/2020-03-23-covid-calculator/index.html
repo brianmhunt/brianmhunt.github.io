@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>COVID Exponential Growth Estimator</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="">
+  <meta name="generator" content="Hugo 0.68.1" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css" integrity="sha256-l85OmPOjvil/SOvVt3HnSSjzF1TUMyT9eV0c2BzEGzU=" crossorigin="anonymous" />
+  <link href="" rel="alternate" type="application/rss+xml" title="Brian M Hunt" />
+  <link href="https://brianmhunt.github.io/css/local.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://use.typekit.net/gdm7was.css">
+  
+  <script type="text/javascript" src="https://ssl.google-analytics.com/ga.js"></script>
+  <script>
+    var _gaq = _gaq || [];
+    var pluginUrl = 
+    '//www.google-analytics.com/plugins/ga/inpage_linkid.js';
+    _gaq.push(['_require', 'inpage_linkid', pluginUrl]);
+    _gaq.push(['_setAccount', 'UA-47448402-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+  
+  <link rel="alternate" type="application/rss+xml" href="https://brianmhunt.github.io/index.xml" title="Site Title">
+
+</head>
+
+<body>
+
+<header>
+  <a class='me' href='/'>Brian M Hunt</a>
+</header>
+
+<picture class='splash'>
+  <source srcset="https://picsum.photos/1600/600" media="(min-width: 1600px)">
+  <source srcset="https://picsum.photos/1200/400" media="(min-width: 1200px)">
+  <source srcset="https://picsum.photos/800/300" media="(min-width: 800px)">
+  <img class='splash' src='https://picsum.photos/600/200' alt='Splash by picsum.photos' />
+</picture>
+
+
+<article>
+  <div class="title">COVID Exponential Growth Estimator</div>
+  <div class="date">Mar 23, 2020</div>
+  <div class="content">
+    <link href="/css/covid.css" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/knockout/3.5.1/knockout-latest.js" integrity="sha256-6JV7sYKlBHsHvqCkn9IrEWFLGrmsW4KG/LIln0hljnM=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment-with-locales.min.js" integrity="sha256-AdQN98MVZs44Eq2yTwtoKufhnU+uZ7v2kXnD5vqzZVo=" crossorigin="anonymous"></script>
+<p>The following is an calculator that can be used to make
+estimates about the exponential growth phase of the COVID pandemic.</p>
+<p>It is purely a mathematical estimator, and has no underlying insight into the
+disease growth patterns, but can be used as an informational tool for projecting
+and observing patterns.</p>
+<h2 id="calculate-growth-rate">Calculate Growth Rate</h2>
+<p>The doubling rate is calculated with:</p>
+<code class='covid-formula'>
+  days &times; log<sub>n</sub>(2) / log<sub>n</sub>(count<sub>2</sub> / count<sub>1</sub>)
+</code>
+<p>being a <a href='https://en.wikipedia.org/wiki/Doubling_time'>doubling time</a> formula.</p>
+<h3 id="instructions">Instructions</h3>
+<p>Enter two dates where the number of cases is known, and the respective number
+of cases, then the result will be shown.</p>
+<p>For example, in
+<a href='#' data-bind='click: ontExampleClick'>Ontario May 11, 2020: 42 cases =&gt; May 23: 425 cases</a>
+indicates a doubling rate of 3.59 days.<br>
+However <a href='#' data-bind='click: ontExample2Click'>Ontario May 23, 2020: 425 cases =&gt; May 28: 994 cases</a>
+indicates a doubling rate of 4.08 days, suggesting that the doubling rate is slowing.</p>
+<div class='covid-rate-grid'>
+  <span>First date</span>
+  <input type='date' data-bind='value: date1'/>
+  <input type='number' placeholder='Cases' data-bind='textInput: count1'>
+  <span>Second date</span>
+  <input type='date' data-bind='value: date2'/>
+  <input type='number' data-bind='textInput: count2'>
+  <span>Result</span>
+  <span class='covid-rate-result' data-bind='text: curve'></span>
+</div>
+<p>The start date and the second cases will be automatically copied into the
+estimate below.</p>
+<h2 id="estimate-future-cases">Estimate future cases</h2>
+<p>The estimate of future cases follows the formula:</p>
+<code class='covid-formula'>
+  cases &times; 2<sup>days / days-to-double</sup>
+</code>
+<p>The estimates stop at 1 billion or 365 days.</p>
+<h3 id="instructions-1">Instructions</h3>
+<p>Enter the start date, the current number of cases, and number of days
+the cases double, and estimates will be calculated in a table.</p>
+<div class='covid-estimate-grid'>
+  <span>Start Date</span>
+  <input type='date' data-bind='value: startDate' />
+  <span>Starting Date Cases</span>
+  <input type='text' data-bind='textInput: currentCases' />
+  <span>Days to Double</span>
+  <input type='text' data-bind='textInput: doublingRate' />
+  <div class='covid-estimates'>
+    <b>Days from now</b>
+    <b>Date</b>
+    <b>Estimated cases</b>
+    <!-- ko foreach: estimates -->
+      <span style='text-align: right' data-bind='text: daysFromNow'></span>
+      <span data-bind='text: date'></span>
+      <span data-bind='text: formatted'></span>
+    <!-- /ko -->
+  </div>
+</div>
+<p>Of course these estimates are inaccurate in the very-short term, and
+they become wildly inaccurate in the very-long term since the exponential
+growth rates quickly exceed the global human population.</p>
+<script src="/covid.js"></script>
+
+  </div>
+  <div class='copyright'> &copy; 2020 </div>
+</article>
+
+  <footer>
+
+    <div class="pager">
+      <div class="list-link"><a href="/post">Go to all posts</a></div>
+      
+        <a class="prev-link" href="https://brianmhunt.github.io/post/2017-08-19-kasparovs-razor/">
+          Previous post Aug 19, 2017
+          <br/><em>Kasparov&#39;s Razor</em>
+        </a>
+      
+      
+    </div>
+
+    <div class='license'>
+      <span xmlns:dct="http://purl.org/dc/terms/" href="http://purl.org/dc/dcmitype/Text" property="dct:title" rel="dct:type">COVID Exponential Growth Estimator</span> by Brian M Hunt at <a xmlns:cc="http://creativecommons.org/ns#" href="https://brianmhunt.github.io/post/2020-03-23-covid-calculator/" property="cc:attributionName" rel="cc:attributionURL">https://brianmhunt.github.io/post/2020-03-23-covid-calculator/</a> is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License</a>.
+      <br/>
+      <a rel="license" href="http://creativecommons.org/licenses/by/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by/4.0/80x15.png" /></a> 
+    </div>
+    <div class='photo-credit'>
+      Photo credit: <a href='https://picsum.photos'>https://picsum.photos</a>
+    </div>
+  </footer>
+</body>
+</html>
+

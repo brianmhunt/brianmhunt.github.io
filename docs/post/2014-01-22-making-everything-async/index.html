@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Asynchronous client-side Javascript page loading</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Code and ideas about the client-side script-loading experience.
+">
+  <meta name="generator" content="Hugo 0.68.1" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css" integrity="sha256-l85OmPOjvil/SOvVt3HnSSjzF1TUMyT9eV0c2BzEGzU=" crossorigin="anonymous" />
+  <link href="" rel="alternate" type="application/rss+xml" title="Brian M Hunt" />
+  <link href="https://brianmhunt.github.io/css/local.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://use.typekit.net/gdm7was.css">
+  
+  <script type="text/javascript" src="https://ssl.google-analytics.com/ga.js"></script>
+  <script>
+    var _gaq = _gaq || [];
+    var pluginUrl = 
+    '//www.google-analytics.com/plugins/ga/inpage_linkid.js';
+    _gaq.push(['_require', 'inpage_linkid', pluginUrl]);
+    _gaq.push(['_setAccount', 'UA-47448402-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+  
+  <link rel="alternate" type="application/rss+xml" href="https://brianmhunt.github.io/index.xml" title="Site Title">
+
+</head>
+
+<body>
+
+<header>
+  <a class='me' href='/'>Brian M Hunt</a>
+</header>
+
+<picture class='splash'>
+  <source srcset="https://picsum.photos/1600/600" media="(min-width: 1600px)">
+  <source srcset="https://picsum.photos/1200/400" media="(min-width: 1200px)">
+  <source srcset="https://picsum.photos/800/300" media="(min-width: 800px)">
+  <img class='splash' src='https://picsum.photos/600/200' alt='Splash by picsum.photos' />
+</picture>
+
+
+<article>
+  <div class="title">Asynchronous client-side Javascript page loading</div>
+  <div class="date">Jan 22, 2014</div>
+  <div class="content">
+    <h1 id="what-is-it">What is it?</h1>
+<p>A process for loading our script resources asynchronously, with one <code>&lt;script&gt;</code> tag, like this:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-html" data-lang="html">&lt;<span style="color:#f92672">script</span> <span style="color:#a6e22e">async</span> <span style="color:#a6e22e">src</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#39;/all.js-{{ cache_buster }}&#39;</span>&gt;&lt;/<span style="color:#f92672">script</span>&gt;
+</code></pre></div><p>This all.js file loads all our Javascript, external services, templates, and any RESTful resources from our server.</p>
+<p>We discuss the <code>cache_buster</code> in <a href="/articles/permanent-caching-and-busting">the next post</a>.</p>
+<h1 id="why-is-it-important">Why is it important?</h1>
+<p>Having one file for Javascript gives us:</p>
+<ol>
+<li>one file to request;</li>
+<li>improved cachability;</li>
+<li>parallel requests for our resources;</li>
+<li>centralizing where we control our loading;</li>
+<li>fine-grained control of the loading process.</li>
+</ol>
+<p>We have a fairly hefty application. Every page loads about 2MB of Javascript, and around 200KB of HTML templates. We also load a number of third party services, such as Uservoice, Typekit and Stripe.</p>
+<h1 id="how-does-it-work">How does it work?</h1>
+<p>We compile all our Javascript using <a href="https://gruntjs.com">grunt</a> and <a href="https://browserify.org/">Browserify</a>.</p>
+<p>The compiled Javascript loads the external services Uservoice, Typekit and Stripe, as well as our templates, as set out below.</p>
+<h2 id="third-party-services">Third party services</h2>
+<p>Loading the third party services is usually done with <code>&lt;script&gt;</code> tags in the <code>&lt;head&gt;</code> tag or inline Javascript. We avoid inline javascript because it violates the Content Security Policy, and it&rsquo;s less organized.</p>
+<p>We avoid the script tags for external services because:</p>
+<ol>
+<li>if they are synchronously loaded they slow down the page loading;</li>
+<li>if asynchronously loaded (with the <code>async</code> or <code>defer</code> attribute) we cannot tell when they have completed loading without polling; or</li>
+<li>they have mucked up the page completely and we want better control over their inclusion.</li>
+</ol>
+<h3 id="typekit">Typekit</h3>
+<p>Here is the Coffeescript I use to load Typekit. The real trick here is in catching the exceptions and timeouts so that the user can still get stuff done, ugly though the fonts may be.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-coffeescript" data-lang="coffeescript">load_typekit = <span style="color:#a6e22e">(timeout=3000) -&gt;</span>
+  LOADING_CLASS = <span style="color:#e6db74">&#39;wf-loading&#39;</span>
+  FAIL_CLASS = <span style="color:#e6db74">&#34;wf-inactive&#34;</span>
+  kitId = <span style="color:#e6db74">&#39;OUR-TYPEKIT-ID&#39;</span>
+  url = <span style="color:#e6db74">&#34;//use.typekit.net/</span><span style="color:#e6db74">#{</span><span style="color:#a6e22e">kitId</span><span style="color:#e6db74">}</span><span style="color:#e6db74">.js&#34;</span>
+
+  <span style="color:#a6e22e">$</span>.<span style="color:#a6e22e">ajax</span>(<span style="color:#a6e22e">url</span>, timeout: <span style="color:#ae81ff">1500</span>, dataType: <span style="color:#e6db74">&#34;script&#34;</span>)
+    .<span style="color:#a6e22e">done</span>(<span style="color:#a6e22e">-&gt;</span>
+      <span style="color:#66d9ef">try</span>
+        <span style="color:#a6e22e">Typekit</span>.<span style="color:#a6e22e">load</span>(kitId: <span style="color:#a6e22e">kitId</span>, scriptTimeout: <span style="color:#a6e22e">timeout</span>)
+      <span style="color:#66d9ef">catch</span> <span style="color:#a6e22e">b</span>
+        <span style="color:#a6e22e">$</span>(<span style="color:#e6db74">&#34;html&#34;</span>).<span style="color:#a6e22e">removeClass</span>(<span style="color:#a6e22e">LOADING_CLASS</span>).<span style="color:#a6e22e">addClass</span>(<span style="color:#a6e22e">FAIL_CLASS</span>)
+      <span style="color:#66d9ef">return</span>
+    )
+    .<span style="color:#a6e22e">fail</span>(<span style="color:#a6e22e">(jqxhr, settings, exception) -&gt;</span>
+      <span style="color:#a6e22e">console</span>.<span style="color:#a6e22e">error</span>(<span style="color:#e6db74">&#34;Problem getting TypeKit at </span><span style="color:#e6db74">#{</span><span style="color:#a6e22e">url</span><span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>, <span style="color:#a6e22e">jqxhr</span>,
+        <span style="color:#a6e22e">settings</span>, <span style="color:#a6e22e">exception</span>)
+      <span style="color:#a6e22e">$</span>(<span style="color:#e6db74">&#34;html&#34;</span>).<span style="color:#a6e22e">removeClass</span>(<span style="color:#a6e22e">LOADING_CLASS</span>).<span style="color:#a6e22e">addClass</span>(<span style="color:#a6e22e">FAIL_CLASS</span>)
+      <span style="color:#66d9ef">return</span>
+    )
+  <span style="color:#66d9ef">return</span>
+</code></pre></div><p>We have a much lower threshold for the timeout on Typekit than the other services below because if it is slow or fails to load then the application is rendered unusable because the page never hides the loading screen to show the page.</p>
+<p>We use the following CSS to get around the <a href="https://help.typekit.com/customer/portal/articles/6852-controlling-the-flash-of-unstyled-text-or-fout-using-font-events">Flash of Unstyled Text</a>:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-css" data-lang="css"><span style="color:#75715e">/* html */</span>.<span style="color:#a6e22e">wf-loading</span> {
+  <span style="color:#66d9ef">opacity</span>: <span style="color:#ae81ff">0</span>;
+  <span style="color:#66d9ef">visibility</span>: <span style="color:#66d9ef">hidden</span>;
+}
+
+<span style="color:#75715e">/* html */</span>.<span style="color:#a6e22e">wf-active</span> {
+  <span style="color:#66d9ef">visibility</span>: <span style="color:#66d9ef">visible</span>;
+  <span style="color:#66d9ef">opacity</span>: <span style="color:#ae81ff">1</span>;
+  <span style="color:#66d9ef">-webkit-</span><span style="color:#66d9ef">transition</span>: <span style="color:#66d9ef">opacity</span> <span style="color:#ae81ff">0.55</span><span style="color:#66d9ef">s</span> <span style="color:#66d9ef">ease</span><span style="color:#f92672">-</span>in-out;
+     <span style="color:#66d9ef">-moz-</span><span style="color:#66d9ef">transition</span>: <span style="color:#66d9ef">opacity</span> <span style="color:#ae81ff">0.55</span><span style="color:#66d9ef">s</span> <span style="color:#66d9ef">ease</span><span style="color:#f92672">-</span>in-out;
+       <span style="color:#66d9ef">-o-</span><span style="color:#66d9ef">transition</span>: <span style="color:#66d9ef">opacity</span> <span style="color:#ae81ff">0.55</span><span style="color:#66d9ef">s</span> <span style="color:#66d9ef">ease</span><span style="color:#f92672">-</span>in-out;
+          <span style="color:#66d9ef">transition</span>: <span style="color:#66d9ef">opacity</span> <span style="color:#ae81ff">0.55</span><span style="color:#66d9ef">s</span> <span style="color:#66d9ef">ease</span><span style="color:#f92672">-</span>in-out;
+}
+</code></pre></div><p>This is essentially what Typekit has suggested, but with a pleasant opacity transition.</p>
+<p>A neat observation of using the CSS FOUT is that the browser seems noticibly faster when loading the asynchronous resources. Without more analysis I can only speculate why, but I imagine because the processor is not rendering for the first 400ms of a page load it can concentrate on network tasks. Whatever the reason, we were very pleased with this unexpected benefit.</p>
+<p>Typekit has been and remains the largest barrier to quickly displaying something on screen, since it must be loaded before the page displays any fonts. Nevertheless this is more than made up for in the improvement in our typographic options and the unexpected benefit the FOUT CSS makes to load times.</p>
+<p>Before Typekit is loaded one could get an image out to the user with an animated background image, as described in <a href="https://webdesign.tutsplus.com/tutorials/ux-tutorials/quick-tip-avoid-fout-by-adding-a-web-font-preloader/">Avoid FOUT by Adding a Web Font Preloader</a> like this:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-css" data-lang="css">.<span style="color:#a6e22e">wf-loading</span> {
+  <span style="color:#75715e">/* ... */</span>
+  <span style="color:#66d9ef">background</span>: url(<span style="color:#e6db74">&#39;../images/ajax-loader.gif&#39;</span>) <span style="color:#66d9ef">no-repeat</span> <span style="color:#66d9ef">center</span> <span style="color:#66d9ef">center</span>;
+  <span style="color:#66d9ef">height</span>: <span style="color:#ae81ff">100</span><span style="color:#66d9ef">%</span>;
+  <span style="color:#66d9ef">overflow</span>: <span style="color:#66d9ef">hidden</span>;
+}
+</code></pre></div><p>If I were to do this I would prefer the page not display some arbitrary loading image, but an image that resembles what the rendered page will eventually look like. I feel the users would find that a more comfortable transition since I find blanking the page gives the impression of impermanence and a feeling of incontinuity and fragility to the service.</p>
+<h3 id="uservoice">Uservoice</h3>
+<p>Uservoice is straightforward. Note that we are doing our best to become <a href="https://www.w3.org/TR/CSP/">Content-Security-Policy (CSP)</a> compliant, so page-specific attributes such as the current-user email and key are added as attributes to the <code>&lt;body&gt;</code> tag.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-coffeescript" data-lang="coffeescript">load_uservoice = <span style="color:#a6e22e">-&gt;</span>
+  url = <span style="color:#e6db74">&#39;//widget.uservoice.com/OUR-WIDGET-URL.js&#39;</span>
+
+  <span style="color:#75715e"># Add a global list for adding UserVoice settings
+</span><span style="color:#75715e"></span>  UserVoice = window.<span style="color:#a6e22e">UserVoice</span> <span style="color:#f92672">or</span> []
+
+  <span style="color:#75715e"># We have to set the global option so that UserVoice knows what the
+</span><span style="color:#75715e"></span>  <span style="color:#75715e"># settings are.
+</span><span style="color:#75715e"></span>  window.UserVoice = <span style="color:#a6e22e">UserVoice</span>
+
+  <span style="color:#75715e"># Load the UserVoice script
+</span><span style="color:#75715e"></span>  <span style="color:#a6e22e">$</span>.<span style="color:#a6e22e">getScript</span>(<span style="color:#a6e22e">url</span>)
+
+  <span style="color:#75715e"># Colors
+</span><span style="color:#75715e"></span>  <span style="color:#a6e22e">UserVoice</span>.<span style="color:#a6e22e">push</span> [<span style="color:#e6db74">&#39;set&#39;</span>,
+    accent_color: <span style="color:#e6db74">&#39;#448dd6&#39;</span>,
+    trigger_color: <span style="color:#e6db74">&#39;white&#39;</span>,
+    trigger_background_color: <span style="color:#e6db74">&#39;rgba(46, 49, 51, 0.6)&#39;</span>
+  ]
+
+  <span style="color:#75715e"># User identity &amp; traits
+</span><span style="color:#75715e"></span>  <span style="color:#a6e22e">UserVoice</span>.<span style="color:#a6e22e">push</span> [<span style="color:#e6db74">&#39;identify&#39;</span>,
+    email: <span style="color:#a6e22e">$</span>(<span style="color:#e6db74">&#39;body&#39;</span>).<span style="color:#a6e22e">attr</span>(<span style="color:#e6db74">&#34;data-user-email&#34;</span>),
+    id: <span style="color:#a6e22e">$</span>(<span style="color:#e6db74">&#34;body&#34;</span>).<span style="color:#a6e22e">attr</span>(<span style="color:#e6db74">&#34;data-current-user-key&#34;</span>),
+  ]
+
+  <span style="color:#75715e"># Add default trigger to the bottom-right corner of the window:
+</span><span style="color:#75715e"></span>  <span style="color:#a6e22e">UserVoice</span>.<span style="color:#a6e22e">push</span> [<span style="color:#e6db74">&#39;addTrigger&#39;</span>,
+    mode: <span style="color:#e6db74">&#39;contact&#39;</span>,
+    trigger_position: <span style="color:#e6db74">&#39;bottom-right&#39;</span>
+  ]
+
+  <span style="color:#a6e22e">UserVoice</span>.<span style="color:#a6e22e">push</span> [<span style="color:#e6db74">&#39;autoprompt&#39;</span>, {}]
+</code></pre></div><h3 id="stripe">Stripe</h3>
+<p>Like Uservoice, Stripe via <a href="https://stripe.com/docs/stripe.js">Stripe.js</a> is straightforward. Again we have added our stripe key to the <code>&lt;body&gt;</code> tag so that we remain CSP-compliant.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-coffeescript" data-lang="coffeescript">initialize_stripe = <span style="color:#a6e22e">-&gt;</span>
+  url = <span style="color:#e6db74">&#34;https://js.stripe.com/v1/&#34;</span>
+  pub_key = <span style="color:#a6e22e">$</span>(<span style="color:#e6db74">&#34;body&#34;</span>).<span style="color:#a6e22e">attr</span>(<span style="color:#e6db74">&#34;data-stripe-pubkey&#34;</span>)
+  <span style="color:#a6e22e">$</span>.<span style="color:#a6e22e">getScript</span>(<span style="color:#a6e22e">url</span>)
+    .<span style="color:#a6e22e">done</span>(<span style="color:#a6e22e">-&gt;</span> window.<span style="color:#a6e22e">Stripe</span>.<span style="color:#a6e22e">setPublishableKey</span>(<span style="color:#a6e22e">pub_key</span>))
+    .<span style="color:#a6e22e">fail</span>(<span style="color:#a6e22e">(jqxhr, settings, exception) -&gt;</span>
+      <span style="color:#a6e22e">console</span>.<span style="color:#a6e22e">error</span>(<span style="color:#e6db74">&#34;Problem getting Stripe at </span><span style="color:#e6db74">#{</span><span style="color:#a6e22e">url</span><span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>, <span style="color:#a6e22e">jqxhr</span>, <span style="color:#a6e22e">settings</span>, <span style="color:#a6e22e">exception</span>)
+    )
+</code></pre></div><h3 id="templates">Templates</h3>
+<p>We use a lot of templates on the page, in the form of Bootstrap modals and Knockout templates. Rather than putting these reusable templates into every page we follow the same caching mechanism as for <code>all.js</code>.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-coffeescript" data-lang="coffeescript">initialize_page = <span style="color:#a6e22e">-&gt;</span>
+  cache_buster = <span style="color:#a6e22e">$</span>(<span style="color:#e6db74">&#34;body&#34;</span>).<span style="color:#a6e22e">attr</span>(<span style="color:#e6db74">&#34;data-cache-buster&#34;</span>)
+  <span style="color:#a6e22e">$</span>.<span style="color:#a6e22e">ajax</span>(<span style="color:#e6db74">&#34;/templates.html-</span><span style="color:#e6db74">#{</span><span style="color:#a6e22e">cache_buster</span><span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>).<span style="color:#a6e22e">done</span>(<span style="color:#a6e22e">(html) -&gt;</span>
+    <span style="color:#a6e22e">$</span>(<span style="color:#e6db74">&#34;body&#34;</span>).<span style="color:#a6e22e">append</span>(<span style="color:#a6e22e">html</span>)
+    <span style="color:#a6e22e">page_init</span>()              <span style="color:#75715e"># Or whatever function starts your journey.
+</span><span style="color:#75715e"></span>  )
+</code></pre></div><h2 id="the-superfluous-async-attribute">The superfluous async attribute</h2>
+<p>While we are using the HTML5 <code>async</code> script attribute on our <code>all.js</code> tag, it is worth noting that this probably has no effect. Since we are using <em>FOUT</em> CSS workaround below, the page is blank until the Typekit javascript finishes loading. We make the assumption that some page rendering that could not otherwise happen in parallel occurs when <code>async</code> is used, but that said we have not noticed any significant difference one way or the other.</p>
+<p>That said, because it is <code>async</code> the <code>&lt;script&gt;</code> tag can go in the <code>&lt;head&gt;</code> tag instead of at the end of the page, without slowing down the page loading.</p>
+<h2 id="and-in-the-darkness-">And in the darkness &hellip;</h2>
+<p>I put all the above together like this:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-coffeescript" data-lang="coffeescript"><span style="color:#a6e22e">$</span>(<span style="color:#a6e22e">-&gt;</span>
+  <span style="color:#a6e22e">load_typekit</span>()
+  <span style="color:#a6e22e">initialize_stripe</span>()
+  <span style="color:#a6e22e">initialize_page</span>()
+  <span style="color:#a6e22e">_</span>.<span style="color:#a6e22e">defer</span> <span style="color:#a6e22e">load_uservoice</span>
+)
+</code></pre></div><p>Note that we have deferred the loading of Uservoice. This was to work around a
+problem where Uservoice would push out code that broke jQuery.</p>
+<h2 id="results">Results</h2>
+<p>When our page was loading synchronously we were sometimes seeing ten seconds  before the page displayed anything at all. With everything being asynchronous we have a page typically displaying something within 700ms and everything loaded under 3 seconds.</p>
+<p>This combined with the caching discussed in <a href="/articles/permanent-caching-and-busting">the next post</a> has allowed us to achieve a load time that we are comfortable with in terms of the user experience we aspire to.</p>
+<p>I hope you have enjoyed reading. Please feel free to comment.</p>
+
+  </div>
+  <div class='copyright'> &copy; 2014 </div>
+</article>
+
+  <footer>
+
+    <div class="pager">
+      <div class="list-link"><a href="/post">Go to all posts</a></div>
+      
+      
+        <a class="next-link" href="https://brianmhunt.github.io/post/2014-01-23-permanent-caching-and-busting/">
+          Next post Jan 23, 2014
+          <br/><em>Permanent HTTP caching and busting</em>
+        </a>
+      
+    </div>
+
+    <div class='license'>
+      <span xmlns:dct="http://purl.org/dc/terms/" href="http://purl.org/dc/dcmitype/Text" property="dct:title" rel="dct:type">Asynchronous client-side Javascript page loading</span> by Brian M Hunt at <a xmlns:cc="http://creativecommons.org/ns#" href="https://brianmhunt.github.io/post/2014-01-22-making-everything-async/" property="cc:attributionName" rel="cc:attributionURL">https://brianmhunt.github.io/post/2014-01-22-making-everything-async/</a> is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License</a>.
+      <br/>
+      <a rel="license" href="http://creativecommons.org/licenses/by/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by/4.0/80x15.png" /></a> 
+    </div>
+    <div class='photo-credit'>
+      Photo credit: <a href='https://picsum.photos'>https://picsum.photos</a>
+    </div>
+  </footer>
+</body>
+</html>
+

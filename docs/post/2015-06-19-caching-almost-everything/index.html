@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Caching almost everything static on Google App Engine</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="">
+  <meta name="generator" content="Hugo 0.68.1" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css" integrity="sha256-l85OmPOjvil/SOvVt3HnSSjzF1TUMyT9eV0c2BzEGzU=" crossorigin="anonymous" />
+  <link href="" rel="alternate" type="application/rss+xml" title="Brian M Hunt" />
+  <link href="https://brianmhunt.github.io/css/local.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://use.typekit.net/gdm7was.css">
+  
+  <script type="text/javascript" src="https://ssl.google-analytics.com/ga.js"></script>
+  <script>
+    var _gaq = _gaq || [];
+    var pluginUrl = 
+    '//www.google-analytics.com/plugins/ga/inpage_linkid.js';
+    _gaq.push(['_require', 'inpage_linkid', pluginUrl]);
+    _gaq.push(['_setAccount', 'UA-47448402-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+  
+  <link rel="alternate" type="application/rss+xml" href="https://brianmhunt.github.io/index.xml" title="Site Title">
+
+</head>
+
+<body>
+
+<header>
+  <a class='me' href='/'>Brian M Hunt</a>
+</header>
+
+<picture class='splash'>
+  <source srcset="https://picsum.photos/1600/600" media="(min-width: 1600px)">
+  <source srcset="https://picsum.photos/1200/400" media="(min-width: 1200px)">
+  <source srcset="https://picsum.photos/800/300" media="(min-width: 800px)">
+  <img class='splash' src='https://picsum.photos/600/200' alt='Splash by picsum.photos' />
+</picture>
+
+
+<article>
+  <div class="title">Caching almost everything static on Google App Engine</div>
+  <div class="date">Jun 19, 2015</div>
+  <div class="content">
+    <h1 id="what-is-it">What is it?</h1>
+<p>An aggressive caching technique.</p>
+<h1 id="why-is-it-important">Why is it important?</h1>
+<p>Caching can save time &amp; resources downloading.</p>
+<h1 id="how-do-we-do-it">How do we do it?</h1>
+<p>A simple HTML file and a simple tiny loader script (~900 bytes).</p>
+<p>Here is the <code>HTML</code>:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-html" data-lang="html"><span style="color:#75715e">&lt;!doctype html&gt;</span>
+&lt;<span style="color:#f92672">html</span>&gt;
+  &lt;<span style="color:#f92672">head</span>&gt;
+    &lt;<span style="color:#f92672">script</span> <span style="color:#a6e22e">src</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#39;/loader.js&#39;</span>&gt;&lt;/<span style="color:#f92672">script</span>&gt;
+    ...
+  &lt;<span style="color:#f92672">head</span>&gt;
+  &lt;<span style="color:#f92672">body</span>&gt; ... &lt;/<span style="color:#f92672">body</span>&gt;
+&lt;/<span style="color:#f92672">html</span>&gt;
+</code></pre></div><p>and annotated <code>loader.js</code>:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-javascript" data-lang="javascript">(<span style="color:#66d9ef">function</span> () {
+  <span style="color:#e6db74">&#34;use strict&#34;</span>;
+  <span style="color:#75715e">// We build this file on deploy and replace $TIME with the build time.
+</span><span style="color:#75715e"></span>  window.<span style="color:#a6e22e">_build</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">$TIME</span>;
+  <span style="color:#75715e">// Add the CSS styles.
+</span><span style="color:#75715e"></span>  <span style="color:#66d9ef">var</span> <span style="color:#a6e22e">styles</span> <span style="color:#f92672">=</span> document.<span style="color:#a6e22e">createElement</span>(<span style="color:#e6db74">&#39;link&#39;</span>);
+  <span style="color:#a6e22e">styles</span>.<span style="color:#a6e22e">href</span> <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;/styles.css-&#39;</span> <span style="color:#f92672">+</span> window.<span style="color:#a6e22e">_build</span>;
+  <span style="color:#a6e22e">styles</span>.<span style="color:#a6e22e">rel</span> <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;stylesheet&#39;</span>
+  document.<span style="color:#a6e22e">head</span>.<span style="color:#a6e22e">appendChild</span>(<span style="color:#a6e22e">styles</span>);
+  <span style="color:#75715e">// Add our Javascript libraries
+</span><span style="color:#75715e"></span>  <span style="color:#66d9ef">var</span> <span style="color:#a6e22e">libs</span> <span style="color:#f92672">=</span> document.<span style="color:#a6e22e">createElement</span>(<span style="color:#e6db74">&#39;script&#39;</span>);
+  <span style="color:#a6e22e">libs</span>.<span style="color:#a6e22e">src</span> <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;/libs.js-&#39;</span> <span style="color:#f92672">+</span> window.<span style="color:#a6e22e">_build</span>;
+  document.<span style="color:#a6e22e">head</span>.<span style="color:#a6e22e">appendChild</span>(<span style="color:#a6e22e">libs</span>);
+  <span style="color:#75715e">// When the libraries have loaded, we load our application.
+</span><span style="color:#75715e"></span>  <span style="color:#75715e">// Note IE8 workaround at https://stackoverflow.com/a/15437678/19212
+</span><span style="color:#75715e"></span>  <span style="color:#a6e22e">libs</span>.<span style="color:#a6e22e">onload</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">function</span> () {
+    <span style="color:#66d9ef">var</span> <span style="color:#a6e22e">app</span> <span style="color:#f92672">=</span> document.<span style="color:#a6e22e">createElement</span>(<span style="color:#e6db74">&#39;script&#39;</span>);
+    <span style="color:#a6e22e">app</span>.<span style="color:#a6e22e">src</span> <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;/app.js-&#34;</span> <span style="color:#f92672">+</span> window.<span style="color:#a6e22e">_build</span>;
+    document.<span style="color:#a6e22e">head</span>.<span style="color:#a6e22e">appendChild</span>(<span style="color:#a6e22e">app</span>);
+  }
+})();
+</code></pre></div><p>The scripts are loaded asynchronously, so one may wish to check that
+the document is loaded before doing anything in <code>app.js</code>. We compile our
+libraries (<code>lodash</code>, <code>knockout</code>, etc.) into a <code>libs.js</code>, which
+speeds up our recompilation time for our <code>app.js</code>.</p>
+<p>You will note that we are changing the names of the files. For example,
+we are getting <code>/libs.js-$TIME</code> for some value of <code>$TIME</code>. Ordinarily
+one could just use <code>?_cache_buster=$TIME</code> to get a new version, but we are
+not just caching the version on the client. We are pushing a version of the
+file out to the Google static file cache. We use unique filenames to ensure
+that the latest version is being served.</p>
+<p>With this setup we can set really-long expirations; for <code>app.yaml</code> in Google
+App Engine:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#66d9ef">application</span>: APP ID
+<span style="color:#66d9ef">version</span>: release-version
+<span style="color:#66d9ef">runtime</span>: python27
+<span style="color:#66d9ef">api_version</span>: <span style="color:#ae81ff">1</span>
+<span style="color:#66d9ef">threadsafe</span>: <span style="color:#66d9ef">true</span>
+
+<span style="color:#66d9ef">default_expiration</span>: <span style="color:#e6db74">&#34;365d&#34;</span>
+
+<span style="color:#66d9ef">handlers</span>:
+<span style="color:#75715e"># Short expirations for index.html and loader.js</span>
+- <span style="color:#66d9ef">url</span>: /
+  <span style="color:#66d9ef">expiration</span>: 1s
+  <span style="color:#66d9ef">static_files</span>: static/index.html
+  <span style="color:#66d9ef">upload</span>: static/index.html
+
+- <span style="color:#66d9ef">url</span>: /loader.js
+  <span style="color:#66d9ef">expiration</span>: 1s
+  <span style="color:#66d9ef">static_files</span>: static/loader.js
+  <span style="color:#66d9ef">upload</span>: static/loader.js
+  <span style="color:#66d9ef">mime_type</span>: application/javascript; charset=UTF<span style="color:#ae81ff">-8</span>
+
+<span style="color:#75715e"># Long expirations for our other content</span>
+- <span style="color:#66d9ef">url</span>: /(.<span style="color:#75715e">*).js.map(?:-\d+)?</span>
+  <span style="color:#66d9ef">static_files</span>: static/\<span style="color:#ae81ff">1.</span>js.map
+  <span style="color:#66d9ef">upload</span>: static/(.<span style="color:#75715e">*).js.map</span>
+  <span style="color:#66d9ef">mime_type</span>: application/json
+
+- <span style="color:#66d9ef">static_files</span>: static/\<span style="color:#ae81ff">1</span>
+  <span style="color:#66d9ef">upload</span>: static/(.<span style="color:#75715e">*)</span>
+  <span style="color:#66d9ef">application_readable</span>: <span style="color:#66d9ef">true</span>
+  <span style="color:#75715e"># &#34;&gt;-&#34; starts a multiline string that trims whitespace.</span>
+  <span style="color:#66d9ef">url</span>: &gt;<span style="color:#e6db74">-
+</span><span style="color:#e6db74">    /(?:fonts/)?(.*.(?:html|js|css|woff2|svg|ttf|png|jpg|json))(?:-\d+)?$</span>
+</code></pre></div><p>Google does a good job of serving up static files with a long-term cache.</p>
+<h1 id="conclusion">Conclusion</h1>
+<p>This is a &ldquo;poor man&rsquo;s&rdquo; alternative to (and in some respects a potential
+compliment of) the
+<a href="https://www.html5rocks.com/en/tutorials/appcache/beginner/">Application Cache</a>,
+which is more involved and comes with a number of
+<a href="https://www.html5rocks.com/en/tutorials/appcache/beginner/">gotchas</a>.</p>
+<p>I hope this gives some insight into a possible caching strategy
+that will work for you.</p>
+
+  </div>
+  <div class='copyright'> &copy; 2015 </div>
+</article>
+
+  <footer>
+
+    <div class="pager">
+      <div class="list-link"><a href="/post">Go to all posts</a></div>
+      
+        <a class="prev-link" href="https://brianmhunt.github.io/post/2014-12-01-joining-knockout/">
+          Previous post Dec 1, 2014
+          <br/><em>Joining Knockout.js maintainers</em>
+        </a>
+      
+      
+        <a class="next-link" href="https://brianmhunt.github.io/post/2015-07-22-new-knockout-website/">
+          Next post Jul 22, 2015
+          <br/><em>New Knockout Website</em>
+        </a>
+      
+    </div>
+
+    <div class='license'>
+      <span xmlns:dct="http://purl.org/dc/terms/" href="http://purl.org/dc/dcmitype/Text" property="dct:title" rel="dct:type">Caching almost everything static on Google App Engine</span> by Brian M Hunt at <a xmlns:cc="http://creativecommons.org/ns#" href="https://brianmhunt.github.io/post/2015-06-19-caching-almost-everything/" property="cc:attributionName" rel="cc:attributionURL">https://brianmhunt.github.io/post/2015-06-19-caching-almost-everything/</a> is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License</a>.
+      <br/>
+      <a rel="license" href="http://creativecommons.org/licenses/by/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by/4.0/80x15.png" /></a> 
+    </div>
+    <div class='photo-credit'>
+      Photo credit: <a href='https://picsum.photos'>https://picsum.photos</a>
+    </div>
+  </footer>
+</body>
+</html>
+

@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Open Source Exposure</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="The quantum of liability associated with using open source
+">
+  <meta name="generator" content="Hugo 0.68.1" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css" integrity="sha256-l85OmPOjvil/SOvVt3HnSSjzF1TUMyT9eV0c2BzEGzU=" crossorigin="anonymous" />
+  <link href="" rel="alternate" type="application/rss+xml" title="Brian M Hunt" />
+  <link href="https://brianmhunt.github.io/css/local.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://use.typekit.net/gdm7was.css">
+  
+  <script type="text/javascript" src="https://ssl.google-analytics.com/ga.js"></script>
+  <script>
+    var _gaq = _gaq || [];
+    var pluginUrl = 
+    '//www.google-analytics.com/plugins/ga/inpage_linkid.js';
+    _gaq.push(['_require', 'inpage_linkid', pluginUrl]);
+    _gaq.push(['_setAccount', 'UA-47448402-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+  
+  <link rel="alternate" type="application/rss+xml" href="https://brianmhunt.github.io/index.xml" title="Site Title">
+
+</head>
+
+<body>
+
+<header>
+  <a class='me' href='/'>Brian M Hunt</a>
+</header>
+
+<picture class='splash'>
+  <source srcset="https://picsum.photos/1600/600" media="(min-width: 1600px)">
+  <source srcset="https://picsum.photos/1200/400" media="(min-width: 1200px)">
+  <source srcset="https://picsum.photos/800/300" media="(min-width: 800px)">
+  <img class='splash' src='https://picsum.photos/600/200' alt='Splash by picsum.photos' />
+</picture>
+
+
+<article>
+  <div class="title">Open Source Exposure</div>
+  <div class="date">Feb 16, 2014</div>
+  <div class="content">
+    <p>The concept of <strong>exposure</strong> comes from my practice as a lawyer on insurance
+matters. My practice in this area consisted predominantly of plaintiff work and
+as counsel for the Queen of Canada (England) in her role as an insurance payer of
+last resort in the province of Ontario. In insurance matters the word exposure is
+a core concept used on a daily basis. I have found that the lingo and concept of
+exposure is a handy tool in deciding whether and how to include open source
+software in a project.</p>
+<p><a href="https://en.wikipedia.org/wiki/Black's_Law_Dictionary">Black&rsquo;s Law Dictionary</a>, 7th edition, defines &ldquo;<strong>exposure</strong>&rdquo; as:</p>
+<blockquote>
+<p>The amount of liability or other risk to which a person is
+subject &lt;the client wanted to know its exposure before it made a
+settlement offer&gt;</p>
+</blockquote>
+<p>The concept roughly translates into the <strong>potential cost of a contingency</strong>. Exposure says nothing about the probability of the contingency, just the cost should it come to pass.</p>
+<p>As a matter of interest, in the insurance industry the <a href="https://en.wikipedia.org/wiki/Law_of_large_numbers">law of large numbers</a> helps insurers produce accurate predictions of their aggregate exposure across a set of claims by essentially multiplying the exposure of each claim by the probability of that exposure. In doing so they can set aside a predictable set of reserves, the funds necessary to cover the cost of future claims.</p>
+<p>The notion of exposure translates into the <strong>potential costs</strong> associated with using open source software when developing and designing a project. The exposure that can crystallize from choosing open source software includes project delay, introduction of bugs and complexity, distraction from our core focus, loss of client confidence, investor wariness. Below is a cross-section of some of my experiences.</p>
+<p>I do not mean to suggest that one should not use open source software. Only that there are associated risks and costs, that one is exposed to costs by using open source software and it is <strong>good to be aware</strong> of this exposure.</p>
+<p>The <strong>alternatives</strong> to using open source software include developing something in house, outsourcing development, forking and maintaining an existing project, and using equivalent commercial software. A rational choice will weigh the cost-benefit relationship of each of these, and in the case of open source options it is important to evaluate the potential exposure of doing so.</p>
+<p>The <strong>promise</strong> of open source software is a peer-reviewed solution maintained by the community. Where an open source option lives up to that promise, it is often an excellent choice. jQuery, Flask, Bootstrap, Knockout.js have all proven their mettle in my experience. There are many examples where it does not however, and the alure of the promise can allay the good judgment to deeply consider the cost.</p>
+<p>The present-day <strong>open source ecology</strong> is vibrant, an incredible thing to
+witness. Truly incredible. There is a thriving community of active developers
+whose incentive is often as pure as can be imagined: the satisfaction of
+creation. That said, if you are commercializing a project with limited resources, open source is not a panacea – one must be mindful of how using open source creates exposure.</p>
+<h1 id="when-the-music-stops">When the music stops</h1>
+<p>Sometimes open source software stops being developed. If there is one <strong>constant</strong> of the software it is <strong>change</strong>. As the collage of software, services, platforms and frameworks one uses changes, often a set of changes must be made to other software so that they continue to work together. When a piece of open source software stops being developed, it often becomes antiquated and ceases to work to satisfaction.</p>
+<p>There are essentially two reasons software ceases to be developed: deprecation and abandonment.</p>
+<h2 id="deprecation">Deprecation</h2>
+<p>The best example I can think of for deprecation is <strong>Bootstrap Typeahead</strong>. Bootstrap Typeahead provided an elegant and simple solution to the problem of automatically suggesting options for users to enter data into <code>&lt;input&gt;</code> and <code>&lt;textarea&gt;</code> fields. It was simply fabulous, but it was explicitly deprecated.</p>
+<p>As of version 3.0, <a href="https://getbootstrap.com/">Bootstrap</a> <strong>removed its builtin Typeahead plugin</strong>. Twitter came out with an independent plugin <a href="https://twitter.github.io/typeahead.js/">Typeahead.js</a>, but it was
+<a href="https://github.com/twitter/typeahead.js/issues/119">not entirely compatible</a> with its predecessor from Bootstrap. An alternative
+plugin was developed, <a href="https://github.com/tcrosen/twitter-bootstrap-typeahead">Twitter Bootstrap Typeahead Plugin</a>, but I experienced issues with it and it is now abandoned.</p>
+<p>As I had chosen to extensively use Bootstrap&rsquo;s typeahead feature in NetPleadings the exposure was, which in my case crystallized, the following:</p>
+<ol>
+<li><strong>Delay</strong> upgrading from Bootstrap 2 to 3;</li>
+<li>Big chunks of code needed <strong>refactoring</strong>;</li>
+<li><strong>Uncertainty</strong> of suitability of the Typeahead.js alternative.</li>
+</ol>
+<p>None of this is to make a complaint about the incredible Bootstrap or Typeahead.js software. It is merely a <strong>description of the exposure</strong> associated with my choice to use Bootstrap Typeahead, which happened to come to pass.</p>
+<h2 id="abandonment">Abandonment</h2>
+<p>Curiously <strong>Typeahead.js</strong> also gives <strong>an example</strong> of abandonment. In addition to Typeahead.js not being compatible with Bootstrap&rsquo;s Typeahead, it was since <a href="https://github.com/twitter/typeahead.js/graphs/contributors?from=2013-07-07&amp;to=2013-12-18&amp;type=c">August 2013 through January 2014 unmaintained</a>.</p>
+<p>Abandonment is the arguably the <strong>most common occurrence</strong> with all open source software as an aggregate production. People get busy and wander off once the glow, novelty and interest wanes. Developers get sick, die, change jobs, have families and children. The suitability of a project for a developer changes. Picking a project with longevity is a real art – you are really betting on the tenacity and capacity of the developers. The ecology of open source means that it is auto-correcting to a certain extent, though.</p>
+<p>A truly useful project that is abandoned often has <strong>the simplest cure: time</strong>. If there is demand for the project, someone will pick up the torch and run with it. A great example is the now dead <a href="https://github.com/nvie/gitflow">git-flow</a> project and its spiritual successor <a href="https://github.com/petervanderdoes/gitflow">git-flow-avh</a>. Another example: Jinja2 was <a href="https://lucumr.pocoo.org/2013/5/21/porting-to-python-3-redux/">idle for quite some time</a>, as Armin Ronacher (its author) was frustrated by making it simultaneously compatible with Python 2.x and 3.x. Over time Armin came back to the project. That said, the time between abandonment and a successor can be troublesome. Even temporary abandonment can have a cost.</p>
+<p>Unfortunately in the case of Bootstrap Typeahead no successor suitable for our use has yet come to pass. I ended up <strong>redesigning</strong> our typeahead-equivalent functionalty entirely <strong>in-house</strong>. What we now have is much cleaner, simpler, and tailored to the experience we want to deliver. The time I dedicated to it gave me a much better understanding of the essential features of the user experience for automatically making suggestions on user input. That said, not everyone will have the luxury of taking the time for such a redesign.</p>
+<h1 id="novelty">Novelty</h1>
+<p>The latest projects generally have the greatest <strong>uncertainty</strong>. Have they been vetted with major platforms? Do they solve a pain that inspires a community?</p>
+<p>An example of the <strong>novelty problem</strong> is the really awesome <a href="https://github.com/HubSpot/drop">Hubspot/Drop</a> plugin. Though it is fabulous, it does <a href="https://github.com/HubSpot/drop/issues/9">not yet work with Bootstrap modals</a>. It is new, promises exellent functionality similar to <a href="https://jqueryui.com/position/">jQueryUI&rsquo;s position</a>, but without the heft of jQueryUI. It is aluring, but unproven. The only way to find out if it works is to dedicate the time to <strong>experimenting</strong> with it. Only time will really tell.</p>
+<h1 id="imprecision">Imprecision</h1>
+<p>For years NetPleadings was based on <strong>Django</strong>, but I ended up <strong>replacing every piece</strong> of it over time until I switched entirely to Flask and Jinja2. This <a href="https://stackoverflow.com/a/3293509/19212">quote rang true with me</a>:</p>
+<blockquote>
+<p>If you go with django, then in the long term, you will have to replace almost every single component of django with something else, the only remaining part will be the url mapper.
+— <a href="https://stackoverflow.com/users/35364/hasenj">hasenj</a></p>
+</blockquote>
+<p>Django is a fabulous framework, but it turns out it was <strong>unsuitable to the
+style</strong> of development I had. For how I work, Flask and
+<a href="https://stackoverflow.com/questions/4336713/">Jinja2</a> was a better – and narrower – fit.</p>
+<p>Of course we had to rework our application to Flask from Django, but in reality this only took a couple days. It was well <strong>worth the cost</strong>; I used to fight with Django on a regular basis, using my very limited mental faculties on what should have been trite problems. Flask worked the way my mind thinks, and it provided a framework that matched our design aspirations so the bickering went away entirely. The psychological relief is a compelling consideration, worthy of a blog post on its own.</p>
+<h1 id="complexity">Complexity</h1>
+<p>Speaking of psychology, some projects simply seem too ambitious. I cannot relay how much time I wasted on <strong>RequireJS</strong>. I have blocked it out of my mind, but it is in the order of hundreds of hours, attempting to get it to work as documented. Unfortunately a combination of bad design, poor documentation, unforeseeable bugs, difficulty debugging and a slow test cycle made RequireJS an incredibly expensive choice. Using RequireJS added monumental unnecessary complexity on top of the client-side of our software, and I spent more time making RequireJS work than making NetPleadings better.</p>
+<p>Of course RequireJS is clever, for some RequireJS is a great answer, but for me it was a painful experience. The <strong>promise</strong> of simplified aggregation of our scripts and automatic compilation of Coffeescript was luring. Unfortunately though, RequireJS was such a time sink that I wrote <a href="https://github.com/brianmhunt/yamdo">Yet Another Module Definition Optimizer</a> between debugging fits. Towards the end of my relationship with RequireJS it was locking up Google Chrome and crashing Firefox several times a day – basically it was unusable. It took an enormous investment to discover this.</p>
+<p>Thankfully there was a very cool alternative: <strong>Browserify</strong>. I changed our Coffeescript compiler and script aggregator to Browserify and have had <strong>hardly a notable issue since</strong>. It has taken a long time to make the change-over though, the tentacles of RequireJS design ran deep. It has been over a year and I still find quirks meant to hack around issues with RequireJS. Thinking about the time wasted, loss of productivity, mental frustration, hit to client relations and investor confidence gives me heartache!</p>
+<p>And so the exposure was substantially greater with RequireJS than most projects because it went to the <strong>heart of the design</strong> for our client-side code. It was
+a costly experiment that ended in failure and the redesign was challenging and
+time consuming.</p>
+<h1 id="hard-choices">Hard choices</h1>
+<p>It can often be <strong>impossible to predict</strong> the outcome of choosing between two similar open source solutions for a complex system. Back in 2008-09, who knew <a href="https://stackoverflow.com/questions/2644556">jQuery would beat out Prototype</a>? One would hardly have expected at the time that jQuery would become ubiquitous, particularly since Prototype was the first to market. Both were so young and vibrant, solving real problems in elegant ways. Now Prototype seems to be is a dead project.</p>
+<p>Hind-sight is 20-20, but at the time I chose jQuery for NetPleadings it was really a <strong>coin-toss</strong>, with perhaps just the slightest touch of intuition. The choice saved ourselves substantial exposure refactoring from Prototype to jQuery – or relying on a dead project.</p>
+<h1 id="legal-concerns">Legal concerns</h1>
+<p>Of course one concern that I have not mentioned is exposure to <strong>copyright infringement</strong> where we would violate an open source license. Notable are some clauses of the <a href="https://www.gnu.org/copyleft/gpl.html">GNU GPL</a>, and though it is a legitimate consideration depending on your circumstances exposure to copyright infringement is beyond the scope of this article.</p>
+<h1 id="summary">Summary</h1>
+<p>As the saying goes <strong>there&rsquo;s no such thing as a free lunch</strong>. My concerns when
+choosing or reflecting on open source are often posited opposite whether I should have developed something myself, with the exposure of redesign, delay, abandonment, deprecation and complexity the core considerations. The luxuries afforded by the open source ecosystem is truly a spectacle to behold, and the rate at which problems are discovered and resolved is beyond reckoning.</p>
+<p>The concept of <strong>exposure</strong>, using the word regularly to describe the possible costs, serves as an interesting – if not useful – tool in the evaluation of whether or not to incorporate open source software.</p>
+<p>Whether I am maintaining NetPleadings, introducing new solutions, or just evaluating options, I concern myself with the nature of the cost of employing open source software. In doing so I have developed some senses about the <strong>complexity</strong> of the project, <strong>motivations and capacity</strong> of the developers, extent of <strong>our reliance</strong> on the project, difficulty with any prospective <strong>refactoring</strong>, depth of experiment necessary to determine the <strong>likelihood of a failure</strong>. Which is all to say, I have developed a framework of considerations, and I hope through this article I have relay some of the benefit of my experiences and perspective.</p>
+
+  </div>
+  <div class='copyright'> &copy; 2014 </div>
+</article>
+
+  <footer>
+
+    <div class="pager">
+      <div class="list-link"><a href="/post">Go to all posts</a></div>
+      
+        <a class="prev-link" href="https://brianmhunt.github.io/post/2014-02-13-knockout-catching-errors/">
+          Previous post Feb 13, 2014
+          <br/><em>Knockout catching errors</em>
+        </a>
+      
+      
+        <a class="next-link" href="https://brianmhunt.github.io/post/2014-02-17-catching-sinon-unmet-requests/">
+          Next post Feb 17, 2014
+          <br/><em>Catching Sinon Unmet Requests</em>
+        </a>
+      
+    </div>
+
+    <div class='license'>
+      <span xmlns:dct="http://purl.org/dc/terms/" href="http://purl.org/dc/dcmitype/Text" property="dct:title" rel="dct:type">Open Source Exposure</span> by Brian M Hunt at <a xmlns:cc="http://creativecommons.org/ns#" href="https://brianmhunt.github.io/post/2014-02-16-open-source-exposure/" property="cc:attributionName" rel="cc:attributionURL">https://brianmhunt.github.io/post/2014-02-16-open-source-exposure/</a> is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License</a>.
+      <br/>
+      <a rel="license" href="http://creativecommons.org/licenses/by/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by/4.0/80x15.png" /></a> 
+    </div>
+    <div class='photo-credit'>
+      Photo credit: <a href='https://picsum.photos'>https://picsum.photos</a>
+    </div>
+  </footer>
+</body>
+</html>
+

@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Knockout and foreign keys extender</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="A handy way to extend Knockout observables for storing keys.
+">
+  <meta name="generator" content="Hugo 0.68.1" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css" integrity="sha256-l85OmPOjvil/SOvVt3HnSSjzF1TUMyT9eV0c2BzEGzU=" crossorigin="anonymous" />
+  <link href="" rel="alternate" type="application/rss+xml" title="Brian M Hunt" />
+  <link href="https://brianmhunt.github.io/css/local.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://use.typekit.net/gdm7was.css">
+  
+  <script type="text/javascript" src="https://ssl.google-analytics.com/ga.js"></script>
+  <script>
+    var _gaq = _gaq || [];
+    var pluginUrl = 
+    '//www.google-analytics.com/plugins/ga/inpage_linkid.js';
+    _gaq.push(['_require', 'inpage_linkid', pluginUrl]);
+    _gaq.push(['_setAccount', 'UA-47448402-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+  
+  <link rel="alternate" type="application/rss+xml" href="https://brianmhunt.github.io/index.xml" title="Site Title">
+
+</head>
+
+<body>
+
+<header>
+  <a class='me' href='/'>Brian M Hunt</a>
+</header>
+
+<picture class='splash'>
+  <source srcset="https://picsum.photos/1600/600" media="(min-width: 1600px)">
+  <source srcset="https://picsum.photos/1200/400" media="(min-width: 1200px)">
+  <source srcset="https://picsum.photos/800/300" media="(min-width: 800px)">
+  <img class='splash' src='https://picsum.photos/600/200' alt='Splash by picsum.photos' />
+</picture>
+
+
+<article>
+  <div class="title">Knockout and foreign keys extender</div>
+  <div class="date">Jan 26, 2014</div>
+  <div class="content">
+    <h1 id="what-is-this">What is this?</h1>
+<p>An extension of <a href="https://knockoutjs.com/">Knockout</a> observables, making the observables into <em>keys</em> to another <em>model</em>. The model and its loading status are added as part of a property, <code>.fk</code>, to the observable.</p>
+<h1 id="why-is-it-important">Why is it important?</h1>
+<p>It makes some hard things easy, and some things once impossible just hard. In particular, it makes it easy to define models that load keys, and trivially access the models those keys represent.</p>
+<p>For example, suppose you have an <code>Employee</code> class and want to access its <code>Company</code>. When you load an instance of the <code>Employee</code> we load the key for its respective <code>Company</code> instance into <code>@company</code>. Here it is in coffeescript:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-coffeescript" data-lang="coffeescript"><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Employee</span>
+  constructor: <span style="color:#a6e22e">-&gt;</span>
+    @name = <span style="color:#a6e22e">ko</span>.<span style="color:#a6e22e">observable</span>()
+    @company = <span style="color:#a6e22e">ko</span>.<span style="color:#a6e22e">observable</span>().<span style="color:#a6e22e">extend</span>(foreignKey: <span style="color:#e6db74">&#34;company_model_type&#34;</span>)
+
+<span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Company</span>
+  constructor: <span style="color:#a6e22e">-&gt;</span>
+    @id = <span style="color:#a6e22e">ko</span>.<span style="color:#a6e22e">observable</span>()</code></pre></div>
+<p>Using the <code>foreignKey</code> class below, as an extender in this example, an employee instance <code>employee</code> can access its company instance like this:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-javascript" data-lang="javascript"><span style="color:#a6e22e">employee_company</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">employee</span>.<span style="color:#a6e22e">company</span>.<span style="color:#a6e22e">fk</span>.<span style="color:#a6e22e">model</span>()
+</code></pre></div>
+<p>The <code>fk</code> property is added by the extender to the observable <code>@company</code>, and contains all the nuts and bolts of the foreign key extension (as documented below).</p>
+<p>This simplifies and makes consistent a great deal of the templating logic, particularly when that model needs to indicate the loading status of a given item.</p>
+<h1 id="how-does-it-work">How does it work?</h1>
+<p>Writing an extender for Knockout is <a href="https://knockoutjs.com/documentation/extenders.html">well documented</a>. I expect if you are reading this that you have some familiarity with Knockout, and this may be a somewhat involved example.</p>
+<p>The one function that needs to be defined, and varies depending on how you define and load your models, is called <code>_load_model</code>. This function takes the name of a class and the key and (perhaps asynchronously) populates an observable with an instance of the model. There are more details on this below.</p>
+<p>Just for my own convenience, I will be using coffeescript to define the class.</p>
+<h2 id="the-foreignkey-extender">The <code>foreignKey</code> extender</h2>
+<p>The <code>foreignKey</code> class extends an observable so that when a key is written to the observable a set of <code>fk</code> properties are updated to reflect the loading status of the model the key refers to. Once loaded, the model can be accessed at <code>observable_name.fk.model()</code>.</p>
+<h3 id="properties-of-fk">Properties of <code>fk</code></h3>
+<p>Here are the properties of <code>fk</code>. Except for <code>model_class</code> they are all Knockout observables:</p>
+<table>
+<thead>
+<tr>
+<th align="left">Property</th>
+<th align="left">Provides</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="left"><code>fk.key</code></td>
+<td align="left">The <code>target</code> observable i.e. the observable extended</td>
+</tr>
+<tr>
+<td align="left"><code>fk.is_loading</code></td>
+<td align="left">True when a key has been defined and the model is loading</td>
+</tr>
+<tr>
+<td align="left"><code>fk.is_loaded</code></td>
+<td align="left">True when there is a defined key and the respective model is loaded</td>
+</tr>
+<tr>
+<td align="left"><code>fk.is_defined</code></td>
+<td align="left">True when the key is defined</td>
+</tr>
+<tr>
+<td align="left"><code>fk.model</code></td>
+<td align="left">The model instance, when loaded, otherwise <code>undefined</code></td>
+</tr>
+<tr>
+<td align="left"><code>fk.model_class</code></td>
+<td align="left">The name of the class, provided as an argument to the extender</td>
+</tr>
+</tbody>
+</table>
+<p>I find this is particularly well suited to the asynchronous loading of multiple models, as we will see below.</p>
+<h3 id="functions-on-fk">Functions on <code>fk</code></h3>
+<p>The <code>fk</code> property also supports a few functions, being:</p>
+<dl>
+<dt><code>fk.attr(name, default=</code>undefined<code>)</code></dt>
+<dd>Return the attribute <code>attr</code> of the model, i.e. <code>model[name]</code>, if the model is loaded, or <code>default</code>. If the attribute is a function or observable, it will be called / unwrapped.</dd>
+<dt><code>fk.rawAttr(name, default=</code>undefined<code>)</code></dt>
+<dd>Same as <code>attr</code> but does not unwrap an observable or call a function.</dd>
+<dt><code>fk.on_load_callback(callback, owner)</code></dt>
+<dd>Call <code>callback(model, fk)</code> when the model has loaded. Runs synchronously if the model is already loaded. If it is provided the <code>owner</code> argument is bound as the <code>this</code> argument to <code>callback</code>.</dd>
+</dl>
+<h1 id="class-foreignkey-definition">Class <code>foreignKey</code> definition</h1>
+<p>We start with some includes:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-coffeescript" data-lang="coffeescript">_ = <span style="color:#a6e22e">require</span> <span style="color:#e6db74">&#39;lodash&#39;</span>
+ko = <span style="color:#a6e22e">require</span> <span style="color:#e6db74">&#39;knockout&#39;</span></code></pre></div>
+<h3 id="loading-models-_load_model">Loading models: <code>_load_model</code></h3>
+<p>We need some way to load models from a <code>class_name</code> and <code>key</code>, and this will
+vary depending on the implementation you use for models.</p>
+<p>Given a <code>key</code> (string, id, etc.) that we use to load a class of type <code>class_name</code> and put the result into <code>model_obs</code>.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-coffeescript" data-lang="coffeescript">_load_model = <span style="color:#a6e22e">(class_name, key, model_obs) -&gt;</span>
+  <span style="color:#75715e"># Load model of type `class_name` with key `key` into `model_obs`.
+</span><span style="color:#75715e"></span>  <span style="color:#960050;background-color:#1e0010">#</span> <span style="color:#a6e22e">This</span> <span style="color:#a6e22e">can</span> <span style="color:#a6e22e">be</span> <span style="color:#a6e22e">asynchronous</span>.</code></pre></div>
+<h3 id="the-extender">The extender</h3>
+<p>Here is the code for the extender. Sorry for the length, but this creature has grown from a very simple concept to something with a bit of a life of its own.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-coffeescript" data-lang="coffeescript">ko.extenders.foreignKey = <span style="color:#a6e22e">(target, model_class_name) -&gt;</span>
+  <span style="color:#75715e"># avoid duplicate application
+</span><span style="color:#75715e"></span>  <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">_</span>.<span style="color:#a6e22e">isObject</span>(<span style="color:#a6e22e">target</span>.<span style="color:#a6e22e">fk</span>) <span style="color:#66d9ef">then</span> <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">target</span>
+
+  fk = target.fk =
+    key: <span style="color:#a6e22e">target</span>
+    is_loading: <span style="color:#a6e22e">ko</span>.<span style="color:#a6e22e">observable</span>(<span style="color:#66d9ef">false</span>)
+    is_loaded: <span style="color:#a6e22e">ko</span>.<span style="color:#a6e22e">observable</span>(<span style="color:#66d9ef">false</span>)
+    is_defined: <span style="color:#a6e22e">ko</span>.<span style="color:#a6e22e">computed</span>(<span style="color:#a6e22e">-&gt;</span> Boolean(<span style="color:#a6e22e">target</span>()))
+    model: <span style="color:#a6e22e">ko</span>.<span style="color:#a6e22e">observable</span>()
+    model_class: <span style="color:#a6e22e">model_class_name</span>
+    _on_load_callbacks: []
+
+    attr: <span style="color:#a6e22e">(attr_, default_=undefined) -&gt;</span>
+      <span style="color:#75715e"># We define an attr function that returns &#39;undefined&#39; whenever
+</span><span style="color:#75715e"></span>      <span style="color:#75715e"># the model is not loaded.
+</span><span style="color:#75715e"></span>      <span style="color:#66d9ef">unless</span> <span style="color:#a6e22e">fk</span>.<span style="color:#a6e22e">is_loaded</span>() <span style="color:#66d9ef">then</span> <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">default_</span>
+      <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">_</span>.<span style="color:#a6e22e">result</span>(<span style="color:#a6e22e">fk</span>.<span style="color:#a6e22e">model</span>(), <span style="color:#a6e22e">attr_</span>)
+
+    rawAttr: <span style="color:#a6e22e">(attr_, default_=undefined) -&gt;</span>
+      <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">fk</span>.<span style="color:#a6e22e">is_loaded</span>()
+        <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">fk</span>.<span style="color:#a6e22e">model</span>()[<span style="color:#a6e22e">attr_</span>] <span style="color:#f92672">or</span> <span style="color:#a6e22e">default_</span>
+      <span style="color:#66d9ef">else</span>
+        <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">default_</span>
+
+    on_load_callback: <span style="color:#a6e22e">(cb, owner) -&gt;</span>
+      <span style="color:#75715e"># Run the given callback when the item is loaded
+</span><span style="color:#75715e"></span>      <span style="color:#75715e"># Calls cb(model, fk)
+</span><span style="color:#75715e"></span>      <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">owner</span> <span style="color:#66d9ef">then</span> cb = <span style="color:#a6e22e">_</span>.<span style="color:#a6e22e">bind</span>(<span style="color:#a6e22e">cb</span>, <span style="color:#a6e22e">owner</span>)
+      <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">fk</span>.<span style="color:#a6e22e">is_loaded</span>()
+        <span style="color:#a6e22e">cb</span>(<span style="color:#a6e22e">fk</span>.<span style="color:#a6e22e">model</span>(), <span style="color:#a6e22e">fk</span>)
+      <span style="color:#66d9ef">else</span>
+        <span style="color:#a6e22e">@_on_load_callbacks</span>.<span style="color:#a6e22e">push</span>(<span style="color:#a6e22e">cb</span>)
+      <span style="color:#66d9ef">return</span>
+
+  <span style="color:#a6e22e">fk</span>.<span style="color:#a6e22e">is_loaded</span>.<span style="color:#a6e22e">subscribe</span> <span style="color:#a6e22e">(loaded) -&gt;</span>
+    <span style="color:#66d9ef">unless</span> <span style="color:#a6e22e">loaded</span> <span style="color:#66d9ef">then</span> <span style="color:#66d9ef">return</span>
+
+    <span style="color:#75715e"># Call each of the callbacks now that the model has been loaded.
+</span><span style="color:#75715e"></span>    <span style="color:#a6e22e">_</span>.<span style="color:#a6e22e">each</span>(<span style="color:#a6e22e">fk</span>.<span style="color:#a6e22e">_on_load_callbacks</span>, <span style="color:#a6e22e">(cb) -&gt;</span> <span style="color:#a6e22e">cb</span>(<span style="color:#a6e22e">fk</span>.<span style="color:#a6e22e">model</span>(), <span style="color:#a6e22e">fk</span>))
+    fk._on_load_callbacks = []
+    <span style="color:#66d9ef">return</span>
+
+  _key_subscription = <span style="color:#a6e22e">(key) -&gt;</span>
+    <span style="color:#66d9ef">unless</span> <span style="color:#a6e22e">key</span>
+      <span style="color:#75715e"># Note: an empty string is saved to the db; &#39;undefined&#39; is not.
+</span><span style="color:#75715e"></span>      <span style="color:#a6e22e">fk</span>.<span style="color:#a6e22e">model</span>(<span style="color:#66d9ef">undefined</span>)
+      <span style="color:#a6e22e">fk</span>.<span style="color:#a6e22e">is_loaded</span>(<span style="color:#66d9ef">false</span>)
+      <span style="color:#a6e22e">fk</span>.<span style="color:#a6e22e">is_loading</span>(<span style="color:#66d9ef">false</span>)
+      <span style="color:#66d9ef">return</span>
+
+    <span style="color:#66d9ef">unless</span> <span style="color:#a6e22e">_</span>.<span style="color:#a6e22e">isString</span>(<span style="color:#a6e22e">key</span>)
+      <span style="color:#a6e22e">fk</span>.<span style="color:#a6e22e">model</span>(<span style="color:#66d9ef">undefined</span>)
+      <span style="color:#a6e22e">fk</span>.<span style="color:#a6e22e">is_loaded</span>(<span style="color:#66d9ef">false</span>)
+      <span style="color:#a6e22e">fk</span>.<span style="color:#a6e22e">is_loading</span>(<span style="color:#66d9ef">false</span>)
+      <span style="color:#a6e22e">console</span>.<span style="color:#a6e22e">error</span>(<span style="color:#e6db74">&#34;Bad foreignKey [</span><span style="color:#e6db74">#{</span><span style="color:#a6e22e">model_class_name</span><span style="color:#e6db74">}</span><span style="color:#e6db74">]:&#34;</span>,
+        <span style="color:#66d9ef">typeof</span>(<span style="color:#a6e22e">key</span>), <span style="color:#a6e22e">key</span>)
+      <span style="color:#66d9ef">throw</span> <span style="color:#66d9ef">new</span> Error(<span style="color:#e6db74">&#34;Bad foreignKey [</span><span style="color:#e6db74">#{</span><span style="color:#a6e22e">model_class_name</span><span style="color:#e6db74">}</span><span style="color:#e6db74">] argument&#34;</span>)
+
+    <span style="color:#75715e"># Do nothing if the item is already selected and loaded
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">fk</span>.<span style="color:#a6e22e">attr</span>(<span style="color:#e6db74">&#39;id&#39;</span>) <span style="color:#f92672">==</span> <span style="color:#a6e22e">key</span>
+      <span style="color:#66d9ef">return</span>
+
+    <span style="color:#66d9ef">unless</span> <span style="color:#a6e22e">fk</span>.<span style="color:#a6e22e">is_loaded</span>()
+      <span style="color:#a6e22e">fk</span>.<span style="color:#a6e22e">is_loading</span>(<span style="color:#66d9ef">true</span>)
+      <span style="color:#75715e"># The model may have synchronously loaded from the add_callback above.
+</span><span style="color:#75715e"></span>      <span style="color:#a6e22e">_load_model</span>(<span style="color:#a6e22e">model_class_name</span>, <span style="color:#a6e22e">key</span>, <span style="color:#a6e22e">fk</span>.<span style="color:#a6e22e">model</span>)
+    <span style="color:#66d9ef">return</span>
+
+  <span style="color:#75715e"># Sometimes the model may be set directly.
+</span><span style="color:#75715e"></span>  <span style="color:#a6e22e">fk</span>.<span style="color:#a6e22e">model</span>.<span style="color:#a6e22e">subscribe</span> <span style="color:#a6e22e">(model) -&gt;</span>
+    <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">model</span>
+      <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">model</span>.<span style="color:#a6e22e">id</span>() <span style="color:#f92672">!=</span> <span style="color:#a6e22e">target</span>() <span style="color:#66d9ef">then</span> <span style="color:#a6e22e">target</span>(<span style="color:#a6e22e">model</span>.<span style="color:#a6e22e">id</span>())
+      <span style="color:#66d9ef">if</span> <span style="color:#f92672">not</span> <span style="color:#a6e22e">fk</span>.<span style="color:#a6e22e">is_loaded</span>()
+        <span style="color:#a6e22e">fk</span>.<span style="color:#a6e22e">is_loaded</span>(<span style="color:#66d9ef">true</span>)
+        <span style="color:#a6e22e">fk</span>.<span style="color:#a6e22e">is_loading</span>(<span style="color:#66d9ef">false</span>)
+    <span style="color:#66d9ef">else</span>
+      <span style="color:#75715e"># We were told this model is undefined. Except as called by the
+</span><span style="color:#75715e"></span>      <span style="color:#75715e"># target.subscribe function abive, this should really only happen in
+</span><span style="color:#75715e"></span>      <span style="color:#75715e"># testing.
+</span><span style="color:#75715e"></span>      <span style="color:#75715e"># Revert to the &#39;loading&#39; state.
+</span><span style="color:#75715e"></span>      <span style="color:#a6e22e">fk</span>.<span style="color:#a6e22e">is_loaded</span>(<span style="color:#66d9ef">false</span>)
+      <span style="color:#a6e22e">fk</span>.<span style="color:#a6e22e">is_loading</span>(<span style="color:#66d9ef">true</span>)
+      <span style="color:#75715e"># make the target null / undefined
+</span><span style="color:#75715e"></span>      <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">target</span>() <span style="color:#66d9ef">then</span> <span style="color:#a6e22e">target</span>(<span style="color:#e6db74">&#39;&#39;</span>)
+    <span style="color:#66d9ef">return</span>
+
+  <span style="color:#a6e22e">target</span>.<span style="color:#a6e22e">subscribe</span>(<span style="color:#a6e22e">_key_subscription</span>)
+  <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">target</span>()
+    <span style="color:#75715e"># It may be worth noting that the following may synchronously call
+</span><span style="color:#75715e"></span>    <span style="color:#75715e"># both the above subscriptions (key and model) when the model is
+</span><span style="color:#75715e"></span>    <span style="color:#75715e"># already loaded for the given key (target()).
+</span><span style="color:#75715e"></span>    <span style="color:#a6e22e">_key_subscription</span>(<span style="color:#a6e22e">target</span>())
+
+  <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">target</span></code></pre></div>
+<h2 id="some-examples">Some examples</h2>
+<p>Let&rsquo;s show this with two view models, <code>Employee</code> and <code>Company</code>, as follows:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-coffeescript" data-lang="coffeescript"><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Employee</span>
+  constructor: <span style="color:#a6e22e">-&gt;</span>
+    @name = <span style="color:#a6e22e">ko</span>.<span style="color:#a6e22e">observable</span>()
+    @company = <span style="color:#a6e22e">ko</span>.<span style="color:#a6e22e">observable</span>().<span style="color:#a6e22e">extend</span>(foreignKey: <span style="color:#e6db74">&#34;company_model_type&#34;</span>)
+
+<span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Company</span>
+  constructor: <span style="color:#a6e22e">-&gt;</span>
+    @id = <span style="color:#a6e22e">ko</span>.<span style="color:#a6e22e">observable</span>()</code></pre></div>
+<p>Here is what the properties of the <code>company.fk</code> looks like before the company is defined.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-javascript" data-lang="javascript"><span style="color:#f92672">&gt;&gt;&gt;</span> <span style="color:#a6e22e">ee</span>.<span style="color:#a6e22e">company</span>.<span style="color:#a6e22e">fk</span>.<span style="color:#a6e22e">model_class</span>()
+<span style="color:#e6db74">&#34;company_model_type&#34;</span>
+<span style="color:#f92672">&gt;&gt;&gt;</span> <span style="color:#a6e22e">ee</span>.<span style="color:#a6e22e">company</span>.<span style="color:#a6e22e">fk</span>.<span style="color:#a6e22e">key</span>()
+<span style="color:#66d9ef">undefined</span>
+<span style="color:#f92672">&gt;&gt;&gt;</span> <span style="color:#a6e22e">ee</span>.<span style="color:#a6e22e">company</span>.<span style="color:#a6e22e">fk</span>.<span style="color:#a6e22e">model</span>()
+<span style="color:#66d9ef">undefined</span>
+<span style="color:#f92672">&gt;&gt;&gt;</span> <span style="color:#a6e22e">ee</span>.<span style="color:#a6e22e">company</span>.<span style="color:#a6e22e">fk</span>.<span style="color:#a6e22e">is_defined</span>()
+<span style="color:#66d9ef">false</span>
+<span style="color:#f92672">&gt;&gt;&gt;</span> <span style="color:#a6e22e">ee</span>.<span style="color:#a6e22e">company</span>.<span style="color:#a6e22e">fk</span>.<span style="color:#a6e22e">is_loading</span>()
+<span style="color:#66d9ef">false</span>
+<span style="color:#f92672">&gt;&gt;&gt;</span> <span style="color:#a6e22e">ee</span>.<span style="color:#a6e22e">company</span>.<span style="color:#a6e22e">fk</span>.<span style="color:#a6e22e">is_loaded</span>()
+<span style="color:#66d9ef">false</span>
+</code></pre></div>
+<h3 id="loading-a-model">Loading a model</h3>
+<p>Loading a model then becomes trivial.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-coffeescript" data-lang="coffeescript">ee = <span style="color:#66d9ef">new</span> <span style="color:#a6e22e">Employee</span>()
+<span style="color:#a6e22e">ee</span>.<span style="color:#a6e22e">name</span>(<span style="color:#e6db74">&#34;Sully&#34;</span>)
+<span style="color:#a6e22e">ee</span>.<span style="color:#a6e22e">company</span>(<span style="color:#e6db74">&#34;Monsters Inc&#34;</span>)</code></pre></div>
+<p>Our foreignKey extender will call <code>_load_model</code> to load the Monsters Inc model.</p>
+<p>Here&rsquo;s what the definitions look like after the <code>key</code> has been set but before loaded:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-javascript" data-lang="javascript"><span style="color:#f92672">&gt;&gt;&gt;</span> <span style="color:#a6e22e">ee</span>.<span style="color:#a6e22e">company</span>.<span style="color:#a6e22e">fk</span>.<span style="color:#a6e22e">model_class</span>()
+<span style="color:#e6db74">&#34;company_model_type&#34;</span>
+<span style="color:#f92672">&gt;&gt;&gt;</span> <span style="color:#a6e22e">ee</span>.<span style="color:#a6e22e">company</span>.<span style="color:#a6e22e">fk</span>.<span style="color:#a6e22e">key</span>()
+<span style="color:#e6db74">&#34;Monsters Inc&#34;</span>
+<span style="color:#f92672">&gt;&gt;&gt;</span> <span style="color:#a6e22e">ee</span>.<span style="color:#a6e22e">company</span>.<span style="color:#a6e22e">fk</span>.<span style="color:#a6e22e">model</span>()
+<span style="color:#66d9ef">undefined</span>
+<span style="color:#f92672">&gt;&gt;&gt;</span> <span style="color:#a6e22e">ee</span>.<span style="color:#a6e22e">company</span>.<span style="color:#a6e22e">fk</span>.<span style="color:#a6e22e">is_defined</span>()
+<span style="color:#66d9ef">true</span>
+<span style="color:#f92672">&gt;&gt;&gt;</span> <span style="color:#a6e22e">ee</span>.<span style="color:#a6e22e">company</span>.<span style="color:#a6e22e">fk</span>.<span style="color:#a6e22e">is_loading</span>()
+<span style="color:#66d9ef">true</span>
+<span style="color:#f92672">&gt;&gt;&gt;</span> <span style="color:#a6e22e">ee</span>.<span style="color:#a6e22e">company</span>.<span style="color:#a6e22e">fk</span>.<span style="color:#a6e22e">is_loaded</span>()
+<span style="color:#66d9ef">false</span>
+</code></pre></div>
+<p>When the model has loaded, which could be instant if the loading is synchronous, here is what the definitions look like:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-javascript" data-lang="javascript"><span style="color:#f92672">&gt;&gt;&gt;</span> <span style="color:#a6e22e">ee</span>.<span style="color:#a6e22e">company</span>.<span style="color:#a6e22e">fk</span>.<span style="color:#a6e22e">model_class</span>()
+<span style="color:#e6db74">&#34;company_model_type&#34;</span>
+<span style="color:#f92672">&gt;&gt;&gt;</span> <span style="color:#a6e22e">ee</span>.<span style="color:#a6e22e">company</span>.<span style="color:#a6e22e">fk</span>.<span style="color:#a6e22e">key</span>()
+<span style="color:#e6db74">&#34;Monsters Inc&#34;</span>
+<span style="color:#f92672">&gt;&gt;&gt;</span> <span style="color:#a6e22e">ee</span>.<span style="color:#a6e22e">company</span>.<span style="color:#a6e22e">fk</span>.<span style="color:#a6e22e">model</span>()
+<span style="color:#a6e22e">Company</span> {<span style="color:#a6e22e">id</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;Monsters Inc&#34;</span>, ...}
+<span style="color:#f92672">&gt;&gt;&gt;</span> <span style="color:#a6e22e">ee</span>.<span style="color:#a6e22e">company</span>.<span style="color:#a6e22e">fk</span>.<span style="color:#a6e22e">is_defined</span>()
+<span style="color:#66d9ef">true</span>
+<span style="color:#f92672">&gt;&gt;&gt;</span> <span style="color:#a6e22e">ee</span>.<span style="color:#a6e22e">company</span>.<span style="color:#a6e22e">fk</span>.<span style="color:#a6e22e">is_loading</span>()
+<span style="color:#66d9ef">false</span>
+<span style="color:#f92672">&gt;&gt;&gt;</span> <span style="color:#a6e22e">ee</span>.<span style="color:#a6e22e">company</span>.<span style="color:#a6e22e">fk</span>.<span style="color:#a6e22e">is_loaded</span>()
+<span style="color:#66d9ef">true</span>
+</code></pre></div>
+<p>The only prerequisite is that the <code>_load_model</code> function above populates <code>ee.company</code> with the <code>Company</code> instance for Monster&rsquo;s Inc.</p>
+<h3 id="using-a-model">Using a model</h3>
+<p>Knockout really shines when you get into its templating system. Suppose we
+bind the <code>Employee</code> instance <code>ee</code> above to the following HTML i.e.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-coffeescript" data-lang="coffeescript">  <span style="color:#a6e22e">ko</span>.<span style="color:#a6e22e">applyBindings</span>(<span style="color:#a6e22e">ee</span>, document.<span style="color:#a6e22e">querySelector</span>(<span style="color:#e6db74">&#34;#ee&#34;</span>))</code></pre></div>
+<p>The following bindings will do what is expected, with some references to the tremendous <a href="https://fontawesome.io">FontAwesome</a> icon set.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-html" data-lang="html">&lt;<span style="color:#f92672">div</span> <span style="color:#a6e22e">id</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#39;ee&#39;</span>&gt;
+  &lt;<span style="color:#f92672">h3</span> <span style="color:#a6e22e">data-bind</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#39;text: name&#39;</span>&gt;&lt;/<span style="color:#f92672">h3</span>&gt;
+  &lt;<span style="color:#f92672">h4</span>&gt;Company&lt;/<span style="color:#f92672">h4</span>&gt;
+  &lt;<span style="color:#f92672">div</span> <span style="color:#a6e22e">data-bind</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#39;ifnot: company.fk.is_defined()&#39;</span>&gt;
+    &lt;<span style="color:#f92672">i</span> <span style="color:#a6e22e">class</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#39;fa fa-lg fa-fw fa-warning&#39;</span>&gt;&lt;/<span style="color:#f92672">i</span>&gt; No company defined.
+  &lt;/<span style="color:#f92672">div</span>&gt;
+  &lt;<span style="color:#f92672">div</span> <span style="color:#a6e22e">data-bind</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#39;if: company.fk.is_loading()&#39;</span>&gt;
+    &lt;<span style="color:#f92672">i</span> <span style="color:#a6e22e">class</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#39;fa fa-lg fa-fw fa-spin fa-spinner&#39;</span>&gt;&lt;/<span style="color:#f92672">i</span>&gt; Please wait ...
+  &lt;/<span style="color:#f92672">div</span>&gt;
+  &lt;<span style="color:#f92672">div</span> <span style="color:#a6e22e">data-bind</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#39;if: company.fk.is_loaded()&#39;</span>&gt;
+    &lt;<span style="color:#f92672">i</span> <span style="color:#a6e22e">class</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#39;fa fa-lg fa-fw fa-building-o&#39;</span>&gt;&lt;/<span style="color:#f92672">i</span>&gt;
+    &lt;<span style="color:#f92672">span</span> <span style="color:#a6e22e">data-bind</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#39;text: company.fk.attr(&#34;id&#34;)&#39;</span>&gt;&lt;/<span style="color:#f92672">span</span>&gt;
+  &lt;/<span style="color:#f92672">div</span>&gt;
+&lt;/<span style="color:#f92672">div</span>&gt;</code></pre></div>
+<p>I find the above to be a particularly intuitive way to define how a user interface ought to appear. The logic is innocuous yet adequate.</p>
+<p><em>Caveat</em>: One has to be careful not to use <code>with: employee</code> since that will <code>ko.unwrap</code> the observable and we cannot then easily get at the <code>fk</code> property. I use a number of custom bindings to work around this sort of problem e.g. a <code>withModelFromKey</code>.</p>
+<h3 id="multiple-keys-foreignkeymap">Multiple keys: <code>foreignKeyMap</code></h3>
+<p>If the value of the above is not immediately apparent, I found this particularly compelling:</p>
+<p>Using the excellent <a href="https://blog.stevensanderson.com/2013/12/03/knockout-projections-a-plugin-for-efficient-observable-array-transformations/">knockout projections</a> addon (<a href="https://github.com/stevesanderson/knockout-projections">github</a>), one can map a set of keys in an <code>observableArray</code> with an extender like this <code>foreignKeyMap</code>:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-coffeescript" data-lang="coffeescript">_ = <span style="color:#a6e22e">require</span> <span style="color:#e6db74">&#39;lodash&#39;</span>
+ko = <span style="color:#a6e22e">require</span> <span style="color:#e6db74">&#39;knockout&#39;</span>
+
+LOADED_THROTTLE = <span style="color:#ae81ff">15</span>
+
+ko.extenders.foreignKeyMap = <span style="color:#a6e22e">(target, model_class_name) -&gt;</span>
+  <span style="color:#75715e"># No double application.
+</span><span style="color:#75715e"></span>  <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">ko</span>.<span style="color:#a6e22e">isObservable</span>(<span style="color:#a6e22e">target</span>.<span style="color:#a6e22e">fkm</span>) <span style="color:#66d9ef">then</span> <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">target</span>
+
+  <span style="color:#75715e">#   fkm
+</span><span style="color:#75715e"></span>  <span style="color:#75715e">#   ~~~
+</span><span style="color:#75715e"></span>  <span style="color:#75715e">#
+</span><span style="color:#75715e"></span>  <span style="color:#75715e">#   An array of .fk properties for the target (where the target is a
+</span><span style="color:#75715e"></span>  <span style="color:#75715e">#   list of keys).
+</span><span style="color:#75715e"></span>  <span style="color:#75715e">#
+</span><span style="color:#75715e"></span>  target.fkm = <span style="color:#a6e22e">target</span>.<span style="color:#a6e22e">map</span>(
+    <span style="color:#a6e22e">(key) -&gt;</span> <span style="color:#a6e22e">ko</span>.<span style="color:#a6e22e">observable</span>(<span style="color:#a6e22e">key</span>).<span style="color:#a6e22e">extend</span>(foreignKey: <span style="color:#a6e22e">model_class_name</span>).<span style="color:#a6e22e">fk</span>
+  )
+
+  <span style="color:#75715e">#   fkm.check_is_loaded
+</span><span style="color:#75715e"></span>  <span style="color:#75715e">#   ~~~~~~~~~~~~~~~~~~~
+</span><span style="color:#75715e"></span>  <span style="color:#75715e">#
+</span><span style="color:#75715e"></span>  <span style="color:#75715e">#   Synchronously return whether all the models are loaded.
+</span><span style="color:#75715e"></span>  <span style="color:#75715e">#
+</span><span style="color:#75715e"></span>  target.fkm.check_is_loaded = <span style="color:#a6e22e">-&gt;</span>
+    <span style="color:#a6e22e">_</span>.<span style="color:#a6e22e">all</span>(<span style="color:#a6e22e">@</span>(), <span style="color:#a6e22e">(item) -&gt;</span> <span style="color:#a6e22e">item</span>.<span style="color:#a6e22e">is_loaded</span>())
+
+  <span style="color:#75715e">#   fkm.is_loaded
+</span><span style="color:#75715e"></span>  <span style="color:#75715e">#   ~~~~~~~~~~~~~
+</span><span style="color:#75715e"></span>  <span style="color:#75715e">#
+</span><span style="color:#75715e"></span>  <span style="color:#75715e">#   Indicate whether the all models are loaded, asynchronously.
+</span><span style="color:#75715e"></span>  <span style="color:#75715e">#
+</span><span style="color:#75715e"></span>  target.fkm.is_loaded = <span style="color:#a6e22e">ko</span>.<span style="color:#a6e22e">computed</span>(
+    owner: <span style="color:#a6e22e">target</span>.<span style="color:#a6e22e">fkm</span>,
+    read: <span style="color:#a6e22e">target</span>.<span style="color:#a6e22e">fkm</span>.<span style="color:#a6e22e">check_is_loaded</span>
+  ).<span style="color:#a6e22e">extend</span>(throttle: <span style="color:#a6e22e">LOADED_THROTTLE</span>)
+
+  <span style="color:#75715e">#   fkm.models
+</span><span style="color:#75715e"></span>  <span style="color:#75715e">#   ~~~~~~~~~~
+</span><span style="color:#75715e"></span>  <span style="color:#75715e">#
+</span><span style="color:#75715e"></span>  <span style="color:#75715e">#   A list of models (that are defined).
+</span><span style="color:#75715e"></span>  <span style="color:#75715e">#   Makes for easy access in KO `foreach` loops.
+</span><span style="color:#75715e"></span>  <span style="color:#75715e">#
+</span><span style="color:#75715e"></span>  _fk_model = <span style="color:#a6e22e">(fk) -&gt;</span> <span style="color:#a6e22e">fk</span>.<span style="color:#a6e22e">model</span>()
+  target.fkm.models = <span style="color:#a6e22e">-&gt;</span>
+    <span style="color:#a6e22e">target</span>.<span style="color:#a6e22e">fkm</span>.<span style="color:#a6e22e">filter</span>(<span style="color:#a6e22e">_fk_model</span>).<span style="color:#a6e22e">map</span>(<span style="color:#a6e22e">_fk_model</span>)
+
+  <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">target</span></code></pre></div>
+<p>With this one could define the <code>Company</code> above like this:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-coffeescript" data-lang="coffeescript"><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Company</span>
+  constructor: <span style="color:#a6e22e">-&gt;</span>
+    @id = <span style="color:#a6e22e">ko</span>.<span style="color:#a6e22e">observable</span>()
+    @employees = <span style="color:#a6e22e">ko</span>.<span style="color:#a6e22e">observableArray</span>().<span style="color:#a6e22e">extend</span>(foreignKeyMap: <span style="color:#e6db74">&#34;employee&#34;</span>)</code></pre></div>
+<p>Populating the <code>@employees</code> property with keys will create a list of models as
+<code>@employees.fkm.models()</code> that populates as-loaded.</p>
+<p>Showing the employees of a company is done like this:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-html" data-lang="html">&lt;<span style="color:#f92672">ul</span> <span style="color:#a6e22e">data-bind</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#39;foreach: company.employees.fkm.models&#39;</span>&gt;
+  &lt;<span style="color:#f92672">li</span> <span style="color:#a6e22e">data-bind</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#39;text: name&#39;</span>&gt;&lt;/<span style="color:#f92672">li</span>&gt;
+&lt;/<span style="color:#f92672">ul</span>&gt;</code></pre></div>
+<p>The above will show the items as they load. If you wish to show the loading status of each item you could do something like this:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-html" data-lang="html">&lt;<span style="color:#f92672">ul</span> <span style="color:#a6e22e">data-bind</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#39;foreach: company.employees.fkm&#39;</span>&gt;
+  <span style="color:#75715e">&lt;!-- ko if: is_loaded --&gt;</span>
+    &lt;<span style="color:#f92672">li</span> <span style="color:#a6e22e">data-bind</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#39;text: model().name&#39;</span>&gt;&lt;/<span style="color:#f92672">li</span>&gt;
+  <span style="color:#75715e">&lt;!-- /ko --&gt;</span>
+  <span style="color:#75715e">&lt;!-- ko if: is_loading --&gt;</span>
+    &lt;<span style="color:#f92672">li</span>&gt;
+      &lt;<span style="color:#f92672">i</span> <span style="color:#a6e22e">class</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#39;fa fa-lg fa-spin fa-spinner&#39;</span>&gt;&lt;/<span style="color:#f92672">i</span>&gt;
+    &lt;/<span style="color:#f92672">li</span>&gt;
+  <span style="color:#75715e">&lt;!-- /ko --&gt;</span>
+&lt;/<span style="color:#f92672">ul</span>&gt;</code></pre></div>
+<p>Again for this to work the only thing that a user of <code>foreignKey</code> needs to define is the <code>_load_model</code> function.</p>
+<h2 id="drawbacks">Drawbacks</h2>
+<p>One might note that the granularity of the loading – one request per key – might lead to a <em>lot</em> of requests to the server. I worked around this by debouncing the requests and aggregating them into a single request i.e. instead of (conceptually) <code>/get?id=12341</code>, <code>/get?id=12342</code>, <code>/get?id=12343</code> I send <code>/get?ids=12341,12342,12343</code>.</p>
+<p>It is also worth noting that I only deal with <strong>string keys</strong>. This is because for some time <code>dev_appserver.py</code> for Google App Engine (for which I developed this extender) generated keys for models that were too large for Javascript numbers. So I had to cast everything as a string. One may have to edit the <code>foreignKey</code> extender to work with numeric keys. Sorry I have not tried or otherwise accounted for this.</p>
+<p>Also, since the above is derived from live code but is not entirely identical, it is possible I have overlooked something. Please do let me know if you encounter any issues.</p>
+<h2 id="summary">Summary</h2>
+<p>The above touches on some of the possibilities for extending Knockout. I have really found this one to be particularly handy in making other things easy. Often my models from the server contain one or more keys to other models, and this has drastically simplified the handling of those relationships.</p>
+<p>I have found this technique co-operates very well with lazy loading. In particular, when I want to load the model for a key, I just extend the observable that contains the key with the appropriate class.</p>
+<p>I hope the above proves interesting if not educational.</p>
+
+  </div>
+  <div class='copyright'> &copy; 2014 </div>
+</article>
+
+  <footer>
+
+    <div class="pager">
+      <div class="list-link"><a href="/post">Go to all posts</a></div>
+      
+        <a class="prev-link" href="https://brianmhunt.github.io/post/2014-01-25-strong-crypto-python-passwords/">
+          Previous post Jan 25, 2014
+          <br/><em>Storing passwords using Python</em>
+        </a>
+      
+      
+        <a class="next-link" href="https://brianmhunt.github.io/post/2014-02-02-knockout-plus-content-security-policy/">
+          Next post Feb 2, 2014
+          <br/><em>Knockout Secure Binding</em>
+        </a>
+      
+    </div>
+
+    <div class='license'>
+      <span xmlns:dct="http://purl.org/dc/terms/" href="http://purl.org/dc/dcmitype/Text" property="dct:title" rel="dct:type">Knockout and foreign keys extender</span> by Brian M Hunt at <a xmlns:cc="http://creativecommons.org/ns#" href="https://brianmhunt.github.io/post/2014-01-26-knockout-and-foreign-keys/" property="cc:attributionName" rel="cc:attributionURL">https://brianmhunt.github.io/post/2014-01-26-knockout-and-foreign-keys/</a> is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License</a>.
+      <br/>
+      <a rel="license" href="http://creativecommons.org/licenses/by/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by/4.0/80x15.png" /></a> 
+    </div>
+    <div class='photo-credit'>
+      Photo credit: <a href='https://picsum.photos'>https://picsum.photos</a>
+    </div>
+  </footer>
+</body>
+</html>
+

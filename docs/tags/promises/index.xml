@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>promises on Brian M Hunt</title>
+    <link>https://brianmhunt.github.io/tags/promises/</link>
+    <description>Recent content in promises on Brian M Hunt</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Wed, 09 Jul 2014 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="https://brianmhunt.github.io/tags/promises/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Knockout observables and Promises</title>
+      <link>https://brianmhunt.github.io/post/2014-07-09-pubsub-promises/</link>
+      <pubDate>Wed, 09 Jul 2014 00:00:00 +0000</pubDate>
+      
+      <guid>https://brianmhunt.github.io/post/2014-07-09-pubsub-promises/</guid>
+      <description>What is it? This is just a few notes about using Knockout observables with ES6 Promises.
+Why is it important? The concepts here are reusable ways for promises and pub/sub systems to interact in a healthy way.
+Publish and subscribe and promises are two canonical, widely-supported methods of handling asynchronous flow. The ease at which they communicate with each other makes asynchronicity easier to handle.
+Promises to observables Publishing to an observable when a promise completes is trivial.</description>
+    </item>
+    
+  </channel>
+</rss>

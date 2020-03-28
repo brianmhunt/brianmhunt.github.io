@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>typography on Brian M Hunt</title>
+    <link>https://brianmhunt.github.io/tags/typography/</link>
+    <description>Recent content in typography on Brian M Hunt</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Fri, 24 Jan 2014 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="https://brianmhunt.github.io/tags/typography/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Importance of typography</title>
+      <link>https://brianmhunt.github.io/post/2014-01-24-importance-of-typography/</link>
+      <pubDate>Fri, 24 Jan 2014 00:00:00 +0000</pubDate>
+      
+      <guid>https://brianmhunt.github.io/post/2014-01-24-importance-of-typography/</guid>
+      <description>You have no doubt thought about the font you use to communicate your written words. In the absence of any particular insight or authority you have likely chosen a common font such as Times New Roman or Arial or Helvetica. You have probably wondered whether this choice has any impact on the outcome of your written communication. The answer is a definitive yes — the form a writing takes substantially affects the message read, though as we will discuss below it is not just limited to the choice of font.</description>
+    </item>
+    
+  </channel>
+</rss>

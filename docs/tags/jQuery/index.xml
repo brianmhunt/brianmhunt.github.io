@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>jQuery on Brian M Hunt</title>
+    <link>https://brianmhunt.github.io/tags/jQuery/</link>
+    <description>Recent content in jQuery on Brian M Hunt</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Fri, 18 Jul 2014 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="https://brianmhunt.github.io/tags/jQuery/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Taming contentEditable with jQuery</title>
+      <link>https://brianmhunt.github.io/post/2014-07-18-taming-contenteditable/</link>
+      <pubDate>Fri, 18 Jul 2014 00:00:00 +0000</pubDate>
+      
+      <guid>https://brianmhunt.github.io/post/2014-07-18-taming-contenteditable/</guid>
+      <description>What is it? This is a few examples of how one might extend jQuery to make the contentEditable a more manageable component of the web.
+For convenience I am just going to show the web-standards, so one will need workarounds for IE &amp;lt; 9.
+A more comprehensive suite (and from whose work I derive many of my answers) is rangy.js by Tim Down.
+Why is it important? The contentEditable flag is one of the few ways to get WYSIWYG styling on the web.</description>
+    </item>
+    
+  </channel>
+</rss>

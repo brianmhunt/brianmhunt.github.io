@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>asynchronous on Brian M Hunt</title>
+    <link>https://brianmhunt.github.io/tags/asynchronous/</link>
+    <description>Recent content in asynchronous on Brian M Hunt</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Sun, 26 Jan 2014 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="https://brianmhunt.github.io/tags/asynchronous/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Knockout and foreign keys extender</title>
+      <link>https://brianmhunt.github.io/post/2014-01-26-knockout-and-foreign-keys/</link>
+      <pubDate>Sun, 26 Jan 2014 00:00:00 +0000</pubDate>
+      
+      <guid>https://brianmhunt.github.io/post/2014-01-26-knockout-and-foreign-keys/</guid>
+      <description>What is this? An extension of Knockout observables, making the observables into keys to another model. The model and its loading status are added as part of a property, .fk, to the observable.
+Why is it important? It makes some hard things easy, and some things once impossible just hard. In particular, it makes it easy to define models that load keys, and trivially access the models those keys represent.</description>
+    </item>
+    
+  </channel>
+</rss>

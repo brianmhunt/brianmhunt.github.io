@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Catching Sinon Unmet Requests</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Figure out when Sinon.JS does not respond to a request
+">
+  <meta name="generator" content="Hugo 0.68.1" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css" integrity="sha256-l85OmPOjvil/SOvVt3HnSSjzF1TUMyT9eV0c2BzEGzU=" crossorigin="anonymous" />
+  <link href="" rel="alternate" type="application/rss+xml" title="Brian M Hunt" />
+  <link href="https://brianmhunt.github.io/css/local.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://use.typekit.net/gdm7was.css">
+  
+  <script type="text/javascript" src="https://ssl.google-analytics.com/ga.js"></script>
+  <script>
+    var _gaq = _gaq || [];
+    var pluginUrl = 
+    '//www.google-analytics.com/plugins/ga/inpage_linkid.js';
+    _gaq.push(['_require', 'inpage_linkid', pluginUrl]);
+    _gaq.push(['_setAccount', 'UA-47448402-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+  
+  <link rel="alternate" type="application/rss+xml" href="https://brianmhunt.github.io/index.xml" title="Site Title">
+
+</head>
+
+<body>
+
+<header>
+  <a class='me' href='/'>Brian M Hunt</a>
+</header>
+
+<picture class='splash'>
+  <source srcset="https://picsum.photos/1600/600" media="(min-width: 1600px)">
+  <source srcset="https://picsum.photos/1200/400" media="(min-width: 1200px)">
+  <source srcset="https://picsum.photos/800/300" media="(min-width: 800px)">
+  <img class='splash' src='https://picsum.photos/600/200' alt='Splash by picsum.photos' />
+</picture>
+
+
+<article>
+  <div class="title">Catching Sinon Unmet Requests</div>
+  <div class="date">Feb 17, 2014</div>
+  <div class="content">
+    <h1 id="what-is-it">What is it?</h1>
+<p>Track AJAX requests that have not been responded to by the <a href="https://github.com/cjohansen/Sinon.js">Sinon.JS</a> fake XMLHttpRequest server.</p>
+<h1 id="why-is-it-important">Why is it important?</h1>
+<p>It can be difficult to figure out whether a request has been responded to. Figuring it out can be time consuming and troublesome. This method catches everything.</p>
+<h1 id="how-do-we-do-it">How do we do it?</h1>
+<p>I am using <a href="https://visionmedia.github.io/mocha/">Mocha</a> and <a href="https://chaijs.com/">Chai</a>, but this should work as well with other frameworks&rsquo; equivalent hooks.</p>
+<p>I use a global <code>xhr_server</code> variable to create the Sinon.js server like this:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-coffeescript" data-lang="coffeescript">  xhr_server = <span style="color:#a6e22e">sinon</span>.<span style="color:#a6e22e">fakeServer</span>.<span style="color:#a6e22e">create</span>()</code></pre></div>
+<p>Because I want to capture every AJAX request I do not put this into a <code>before</code>
+or <code>beforeEach</code> with matching restoration in <code>after</code>/<code>afterEach</code>. Any AJAX request made on my testing page ought to be intercepted by the fake server.</p>
+<p>So after every test one can check the Sinon.js <code>queue</code> that tells us what requests were made:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-coffeescript" data-lang="coffeescript">  <span style="color:#a6e22e">afterEach</span> <span style="color:#a6e22e">-&gt;</span>
+    <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">xhr_server</span>.<span style="color:#a6e22e">queue</span>
+      <span style="color:#75715e"># Print something that tells us what&#39;s happening.
+</span><span style="color:#75715e"></span>      <span style="color:#a6e22e">console</span>.<span style="color:#a6e22e">log</span>(<span style="color:#e6db74">&#34;Unmet Requests:&#34;</span>,
+        <span style="color:#a6e22e">xhr_server</span>.<span style="color:#a6e22e">queue</span>.<span style="color:#a6e22e">map</span>(<span style="color:#a6e22e">(m) -&gt;</span> <span style="color:#a6e22e">m</span>.<span style="color:#a6e22e">url</span>).<span style="color:#a6e22e">join</span>(<span style="color:#e6db74">&#34;, &#34;</span>)
+      )
+      xhr_server.queue.length = <span style="color:#ae81ff">0</span>
+    <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">xhr_server</span>.<span style="color:#a6e22e">responses</span>
+      xhr_server.responses.length = <span style="color:#ae81ff">0</span></code></pre></div>
+<p>Note that we empty the server responses and queue for the next test.</p>
+<p>Now whenever a request is unmet, we get:</p>
+<pre><code>&gt;&gt;&gt; Unmet Requests: /test_url /test_url_2
+</code></pre><h2 id="caveats">Caveats</h2>
+<p>There are two caveats to this strategy. First, we cannot match the test that calls <code>afterEach</code> to the request. The queue may contain requests made by latent asynchronous calls generated in a prior test. I am not certain this is a solvable problem.</p>
+<p>Second, and in a related vein, if any request is made after all the tests are complete those requests will not be printed to the screen.</p>
+<p>One can solve this latter problem by changing the <code>xhr_server.xhr.onCreate</code> callback after the test-runner completes.  For example:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-coffeescript" data-lang="coffeescript"><span style="color:#a6e22e">mocha</span>.<span style="color:#a6e22e">run</span>(<span style="color:#a6e22e">-&gt;</span>
+   xhr_server.xhr.onCreate = <span style="color:#a6e22e">(req) -&gt;</span>
+    <span style="color:#a6e22e">console</span>.<span style="color:#a6e22e">error</span>(<span style="color:#e6db74">&#34;XHR request made to </span><span style="color:#e6db74">#{</span><span style="color:#a6e22e">req</span>.<span style="color:#a6e22e">url</span><span style="color:#e6db74">}</span><span style="color:#e6db74"> after tests.&#34;</span>,
+      <span style="color:#a6e22e">req</span>)
+)</code></pre></div>
+<h1 id="summary">Summary</h1>
+<p>This is just a little trick to rein in and tame what can be a wild asynchronous world. I find it quite helpful, and hope you find it valuable.</p>
+
+  </div>
+  <div class='copyright'> &copy; 2014 </div>
+</article>
+
+  <footer>
+
+    <div class="pager">
+      <div class="list-link"><a href="/post">Go to all posts</a></div>
+      
+        <a class="prev-link" href="https://brianmhunt.github.io/post/2014-02-16-open-source-exposure/">
+          Previous post Feb 16, 2014
+          <br/><em>Open Source Exposure</em>
+        </a>
+      
+      
+        <a class="next-link" href="https://brianmhunt.github.io/post/2014-04-04-ndb-tags/">
+          Next post Apr 4, 2014
+          <br/><em>Google App Engine tags for ndb</em>
+        </a>
+      
+    </div>
+
+    <div class='license'>
+      <span xmlns:dct="http://purl.org/dc/terms/" href="http://purl.org/dc/dcmitype/Text" property="dct:title" rel="dct:type">Catching Sinon Unmet Requests</span> by Brian M Hunt at <a xmlns:cc="http://creativecommons.org/ns#" href="https://brianmhunt.github.io/post/2014-02-17-catching-sinon-unmet-requests/" property="cc:attributionName" rel="cc:attributionURL">https://brianmhunt.github.io/post/2014-02-17-catching-sinon-unmet-requests/</a> is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License</a>.
+      <br/>
+      <a rel="license" href="http://creativecommons.org/licenses/by/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by/4.0/80x15.png" /></a> 
+    </div>
+    <div class='photo-credit'>
+      Photo credit: <a href='https://picsum.photos'>https://picsum.photos</a>
+    </div>
+  </footer>
+</body>
+</html>
+

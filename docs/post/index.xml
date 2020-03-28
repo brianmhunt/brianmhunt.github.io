@@ -1,0 +1,309 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Posts on Brian M Hunt</title>
+    <link>https://brianmhunt.github.io/post/</link>
+    <description>Recent content in Posts on Brian M Hunt</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Mon, 23 Mar 2020 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="https://brianmhunt.github.io/post/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>COVID Exponential Growth Estimator</title>
+      <link>https://brianmhunt.github.io/post/2020-03-23-covid-calculator/</link>
+      <pubDate>Mon, 23 Mar 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://brianmhunt.github.io/post/2020-03-23-covid-calculator/</guid>
+      <description>The following is an calculator that can be used to make estimates about the exponential growth phase of the COVID pandemic.
+It is purely a mathematical estimator, and has no underlying insight into the disease growth patterns, but can be used as an informational tool for projecting and observing patterns.
+Calculate Growth Rate The doubling rate is calculated with:
+days &amp;times; logn(2) / logn(count2 / count1)  being a doubling time formula.</description>
+    </item>
+    
+    <item>
+      <title>Kasparov&#39;s Razor</title>
+      <link>https://brianmhunt.github.io/post/2017-08-19-kasparovs-razor/</link>
+      <pubDate>Sat, 19 Aug 2017 00:00:00 +0000</pubDate>
+      
+      <guid>https://brianmhunt.github.io/post/2017-08-19-kasparovs-razor/</guid>
+      <description>Chess champion Garry Kasparov, famous for competing with IBM supercomputer Deep Blue, gave a speech at DEFCON 25 called The Brain&amp;rsquo;s Last Stand. In it, Kasparov said:
+ A weak player plus an ordinary machine plus a superior process will be dominant in the game against a strong player, a strong computer, and an inferior process.
+ For many years I have noted concordant observations of this phenomenon in the legal-technology sphere.</description>
+    </item>
+    
+    <item>
+      <title>How Mortgages Neutered Monetary Policy</title>
+      <link>https://brianmhunt.github.io/post/2017-05-24-how-mortgages-neutered-monetary-policy/</link>
+      <pubDate>Wed, 24 May 2017 00:00:00 +0000</pubDate>
+      
+      <guid>https://brianmhunt.github.io/post/2017-05-24-how-mortgages-neutered-monetary-policy/</guid>
+      <description>According to the Bank of Canada, monetary policy serves to to preserve the value of money by keeping inflation low, stable and predictable. The Bank goes on to say:
+ This allows Canadians to make spending and investment decisions with more confidence, encourages longer-term investment in Canada&amp;rsquo;s economy, and contributes to sustained job creation and greater productivity. This in turn leads to improvements in our standard of living.
+ Unfortunately there&amp;rsquo;s a looming housing crisis in the form of what looks like a housing bubble.</description>
+    </item>
+    
+    <item>
+      <title>Debugging Deep Promises</title>
+      <link>https://brianmhunt.github.io/post/2016-03-15-master-debugging-promises/</link>
+      <pubDate>Tue, 15 Mar 2016 00:00:00 +0000</pubDate>
+      
+      <guid>https://brianmhunt.github.io/post/2016-03-15-master-debugging-promises/</guid>
+      <description>The Problem Promises are arguably the best mechanism we have for dealing with asynchronous software development, and many folks use them heavily in Javascript.
+Promises nonetheless can be problematic to debug. One particularly pernicious problem is “bleeding” of promises from one test to another.
+Problem Example Parallel promises, i.e. not those chained by .then, are resolved in an indeterminate order.
+A contrived but illustrative scenario:
+Promise.resolve().then(aFn).then(() =&amp;gt; console.log(&amp;#39;a&amp;#39;)) Promise.resolve().then(bFn).then(() =&amp;gt; console.</description>
+    </item>
+    
+    <item>
+      <title>ACME &#43; AppEngine ... Simplified</title>
+      <link>https://brianmhunt.github.io/post/2016-03-05-acme-appengine-simplified/</link>
+      <pubDate>Sat, 05 Mar 2016 00:00:00 +0000</pubDate>
+      
+      <guid>https://brianmhunt.github.io/post/2016-03-05-acme-appengine-simplified/</guid>
+      <description>Following my prior post on Let&amp;rsquo;s Encrypt - Acme on AppEngine, I have rewritten in Python and substantially simplified the process for deploying a challenge with minimal user input.
+In particular, the following script will extract the challenge from STDOUT of Let&amp;rsquo;s Encrypt, write the challenges to the given directory, call appcfg.py to upload the challenges, before Let&amp;rsquo;s Encrypt performs its validation. If all goes well, the private key is converted to a format usable by AppEngine and both it and the certificate chain are printed to the terminal.</description>
+    </item>
+    
+    <item>
+      <title>Let&#39;s Encrypt - ACME on AppEngine</title>
+      <link>https://brianmhunt.github.io/post/2016-02-22-let-s-encrypt-acme-on-appengine/</link>
+      <pubDate>Mon, 22 Feb 2016 00:00:00 +0000</pubDate>
+      
+      <guid>https://brianmhunt.github.io/post/2016-02-22-let-s-encrypt-acme-on-appengine/</guid>
+      <description>What is this? This is a bit of process that I use to get TLS keys to use on AppEngine using Let&amp;rsquo;s Encrypt.
+Update I have a streamlined process described below, removing dependencies on Node and Javascript, and reducing the amount of user-input needed, as described in my next post.
+Why&amp;rsquo;s it matter? There are a number of quirks in Let&amp;rsquo;s Encrypt and TLS on AppEngine that make it more difficult to automate the process.</description>
+    </item>
+    
+    <item>
+      <title>Picking our roots: Between HSTS and public key pins</title>
+      <link>https://brianmhunt.github.io/post/2015-11-25-picking-our-roots-between-hsts-and-public-key-pins/</link>
+      <pubDate>Wed, 25 Nov 2015 00:00:00 +0000</pubDate>
+      
+      <guid>https://brianmhunt.github.io/post/2015-11-25-picking-our-roots-between-hsts-and-public-key-pins/</guid>
+      <description>The web browser encryption meta-game has stepped up in the wake of the Snowden publications.
+One very useful advancement called HTTP Strict Transport Security appears to be catching on. Simply, HSTS tells a browser to remember that the website should always in the future be encrypted. After a browser receives a HSTS header for a website any subsequent connection will fail if it is not encrypted, until the header expires. This means that any misconfiguration or malicious attempt to downgrade a connection from HTTPS to HTTP shall fail.</description>
+    </item>
+    
+    <item>
+      <title>Properly Parsing HTML in HTML5</title>
+      <link>https://brianmhunt.github.io/post/2015-09-20-properly-parsing-html-in-html5/</link>
+      <pubDate>Sun, 20 Sep 2015 00:00:00 +0000</pubDate>
+      
+      <guid>https://brianmhunt.github.io/post/2015-09-20-properly-parsing-html-in-html5/</guid>
+      <description>Parsing HTML in Javascript is harder than one would expect. You would think that the browser, a HTML parser by its very nature, would give access to easy HTML parsing. But you&amp;rsquo;d be wrong, and here is an example of why:
+&amp;gt; d = document.createElement(&amp;#39;div&amp;#39;) &amp;lt;div&amp;gt;​&amp;lt;/div&amp;gt;​ &amp;gt; d.innerHTML = &amp;#39;&amp;lt;tr&amp;gt;&amp;lt;/tr&amp;gt;&amp;#39; &amp;#34;&amp;lt;tr&amp;gt;&amp;lt;/tr&amp;gt;&amp;#34; &amp;gt; d.innerHTML &amp;#34;&amp;#34; // ^^ Uh oh. Where&amp;#39;d it go? The problem is that the &amp;lt;tr&amp;gt; tag in HTML requires a parent of &amp;lt;table&amp;gt; or &amp;lt;tbody&amp;gt; or &amp;lt;thead&amp;gt; or &amp;lt;tfoot&amp;gt;, according to the W3C HTML5 spec.</description>
+    </item>
+    
+    <item>
+      <title>Details on the new Knockout Website</title>
+      <link>https://brianmhunt.github.io/post/2015-07-29-knockout-website-details/</link>
+      <pubDate>Wed, 29 Jul 2015 11:11:11 +0000</pubDate>
+      
+      <guid>https://brianmhunt.github.io/post/2015-07-29-knockout-website-details/</guid>
+      <description>Here are some things that make the new proposal for a new Knockout website pretty darned cool, in our opinion.
+ Single-page app Auto-reloading Application Cache Javascript error checking Inline auto-reloading samples  These are a selection of the many really cool features that underly the future online presence of Knockout. The ideas and implementation here will hopefully provide a really great user experience, help demonstrate a little of what Knockout can do, and show some techniques that can be used in many other contexts to improve the web.</description>
+    </item>
+    
+    <item>
+      <title>New Knockout Website</title>
+      <link>https://brianmhunt.github.io/post/2015-07-22-new-knockout-website/</link>
+      <pubDate>Wed, 22 Jul 2015 00:00:00 +0000</pubDate>
+      
+      <guid>https://brianmhunt.github.io/post/2015-07-22-new-knockout-website/</guid>
+      <description>Hi everyone.
+Just a quick post to point you to the new Knockout website, currently at brianmhunt.github.io/knockout
+Hopefully soon it will be up at beta.knockoutjs.com
+You can also follow the relevant Github issue, #1827 or comment on our gitter.
+Cheers,
+Brian</description>
+    </item>
+    
+    <item>
+      <title>Caching almost everything static on Google App Engine</title>
+      <link>https://brianmhunt.github.io/post/2015-06-19-caching-almost-everything/</link>
+      <pubDate>Fri, 19 Jun 2015 00:00:00 +0000</pubDate>
+      
+      <guid>https://brianmhunt.github.io/post/2015-06-19-caching-almost-everything/</guid>
+      <description>What is it? An aggressive caching technique.
+Why is it important? Caching can save time &amp;amp; resources downloading.
+How do we do it? A simple HTML file and a simple tiny loader script (~900 bytes).
+Here is the HTML:
+&amp;lt;!doctype html&amp;gt; &amp;lt;html&amp;gt; &amp;lt;head&amp;gt; &amp;lt;script src=&amp;#39;/loader.js&amp;#39;&amp;gt;&amp;lt;/script&amp;gt; ... &amp;lt;head&amp;gt; &amp;lt;body&amp;gt; ... &amp;lt;/body&amp;gt; &amp;lt;/html&amp;gt; and annotated loader.js:
+(function () { &amp;#34;use strict&amp;#34;; // We build this file on deploy and replace $TIME with the build time.</description>
+    </item>
+    
+    <item>
+      <title>Joining Knockout.js maintainers</title>
+      <link>https://brianmhunt.github.io/post/2014-12-01-joining-knockout/</link>
+      <pubDate>Mon, 01 Dec 2014 00:00:00 +0000</pubDate>
+      
+      <guid>https://brianmhunt.github.io/post/2014-12-01-joining-knockout/</guid>
+      <description>Hi everyone,
+I have joined Steve Sanderson, Michael Best, and Ryan Niemeyer as a core developer of Knockout.js. I thoroughly enjoy working with Knockout.js, and it is a real honour to participate as a maintainer of such a popular and well thought-out library.</description>
+    </item>
+    
+    <item>
+      <title>Opinionated modals with Knockout</title>
+      <link>https://brianmhunt.github.io/post/2014-09-16-opinionated-modals/</link>
+      <pubDate>Tue, 16 Sep 2014 00:00:00 +0000</pubDate>
+      
+      <guid>https://brianmhunt.github.io/post/2014-09-16-opinionated-modals/</guid>
+      <description>What&amp;rsquo;s this? Highly opinionated modals to achieve a user experience I like:
+ Demonstration; Repository.  Why&amp;rsquo;s it matter? It makes an impression, works with, and demonstrates interesting things in HTML5, Javascript ES6, CSS3 and Knockout.js.
+What does it do? There are a few problems Knockout Modal tackles, including:
+ Modals longer than the viewport height Nesting of modals Concise code (~100 line of Javascript) Happily integrates with code for HTML5 history Accepts thenables (e.</description>
+    </item>
+    
+    <item>
+      <title>Follow along at Airconf 2014</title>
+      <link>https://brianmhunt.github.io/post/2014-08-13-follow-along-airconf/</link>
+      <pubDate>Wed, 13 Aug 2014 00:00:00 +0000</pubDate>
+      
+      <guid>https://brianmhunt.github.io/post/2014-08-13-follow-along-airconf/</guid>
+      <description>Airconf 2014 I will be presenting at 10:00 AM EST on August 14, 2014 by Google Hangout.
+The repository for the presentation is github.com/brianmhunt/Airconf-2014-Knockout.
+You can follow the presentation and review snippets used at brianmhunt.github.io/airconf-2014.</description>
+    </item>
+    
+    <item>
+      <title>Taming contentEditable with jQuery</title>
+      <link>https://brianmhunt.github.io/post/2014-07-18-taming-contenteditable/</link>
+      <pubDate>Fri, 18 Jul 2014 00:00:00 +0000</pubDate>
+      
+      <guid>https://brianmhunt.github.io/post/2014-07-18-taming-contenteditable/</guid>
+      <description>What is it? This is a few examples of how one might extend jQuery to make the contentEditable a more manageable component of the web.
+For convenience I am just going to show the web-standards, so one will need workarounds for IE &amp;lt; 9.
+A more comprehensive suite (and from whose work I derive many of my answers) is rangy.js by Tim Down.
+Why is it important? The contentEditable flag is one of the few ways to get WYSIWYG styling on the web.</description>
+    </item>
+    
+    <item>
+      <title>Knockout observables and Promises</title>
+      <link>https://brianmhunt.github.io/post/2014-07-09-pubsub-promises/</link>
+      <pubDate>Wed, 09 Jul 2014 00:00:00 +0000</pubDate>
+      
+      <guid>https://brianmhunt.github.io/post/2014-07-09-pubsub-promises/</guid>
+      <description>What is it? This is just a few notes about using Knockout observables with ES6 Promises.
+Why is it important? The concepts here are reusable ways for promises and pub/sub systems to interact in a healthy way.
+Publish and subscribe and promises are two canonical, widely-supported methods of handling asynchronous flow. The ease at which they communicate with each other makes asynchronicity easier to handle.
+Promises to observables Publishing to an observable when a promise completes is trivial.</description>
+    </item>
+    
+    <item>
+      <title>Google App Engine tags for ndb</title>
+      <link>https://brianmhunt.github.io/post/2014-04-04-ndb-tags/</link>
+      <pubDate>Fri, 04 Apr 2014 00:00:00 +0000</pubDate>
+      
+      <guid>https://brianmhunt.github.io/post/2014-04-04-ndb-tags/</guid>
+      <description>What is it? This is a way to add tags functionality to classes derived from ndb.Model on Google App Engine by way of a mixin.
+Why is it important? Adding tags to data models is a popular phenomenon, but there does not appear to be a published way to accomplish the common functionality with ndb. This method ought to be reusable and performant.
+How does it work? Get the full gist is gist.</description>
+    </item>
+    
+    <item>
+      <title>Catching Sinon Unmet Requests</title>
+      <link>https://brianmhunt.github.io/post/2014-02-17-catching-sinon-unmet-requests/</link>
+      <pubDate>Mon, 17 Feb 2014 00:00:00 +0000</pubDate>
+      
+      <guid>https://brianmhunt.github.io/post/2014-02-17-catching-sinon-unmet-requests/</guid>
+      <description>What is it? Track AJAX requests that have not been responded to by the Sinon.JS fake XMLHttpRequest server.
+Why is it important? It can be difficult to figure out whether a request has been responded to. Figuring it out can be time consuming and troublesome. This method catches everything.
+How do we do it? I am using Mocha and Chai, but this should work as well with other frameworks&amp;rsquo; equivalent hooks.</description>
+    </item>
+    
+    <item>
+      <title>Open Source Exposure</title>
+      <link>https://brianmhunt.github.io/post/2014-02-16-open-source-exposure/</link>
+      <pubDate>Sun, 16 Feb 2014 00:00:00 +0000</pubDate>
+      
+      <guid>https://brianmhunt.github.io/post/2014-02-16-open-source-exposure/</guid>
+      <description>The concept of exposure comes from my practice as a lawyer on insurance matters. My practice in this area consisted predominantly of plaintiff work and as counsel for the Queen of Canada (England) in her role as an insurance payer of last resort in the province of Ontario. In insurance matters the word exposure is a core concept used on a daily basis. I have found that the lingo and concept of exposure is a handy tool in deciding whether and how to include open source software in a project.</description>
+    </item>
+    
+    <item>
+      <title>Knockout catching errors</title>
+      <link>https://brianmhunt.github.io/post/2014-02-13-knockout-catching-errors/</link>
+      <pubDate>Thu, 13 Feb 2014 00:00:00 +0000</pubDate>
+      
+      <guid>https://brianmhunt.github.io/post/2014-02-13-knockout-catching-errors/</guid>
+      <description>What is this? A couple tips for identifying issues with Knockout.
+Why is it important? Error handling is one of the areas where Knockout could do with some attention. These techniques have saved me quite a bit of time, and I hope you also find them useful.
+How&amp;rsquo;s it work? There are two major places where you can really hook in and catch issues:
+ Custom binding provider Wrapping custom bindings  The custom binding provider is called when the bindings are first made, via ko.</description>
+    </item>
+    
+    <item>
+      <title>Knockout Secure Binding</title>
+      <link>https://brianmhunt.github.io/post/2014-02-02-knockout-plus-content-security-policy/</link>
+      <pubDate>Sun, 02 Feb 2014 00:00:00 +0000</pubDate>
+      
+      <guid>https://brianmhunt.github.io/post/2014-02-02-knockout-plus-content-security-policy/</guid>
+      <description>What is it? Knockout Secure Binding is a custom binding provider for Knockout.
+Why does it matter? The regular binding provider calls new Function, which throws an exception when you have a Content Security Policy that prohibits unsafe-eval.
+These security policies are mandatory in some circumstances, such as Chrome Web Apps.
+How does it work? At its core, KSB is two things:
+  A parser that interprets data-bind attributes on the DOM elements and text of virtual elements that Knockout reads; and</description>
+    </item>
+    
+    <item>
+      <title>Knockout and foreign keys extender</title>
+      <link>https://brianmhunt.github.io/post/2014-01-26-knockout-and-foreign-keys/</link>
+      <pubDate>Sun, 26 Jan 2014 00:00:00 +0000</pubDate>
+      
+      <guid>https://brianmhunt.github.io/post/2014-01-26-knockout-and-foreign-keys/</guid>
+      <description>What is this? An extension of Knockout observables, making the observables into keys to another model. The model and its loading status are added as part of a property, .fk, to the observable.
+Why is it important? It makes some hard things easy, and some things once impossible just hard. In particular, it makes it easy to define models that load keys, and trivially access the models those keys represent.</description>
+    </item>
+    
+    <item>
+      <title>Storing passwords using Python</title>
+      <link>https://brianmhunt.github.io/post/2014-01-25-strong-crypto-python-passwords/</link>
+      <pubDate>Sat, 25 Jan 2014 00:00:00 +0000</pubDate>
+      
+      <guid>https://brianmhunt.github.io/post/2014-01-25-strong-crypto-python-passwords/</guid>
+      <description>What is it? An implementation in Python for storing passwords with cryptographically recognized techniques.
+Why is it important? Stored passwords get disclosed from time to time. Good examples give us guidance and help us avoid mistakes.
+Password disclosure is bad news for users and the authenticator. Worse it undermines the trust the public has in our systems for storing and accessing private, personal services.
+When using cryptography it is possible that even if the values stored are disclosed that the secrets they reflect remain opaque, or at least cost ineffective to discover.</description>
+    </item>
+    
+    <item>
+      <title>Importance of typography</title>
+      <link>https://brianmhunt.github.io/post/2014-01-24-importance-of-typography/</link>
+      <pubDate>Fri, 24 Jan 2014 00:00:00 +0000</pubDate>
+      
+      <guid>https://brianmhunt.github.io/post/2014-01-24-importance-of-typography/</guid>
+      <description>You have no doubt thought about the font you use to communicate your written words. In the absence of any particular insight or authority you have likely chosen a common font such as Times New Roman or Arial or Helvetica. You have probably wondered whether this choice has any impact on the outcome of your written communication. The answer is a definitive yes — the form a writing takes substantially affects the message read, though as we will discuss below it is not just limited to the choice of font.</description>
+    </item>
+    
+    <item>
+      <title>Permanent HTTP caching and busting</title>
+      <link>https://brianmhunt.github.io/post/2014-01-23-permanent-caching-and-busting/</link>
+      <pubDate>Thu, 23 Jan 2014 00:00:00 +0000</pubDate>
+      
+      <guid>https://brianmhunt.github.io/post/2014-01-23-permanent-caching-and-busting/</guid>
+      <description>What is it? Permanent caching is part of the HTTP protocol, a way to reduce server load and improve the user experience by speeding up load time.
+Why does it matter? Caches make us and users happy. We get less load on our servers, and it&amp;rsquo;s a significant speedup for load times.
+The busting is important because without it the resource may not be downloaded by a browser even though it has been updated on the server.</description>
+    </item>
+    
+    <item>
+      <title>Asynchronous client-side Javascript page loading</title>
+      <link>https://brianmhunt.github.io/post/2014-01-22-making-everything-async/</link>
+      <pubDate>Wed, 22 Jan 2014 00:00:00 +0000</pubDate>
+      
+      <guid>https://brianmhunt.github.io/post/2014-01-22-making-everything-async/</guid>
+      <description>What is it? A process for loading our script resources asynchronously, with one &amp;lt;script&amp;gt; tag, like this:
+&amp;lt;script async src=&amp;#39;/all.js-{{ cache_buster }}&amp;#39;&amp;gt;&amp;lt;/script&amp;gt; This all.js file loads all our Javascript, external services, templates, and any RESTful resources from our server.
+We discuss the cache_buster in the next post.
+Why is it important? Having one file for Javascript gives us:
+ one file to request; improved cachability; parallel requests for our resources; centralizing where we control our loading; fine-grained control of the loading process.</description>
+    </item>
+    
+  </channel>
+</rss>

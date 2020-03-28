@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Permanent HTTP caching and busting</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Code and ideas about permanent caches of changing resources.
+">
+  <meta name="generator" content="Hugo 0.68.1" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css" integrity="sha256-l85OmPOjvil/SOvVt3HnSSjzF1TUMyT9eV0c2BzEGzU=" crossorigin="anonymous" />
+  <link href="" rel="alternate" type="application/rss+xml" title="Brian M Hunt" />
+  <link href="https://brianmhunt.github.io/css/local.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://use.typekit.net/gdm7was.css">
+  
+  <script type="text/javascript" src="https://ssl.google-analytics.com/ga.js"></script>
+  <script>
+    var _gaq = _gaq || [];
+    var pluginUrl = 
+    '//www.google-analytics.com/plugins/ga/inpage_linkid.js';
+    _gaq.push(['_require', 'inpage_linkid', pluginUrl]);
+    _gaq.push(['_setAccount', 'UA-47448402-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+  
+  <link rel="alternate" type="application/rss+xml" href="https://brianmhunt.github.io/index.xml" title="Site Title">
+
+</head>
+
+<body>
+
+<header>
+  <a class='me' href='/'>Brian M Hunt</a>
+</header>
+
+<picture class='splash'>
+  <source srcset="https://picsum.photos/1600/600" media="(min-width: 1600px)">
+  <source srcset="https://picsum.photos/1200/400" media="(min-width: 1200px)">
+  <source srcset="https://picsum.photos/800/300" media="(min-width: 800px)">
+  <img class='splash' src='https://picsum.photos/600/200' alt='Splash by picsum.photos' />
+</picture>
+
+
+<article>
+  <div class="title">Permanent HTTP caching and busting</div>
+  <div class="date">Jan 23, 2014</div>
+  <div class="content">
+    <h1 id="what-is-it">What is it?</h1>
+<p>Permanent caching is part of the HTTP protocol, a way to reduce server load and improve the user experience by speeding up load time.</p>
+<h1 id="why-does-it-matter">Why does it matter?</h1>
+<p>Caches make us and users happy. We get less load on our servers, and it&rsquo;s a significant speedup for load times.</p>
+<p>The busting is important because without it the resource may not be downloaded by a browser even though it has been updated on the server.</p>
+<h1 id="how-does-it-work">How does it work?</h1>
+<p>One can make a &ldquo;bustable&rdquo; cache a number of &ldquo;static&rdquo; resources that are loaded like this:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-html" data-lang="html">&lt;<span style="color:#f92672">script</span> <span style="color:#a6e22e">async</span> <span style="color:#a6e22e">src</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#39;/all.js-{{ cache_buster }}&#39;</span>&gt;&lt;/<span style="color:#f92672">script</span>&gt;</code></pre></div>
+<p>By &ldquo;static&rdquo; I mean that <strong>it changes at most when we deploy</strong> our software. In addition to Javascript files this caching model can apply to our CSS and HTML template files, and any other static resources including images.</p>
+<p>I discussed putting all our asynchronous loading via one file in the <a href="/articles/making-everything-async/">previous post</a>.</p>
+<p>The <code>cache_buster</code> is a variable set to <strong>the <em>mtime</em> of an arbitrary file,</strong> and that <em>mtime</em> changes whenever we deploy our application to Google App Engine.</p>
+<h2 id="adding-a-long-term-cache">Adding a long-term cache</h2>
+<p>The <strong>HTTP header</strong> we use to achieve a long-term cache is <code>cache-control</code>. We set its value to <code>max-age=31536000</code>. The <code>expires</code> header can also be used to
+determine cachability, but the <code>cache-control</code> header overrides it.</p>
+<p>In Flask we achieve the above for <code>all.js-*</code> with the following view:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">    <span style="color:#a6e22e">@app.route</span>(<span style="color:#e6db74">&#34;/all.js-&lt;string:cache_id&gt;&#34;</span>)
+    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">all_js</span>(cache_id):
+        <span style="color:#e6db74">&#34;&#34;&#34;Our javascript file&#34;&#34;&#34;</span>
+        <span style="color:#66d9ef">return</span> send_file(<span style="color:#e6db74">&#34;all.js&#34;</span>,
+                         mimetype<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;application/javascript&#34;</span>,
+                         add_etags<span style="color:#f92672">=</span>False,
+                         cache_timeout<span style="color:#f92672">=</span><span style="color:#ae81ff">31536000</span>,
+                         conditional<span style="color:#f92672">=</span>False,)</code></pre></div>
+<p>For our Jinja2 templates we do something like the following:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">    <span style="color:#a6e22e">@app.route</span>(<span style="color:#e6db74">&#34;/templates-&lt;string:cache_id&gt;&#34;</span>)
+    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">templates</span>(cache_id):
+        <span style="color:#e6db74">&#34;&#34;&#34;Our reusable templates&#34;&#34;&#34;</span>
+        response <span style="color:#f92672">=</span> make_response(render_template(<span style="color:#e6db74">&#34;templates.html&#34;</span>))
+        response<span style="color:#f92672">.</span>headers[<span style="color:#e6db74">&#39;Cache-Control&#39;</span>] <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;max-age=31536000&#34;</span>
+        <span style="color:#66d9ef">return</span> response</code></pre></div>
+<p>Any resource with this cache header may be <strong>permanently cached</strong> for up to a year (i.e. <em>max-age</em>) by the browser. I say <em>may</em> because caching is optional and in any case the browser will eventually remove old cache items.</p>
+<h2 id="avoiding-conditional-tags-eg-etag">Avoiding conditional tags e.g. <em>etag</em></h2>
+<p>If you add a <a href="https://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html">header</a> like <code>etag</code> or the conditional headers <code>if-(un)modified-since</code>, <code>if-range</code> and <code>if(-none)-match</code> then the browser <em>may</em> make a request <a href="https://stackoverflow.com/questions/499966">even if the item is cached</a>. Since we define the resource by its <code>mtime</code> a conditional cache header would be redundant.</p>
+<p>While it does not make sense for our model, if one wanted to <strong>implement etags</strong> in Flask, there is <a href="https://flask.pocoo.org/snippets/95/">a helpful snippet</a>.</p>
+<h2 id="avoiding-appyaml">Avoiding app.yaml</h2>
+<p>Google App Engine adds an <code>etag</code> header. We could otherwise serve files with <code>app.yaml</code> like this:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">- <span style="color:#66d9ef">url</span>: /all.js.*       <span style="color:#75715e"># Matches all.js-{{ cache_buster }}</span>
+  <span style="color:#66d9ef">expiration</span>: 360d     <span style="color:#75715e"># Specifies how long to cache the request</span>
+  <span style="color:#66d9ef">static_files</span>: scripts/all.js
+  <span style="color:#66d9ef">upload</span>: scripts/all.js</code></pre></div>
+<p>Alas the <code>etag</code> header causes requests to be made to the server. Checking the etag takes about <strong>70–100ms</strong> of extra time per resource over App Engine. If a resource is in cache it takes around <strong>3–15ms</strong> to obtain it. It is small yet a magnitude of improvement.</p>
+<p>It is possible that one could <strong>customize</strong> the <code>headers</code> setting of the static files served via <code>app.yaml</code> but I did not bother to check if one could remove the <code>etag</code> this way. In any case the <code>etag</code> header being added seems <strong>undocumented</strong> so I would not rely on any hack around it since the <strong>behaviour might change</strong> without notice.</p>
+<h2 id="html5-offline-web-application">HTML5 offline web application</h2>
+<p>I experimented with putting the templates and Javascript into an <a href="https://diveintohtml5.info/offline.html">HTML5 offline web application</a> but the benefits proved marginal compared to the above while the complexity went up significantly. Nevertheless, it is an interesting option worth bearing in mind.</p>
+<h1 id="drawbacks">Drawbacks</h1>
+<p>A browser might keep lots of resources around that are outdated. For example
+<code>all.js-1385473710.0</code>, <code>all.js-1385472151.0</code>, etc. This <strong>wastes space</strong>.</p>
+<p>Also any <strong>risk of incontinuity</strong> between the request and the resource might
+lead to the browser using the old version. For example, if the server starts
+serving our web-page that references <code>all.js-X</code>, yet our <code>all.js-*</code> view is
+still serving previous version i.e. it has not yet been updated, then the
+browser might interpret <code>all.js-X</code> to be the old version forevermore. Once it is cached, it is there forever. This is not a risk we are concerned about with Google App Engine, since <strong>deployments are atomic</strong>. If deploying is not atomic, for example if you are using a content delivery network where there is lag between deployment and the commencement of delivery, this would be a concern.</p>
+<h1 id="results">Results</h1>
+<p>With the aggressive caching our page loads are reduced to around 15KB of data transferred for the average page, plus any JSON from the server for the data. The improvement in load time has been a substantial decrease of download time from around <strong>3 seconds per page</strong> of aggregate network transfer time to about <strong>400ms</strong> after the main page completes.</p>
+<p>We combined this with the <strong>asynchronous Javascript loading</strong> discussed <a href="/articles/making-everything-async/">in the previous post</a>.</p>
+
+  </div>
+  <div class='copyright'> &copy; 2014 </div>
+</article>
+
+  <footer>
+
+    <div class="pager">
+      <div class="list-link"><a href="/post">Go to all posts</a></div>
+      
+        <a class="prev-link" href="https://brianmhunt.github.io/post/2014-01-22-making-everything-async/">
+          Previous post Jan 22, 2014
+          <br/><em>Asynchronous client-side Javascript page loading</em>
+        </a>
+      
+      
+        <a class="next-link" href="https://brianmhunt.github.io/post/2014-01-24-importance-of-typography/">
+          Next post Jan 24, 2014
+          <br/><em>Importance of typography</em>
+        </a>
+      
+    </div>
+
+    <div class='license'>
+      <span xmlns:dct="http://purl.org/dc/terms/" href="http://purl.org/dc/dcmitype/Text" property="dct:title" rel="dct:type">Permanent HTTP caching and busting</span> by Brian M Hunt at <a xmlns:cc="http://creativecommons.org/ns#" href="https://brianmhunt.github.io/post/2014-01-23-permanent-caching-and-busting/" property="cc:attributionName" rel="cc:attributionURL">https://brianmhunt.github.io/post/2014-01-23-permanent-caching-and-busting/</a> is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License</a>.
+      <br/>
+      <a rel="license" href="http://creativecommons.org/licenses/by/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by/4.0/80x15.png" /></a> 
+    </div>
+    <div class='photo-credit'>
+      Photo credit: <a href='https://picsum.photos'>https://picsum.photos</a>
+    </div>
+  </footer>
+</body>
+</html>
+
