@@ -7,7 +7,7 @@ title: COVID Exponential Growth Estimator
 <script src="https://cdnjs.cloudflare.com/ajax/libs/knockout/3.5.1/knockout-latest.js" integrity="sha256-6JV7sYKlBHsHvqCkn9IrEWFLGrmsW4KG/LIln0hljnM=" crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment-with-locales.min.js" integrity="sha256-AdQN98MVZs44Eq2yTwtoKufhnU+uZ7v2kXnD5vqzZVo=" crossorigin="anonymous"></script>
 
-The following is an calculator that can be used to make
+The following is a calculator that can be used to make
 estimates about the exponential growth phase of the COVID pandemic.
 
 It is purely a mathematical estimator, and has no underlying insight into the
@@ -20,9 +20,9 @@ Enter two dates where the number of cases is known, and the respective number
 of cases, then the result will be shown.
 
 Some examples:
-- <a href='#' data-bind='click: nyExampleClick'>New York May 10, 2020: 173 cases => May 25: 30811 cases</a> indicates a doubling rate of 2.01 days, however the numbers recorded on the 27th (44,635) indicate a doubling rate of closer to 3, meaning the growth is slowing.
-- <a href='#' data-bind='click: ontExampleClick'>Ontario May 11, 2020: 42 cases => May 23: 425 cases</a> indicates a doubling rate of 3.59 days.  
-- <a href='#' data-bind='click: ontExample2Click'>Ontario May 23, 2020: 425 cases => May 28: 994 cases</a> indicates a doubling rate of 4.08 days, suggesting that the doubling rate is slowing.
+- <a href='#' data-bind='click: nyExampleClick'>New York Mar 10, 2020: 173 cases => Mar 25: 30811 cases</a> indicates a doubling rate of 2.01 days, however the numbers recorded on the 27th (44,635) indicate a doubling rate of closer to 3, meaning the growth is slowing.
+- <a href='#' data-bind='click: ontExampleClick'>Ontario Mar 11, 2020: 42 cases => Mar 23: 425 cases</a> indicates a doubling rate of 3.59 days.  
+- <a href='#' data-bind='click: ontExample2Click'>Ontario Mar 23, 2020: 425 cases => Mar 28: 994 cases</a> indicates a doubling rate of 4.08 days, suggesting that the doubling rate is slowing.
 
 
 <div class='covid-rate-grid'>
@@ -56,7 +56,7 @@ the cases double, and estimates will be calculated in a table.
   <input type='date' data-bind='value: estimateDate' />
   <span class='covid-estimate' data-bind='text: chosenEstimate'></span>
   <div class='covid-estimates'>
-    <b>Days from now</b>
+    <b>Days</b>
     <b>Date</b>
     <b>Estimated cases</b>
     <!-- ko foreach: estimates -->

@@ -17,7 +17,7 @@
       <pubDate>Mon, 23 Mar 2020 00:00:00 +0000</pubDate>
       
       <guid>https://brianmhunt.github.io/post/2020-03-23-covid-calculator/</guid>
-      <description>The following is an calculator that can be used to make estimates about the exponential growth phase of the COVID pandemic.
+      <description>The following is a calculator that can be used to make estimates about the exponential growth phase of the COVID pandemic.
 It is purely a mathematical estimator, and has no underlying insight into the disease growth patterns, but can be used as an informational tool for projecting and observing patterns.
 Calculate Growth Rate Enter two dates where the number of cases is known, and the respective number of cases, then the result will be shown.</description>
     </item>
