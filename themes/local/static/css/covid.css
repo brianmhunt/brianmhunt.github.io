@@ -1,0 +1,39 @@
+
+.covid-rate-grid {
+  margin-left: auto;
+  grid-template-columns: max-content max-content max-content;
+  display: inline-grid;
+  align-items: center;
+  grid-template-rows: auto auto auto;
+  gap: 10px;
+}
+
+.covid-rate-result {
+  font-weight: bold;
+  font-style: italic;
+  grid-column: span 2;
+}
+
+.covid-estimate-grid {
+  display: grid;
+  grid-template-columns: max-content max-content auto;
+  grid-template-rows: auto auto auto;
+  gap: 15px;
+  align-items: center;
+}
+
+.covid-estimates {
+  min-height: 200px;
+  grid-column: 3;
+  grid-row: 1 / span 4;
+  display: grid;
+  grid-template-columns: auto auto auto;
+  gap: 10px;
+  justify-content: left;
+}
+
+.covid-formula {
+  display: block;
+  text-align: center;
+  padding: 15px;
+}

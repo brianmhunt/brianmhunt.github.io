@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>HTML5 on Brian M Hunt</title>
+    <link>https://brianmhunt.github.io/tags/HTML5/</link>
+    <description>Recent content in HTML5 on Brian M Hunt</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Tue, 16 Sep 2014 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="https://brianmhunt.github.io/tags/HTML5/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Opinionated modals with Knockout</title>
+      <link>https://brianmhunt.github.io/post/2014-09-16-opinionated-modals/</link>
+      <pubDate>Tue, 16 Sep 2014 00:00:00 +0000</pubDate>
+      
+      <guid>https://brianmhunt.github.io/post/2014-09-16-opinionated-modals/</guid>
+      <description>What&amp;rsquo;s this? Highly opinionated modals to achieve a user experience I like:
+ Demonstration; Repository.  Why&amp;rsquo;s it matter? It makes an impression, works with, and demonstrates interesting things in HTML5, Javascript ES6, CSS3 and Knockout.js.
+What does it do? There are a few problems Knockout Modal tackles, including:
+ Modals longer than the viewport height Nesting of modals Concise code (~100 line of Javascript) Happily integrates with code for HTML5 history Accepts thenables (e.</description>
+    </item>
+    
+  </channel>
+</rss>

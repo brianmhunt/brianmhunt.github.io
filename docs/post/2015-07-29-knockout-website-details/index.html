@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Details on the new Knockout Website</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="">
+  <meta name="generator" content="Hugo 0.68.1" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css" integrity="sha256-l85OmPOjvil/SOvVt3HnSSjzF1TUMyT9eV0c2BzEGzU=" crossorigin="anonymous" />
+  <link href="" rel="alternate" type="application/rss+xml" title="Brian M Hunt" />
+  <link href="https://brianmhunt.github.io/css/local.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://use.typekit.net/gdm7was.css">
+  
+  <script type="text/javascript" src="https://ssl.google-analytics.com/ga.js"></script>
+  <script>
+    var _gaq = _gaq || [];
+    var pluginUrl = 
+    '//www.google-analytics.com/plugins/ga/inpage_linkid.js';
+    _gaq.push(['_require', 'inpage_linkid', pluginUrl]);
+    _gaq.push(['_setAccount', 'UA-47448402-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+  
+  <link rel="alternate" type="application/rss+xml" href="https://brianmhunt.github.io/index.xml" title="Site Title">
+
+</head>
+
+<body>
+
+<header>
+  <a class='me' href='/'>Brian M Hunt</a>
+</header>
+
+<picture class='splash'>
+  <source srcset="https://picsum.photos/1600/600" media="(min-width: 1600px)">
+  <source srcset="https://picsum.photos/1200/400" media="(min-width: 1200px)">
+  <source srcset="https://picsum.photos/800/300" media="(min-width: 800px)">
+  <img class='splash' src='https://picsum.photos/600/200' alt='Splash by picsum.photos' />
+</picture>
+
+
+<article>
+  <div class="title">Details on the new Knockout Website</div>
+  <div class="date">Jul 29, 2015</div>
+  <div class="content">
+    <p>Here are some things that make the <a href="https://github.com/knockout/knockout/issues/1827">new proposal</a> for a <a href="https://brianmhunt.github.io/knockout/">new Knockout website</a> pretty darned cool, in our opinion.</p>
+<ol>
+<li>Single-page app</li>
+<li>Auto-reloading Application Cache</li>
+<li>Javascript error checking</li>
+<li>Inline auto-reloading samples</li>
+</ol>
+<p>These are a selection of the many really cool features that underly the future online presence of Knockout. The ideas and implementation here will hopefully provide a really great user experience, help demonstrate a little of what Knockout can do, and show some techniques that can be used in many other contexts to improve the web.</p>
+<h1 id="single-page-app">Single-page app</h1>
+<p>The site uses Knockout along with a number of other packages, as you can see in our <a href="https://github.com/brianmhunt/knockout/blob/gh-pages/bower.json#L20">bower.json</a> and <a href="https://github.com/brianmhunt/knockout/blob/gh-pages/package.json#L6">package.json</a>.</p>
+<p>The compiled <a href="https://github.com/brianmhunt/knockout/blob/gh-pages/build/app.js">unminified source code</a> is pretty lean, coming in at under a thousand lines. While demonstratign the concept we are relying on <a href="https://github.com/brianmhunt/knockout/blob/gh-pages/build/libs.js">over a MB</a> of Javascript libraries. Much of that can and will be minified down when it comes time to deploy more broadly.</p>
+<p>Without further ado, let&rsquo;s get into the details.</p>
+<h2 id="overall-page-strategy">Overall page strategy</h2>
+<p>We create a single instance of an object, <a href="https://github.com/brianmhunt/knockout/blob/gh-pages/src/Page.js"><code>Page</code></a> that <a href="https://github.com/brianmhunt/knockout/blob/gh-pages/src/entry.js#L93-L98">Knockout binds to the <code>&lt;body&gt;</code></a> and thereafter determines the state of the entire page. When an anchor is clicked the event is <a href="https://github.com/brianmhunt/knockout/blob/gh-pages/src/events.js#L28">intercepted</a> then, if the browser supports HTML5 history and the user has not disabled the single-page functionality, the page rewrite boils down to Knockout changing the <code>body</code> template of the <code>Page</code> instance. If the browser does not support HTML5 or the user turns off the single-page functionality, then the link is followed (though it may have been <a href="https://github.com/brianmhunt/knockout/blob/gh-pages/src/events.js#L12">rewritten</a>).</p>
+<p>When the body template changes the template shown changes. As well, <code>body</code> change <a href="https://github.com/brianmhunt/knockout/blob/gh-pages/src/Page.js#L10">triggers</a> a page title update to the <code>data-title</code> attribute of the template being changed to.</p>
+<p>To make things load quickly we <a href="https://github.com/brianmhunt/knockout/blob/gh-pages/gulpfile.js#L101">concatenate our templates</a> into one file that is loaded asynchronously, likely from the appcache (more on that below).</p>
+<p>All our pages are stored as markdown and also <a href="https://github.com/brianmhunt/knockout/blob/gh-pages/gulpfile.js#L145">compiled into a single file</a>. A couple tricks we&rsquo;ve used include exposing the <code>gitVersion</code> as <a href="https://github.com/brianmhunt/knockout/blob/gh-pages/gulpfile.js#L29-L33">a property of the <code>global</code> object</a>, that is reloaded (minus debounce) every time it is accessed by e.g. the <a href="https://github.com/brianmhunt/knockout/blob/gh-pages/config.yaml#L150">markdown html template</a>. This becomes important when reporting to our Javascript error reporter, so we know what version has exhibited issues.  This trick allows us to get around having to intercept the vinyl streams to inject the git version, which is arguably a more “gulpy” way to do it.</p>
+<h2 id="history">History</h2>
+<p>I opted for HTML5 history support instead of <a href="https://github.com/devote/HTML5-History-API">HTML5-History-API</a> or <a href="https://github.com/browserstate/history.js/">history.js</a>. Those are excellent plugins, but the idea here is to keep it simple and aim for the future.</p>
+<p>As you can see from <a href="https://github.com/brianmhunt/knockout/blob/gh-pages/src/events.js#L28-L58">the anchor click intercept and <code>popstate</code> handler</a> manipulating the history is pretty trivial when used in conjunction with Knockout.</p>
+<h2 id="multi-page-fallback">Multi-page fallback</h2>
+<p>All our links are rewritten to <code>/a/PAGE.html</code>. These links are simultaneously <a href="https://github.com/brianmhunt/knockout/tree/gh-pages/a">generated individually</a> as actual files, and <a href="https://github.com/brianmhunt/knockout/blob/gh-pages/build/markdown.html#L1">generated for use by Knockout</a> as templates that go into the <code>body</code> property of our <code>Page</code>.</p>
+<h1 id="auto-reloading-application-cache">Auto-reloading Application Cache</h1>
+<p>The application cache speeds up loading time and gives offline access. We regenerate our application cache basically whenever <a href="https://github.com/brianmhunt/knockout/blob/gh-pages/gulpfile.js#L284">anything changes</a> in the compiled files, <a href="https://github.com/brianmhunt/knockout/blob/gh-pages/gulpfile.js#L36">updating</a> the <a href="https://github.com/brianmhunt/knockout/blob/gh-pages/config.yaml#L12">date of compilation</a> so browsers will know to reload the cache.</p>
+<p>When the page is loaded <a href="https://github.com/brianmhunt/knockout/blob/gh-pages/src/entry.js#L31-L56">regularly recheck</a> the application cache. This is handy because we can inform users when there is a newer version. It also comes in handy as a livereload substitute during development.</p>
+<h1 id="error-reporting">Error reporting</h1>
+<p>We are using <a href="https://trackjs.com">TrackJS</a> to keep us up to date on what might be happening. So far, very few errors have been reported over a few hundred accesses, but it was easy to identify and fix the issues when they were reported. There&rsquo;s not much to say here other than we do it, and it&rsquo;s really awesome!</p>
+<h1 id="inline-auto-reloading-samples">Inline auto-reloading samples</h1>
+<p>Many of the examples on the website are “live” in the sense that they can be edited directly. They can also be sent off to jsFiddle and CodePen, making it easy to tinker, learn, and demonstrate reproducible issues.</p>
+<p>We use the Ace editor to <a href="https://github.com/brianmhunt/knockout/blob/gh-pages/src/bindings-highlight.js#L20">show</a> and <a href="https://github.com/brianmhunt/knockout/blob/gh-pages/src/bindings-edit.js#L37">edit</a> examples. When a <a href="https://github.com/brianmhunt/knockout/blob/gh-pages/src/bindings-edit.js#L21">change to the code occurs</a>, the <a href="https://github.com/brianmhunt/knockout/blob/gh-pages/src/bindings-result.js#L8"><code>result</code></a> is updated.</p>
+<p>Our inline examples are <a href="https://github.com/brianmhunt/knockout/blob/gh-pages/gulpfile.js#L129">decoded as YAML</a>, then <a href="https://github.com/brianmhunt/knockout/blob/gh-pages/gulpfile.js#L134">converted to JSON and encoded in Base64</a> to simplify escaping issues.</p>
+<p>When a <code>&lt;live-example&gt;</code> tag is bound by Knockout it is interpreted as a <a href="https://github.com/brianmhunt/knockout/blob/gh-pages/src/LiveExampleComponent.js">LiveExampleComponent</a>. The <code>base64</code> param is decoded and passed to an <a href="https://github.com/brianmhunt/knockout/blob/gh-pages/src/Example.js#L4">Example</a> constructor in the <a href="https://github.com/brianmhunt/knockout/blob/gh-pages/src/LiveExampleComponent.js#L14">LiveExampleComponent</a>.</p>
+<p>The <code>LiveExample</code> is a separation of the user and data interface from the instance of an <code>Example</code> itself; they could be combined but this lets us create <code>Examples</code> in other contexts from the <code>LiveExample</code>.</p>
+<h1 id="where-to-now">Where to now?</h1>
+<p>Next up, we have to go through the examples, links, references, etc.. to clean it up. The style definitely needs some work. Some “live” time to give users time to give it a whirl and send feedback.</p>
+
+  </div>
+  <div class='copyright'> &copy; 2015 </div>
+</article>
+
+  <footer>
+
+    <div class="pager">
+      <div class="list-link"><a href="/post">Go to all posts</a></div>
+      
+        <a class="prev-link" href="https://brianmhunt.github.io/post/2015-07-22-new-knockout-website/">
+          Previous post Jul 22, 2015
+          <br/><em>New Knockout Website</em>
+        </a>
+      
+      
+        <a class="next-link" href="https://brianmhunt.github.io/post/2015-09-20-properly-parsing-html-in-html5/">
+          Next post Sep 20, 2015
+          <br/><em>Properly Parsing HTML in HTML5</em>
+        </a>
+      
+    </div>
+
+    <div class='license'>
+      <span xmlns:dct="http://purl.org/dc/terms/" href="http://purl.org/dc/dcmitype/Text" property="dct:title" rel="dct:type">Details on the new Knockout Website</span> by Brian M Hunt at <a xmlns:cc="http://creativecommons.org/ns#" href="https://brianmhunt.github.io/post/2015-07-29-knockout-website-details/" property="cc:attributionName" rel="cc:attributionURL">https://brianmhunt.github.io/post/2015-07-29-knockout-website-details/</a> is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License</a>.
+      <br/>
+      <a rel="license" href="http://creativecommons.org/licenses/by/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by/4.0/80x15.png" /></a> 
+    </div>
+    <div class='photo-credit'>
+      Photo credit: <a href='https://picsum.photos'>https://picsum.photos</a>
+    </div>
+  </footer>
+</body>
+</html>
+

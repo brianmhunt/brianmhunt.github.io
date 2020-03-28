@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Storing passwords using Python</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Using strong cryptography to store passwords with Python
+">
+  <meta name="generator" content="Hugo 0.68.1" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css" integrity="sha256-l85OmPOjvil/SOvVt3HnSSjzF1TUMyT9eV0c2BzEGzU=" crossorigin="anonymous" />
+  <link href="" rel="alternate" type="application/rss+xml" title="Brian M Hunt" />
+  <link href="https://brianmhunt.github.io/css/local.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://use.typekit.net/gdm7was.css">
+  
+  <script type="text/javascript" src="https://ssl.google-analytics.com/ga.js"></script>
+  <script>
+    var _gaq = _gaq || [];
+    var pluginUrl = 
+    '//www.google-analytics.com/plugins/ga/inpage_linkid.js';
+    _gaq.push(['_require', 'inpage_linkid', pluginUrl]);
+    _gaq.push(['_setAccount', 'UA-47448402-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+  
+  <link rel="alternate" type="application/rss+xml" href="https://brianmhunt.github.io/index.xml" title="Site Title">
+
+</head>
+
+<body>
+
+<header>
+  <a class='me' href='/'>Brian M Hunt</a>
+</header>
+
+<picture class='splash'>
+  <source srcset="https://picsum.photos/1600/600" media="(min-width: 1600px)">
+  <source srcset="https://picsum.photos/1200/400" media="(min-width: 1200px)">
+  <source srcset="https://picsum.photos/800/300" media="(min-width: 800px)">
+  <img class='splash' src='https://picsum.photos/600/200' alt='Splash by picsum.photos' />
+</picture>
+
+
+<article>
+  <div class="title">Storing passwords using Python</div>
+  <div class="date">Jan 25, 2014</div>
+  <div class="content">
+    <h1 id="what-is-it">What is it?</h1>
+<p>An implementation in Python for storing passwords with cryptographically recognized techniques.</p>
+<h1 id="why-is-it-important">Why is it important?</h1>
+<p>Stored passwords get disclosed from time to time. Good examples give us guidance and help us avoid mistakes.</p>
+<p>Password disclosure is bad news for users and the authenticator. Worse it undermines the trust the public has in our systems for storing and accessing private, personal services.</p>
+<p>When using cryptography it is possible that even if the values stored are
+disclosed that the secrets they reflect remain opaque, or at least cost ineffective to discover.</p>
+<h1 id="how-does-it-work">How does it work?</h1>
+<p>Using the cypher <a href="https://en.wikipedia.org/wiki/PBKDF2">Password-Based Key Derivation Function 2</a> or (perhaps even better) <a href="https://en.wikipedia.org/wiki/Scrypt">scrypt</a> or bcrypt one can make it expensive to obtain secrets from stored values. These cyphers are known as <a href="https://en.wikipedia.org/wiki/Key_derivation_function">key derivation functions (KDF)</a> and below is an example of using a KDF in Python on Google App Engine.</p>
+<p>A KDF is given a token (e.g. a password) and returns what is called a <strong>derived key</strong>, which is the value that one stores.</p>
+<p>With PBKDF2 it can be computationally expensive to verify that a token is equal to a derived key. The expense is proportional to the number of <em>iterations</em> given as a parameter. With scrypt the number of iterations increases not only the computational intensity but the amount of memory needed.</p>
+<p>There is an excellent Q &amp; A <a href="https://security.stackexchange.com/q/211/2914">Security.SE: How to securely hash passwords?</a> that goes into detail how to do this. What is below is just an implementation that I hope adheres to the principles set out there.</p>
+<p>The entire class below can be found in a <a href="https://gist.github.com/brianmhunt/8621775">Github Gist</a>.</p>
+<h2 id="the-vector">The vector</h2>
+<p>The topic merits a little background. If someone slurps a database of passwords, there are a number of ways they can obtain the secret passwords from the stored values. If the passwords are stored in plain text then the gig is up. If the passwords are hashed, then there is more work that must be done.</p>
+<p>One would typically start by comparing the values against a database of popular passwords, which may indicate the algorithm used to hash the values. For example the following, with outcomes shortened for brievity:</p>
+<table>
+<thead>
+<tr>
+<th align="left">Password</th>
+<th align="left">Hash</th>
+<th align="right">Outcome</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="left">&ldquo;password&rdquo;</td>
+<td align="left">MD5</td>
+<td align="right"><code>5f4dcc3b5aa765d61d8...</code></td>
+</tr>
+<tr>
+<td align="left">&ldquo;12345&rdquo;</td>
+<td align="left">MD5</td>
+<td align="right"><code>827ccb0eea8a706c4c3...</code></td>
+</tr>
+<tr>
+<td align="left">&ldquo;password&rdquo;</td>
+<td align="left">SHA1</td>
+<td align="right"><code>5baa61e4c9b93f3f068...</code></td>
+</tr>
+<tr>
+<td align="left">&ldquo;12345&rdquo;</td>
+<td align="left">SHA1</td>
+<td align="right"><code>8cb2237d0679ca88db6...</code></td>
+</tr>
+</tbody>
+</table>
+<p>These indicators of underlying mechanisms and values are called <em>oracles</em>. Once one has an oracle that indicates the algorithm, one can use a <a href="https://en.wikipedia.org/wiki/Dictionary_attack">dictionary attack</a> to check for the presence of common passwords. These dictionary attacks are often very computationally cost effective, when employed with <a href="https://en.wikipedia.org/wiki/Rainbow_table">rainbow tables</a>.</p>
+<p>That said, oracles of this sort are like slugs: you can kill them with <a href="https://en.wikipedia.org/wiki/Salt_(cryptography)">salts</a>. That is not the end of the story though, since modern GPUs can calculate hashes such as SHA1 at a rate of around 2.3 billion per second.</p>
+<p>The KDF requires a salt, but it also makes the oracle much more expensive. The KDF increass the comparisons necessary – one for every potential value of the iterations – and one can vary the number of iterations, so even where one matches a password to a secret that match generally reveals the secret in that one instance. With a regular hash or where the KDF iterations are constant the match will reveal the number of iterations.</p>
+<p>Here is a KDF at work, with just an 8 byte key for illustration, and a salt of &quot;&rdquo; (two double-quote characters):</p>
+<table>
+<thead>
+<tr>
+<th align="left">Password</th>
+<th align="center">Iterations</th>
+<th align="right">Outcome</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="left">&ldquo;password&rdquo;</td>
+<td align="center">1</td>
+<td align="right"><code>3eefce369f0ef5fa</code></td>
+</tr>
+<tr>
+<td align="left">&ldquo;password&rdquo;</td>
+<td align="center">2</td>
+<td align="right"><code>12a3e0e9cd5360ba</code></td>
+</tr>
+<tr>
+<td align="left">&ldquo;password&rdquo;</td>
+<td align="center">10000</td>
+<td align="right"><code>5132aa11fb99782d</code></td>
+</tr>
+</tbody>
+</table>
+<p>The outcome is always the same length, but varies on the iterations. It similarly varies on the salt. Here is one iteration with different salts:</p>
+<table>
+<thead>
+<tr>
+<th align="left">Password</th>
+<th align="center">Salt</th>
+<th align="right">Outcome</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="left">&ldquo;password&rdquo;</td>
+<td align="center">X</td>
+<td align="right"><code>0dd67697c0626ce7</code></td>
+</tr>
+<tr>
+<td align="left">&ldquo;password&rdquo;</td>
+<td align="center">Y</td>
+<td align="right"><code>39adb360cdc543df</code></td>
+</tr>
+<tr>
+<td align="left">&ldquo;password&rdquo;</td>
+<td align="center">Z</td>
+<td align="right"><code>63bea2aa5e5468f1</code></td>
+</tr>
+</tbody>
+</table>
+<p>You can <a href="https://anandam.name/pbkdf2/">try PBKDF2 online</a>. Note how the number of iterations significantly increases the time to produce the result. Changing the salt will alter the outcome, but not the computation time.</p>
+<p>Thus, even if one obtains the stored secrets it is computationally expensive to obtain the passwords that were used to authenticate individuals these secrets represent.</p>
+<h2 id="our-implementation">Our implementation</h2>
+<p>Here is what we include in Python:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">import</span> Crypto.Random
+<span style="color:#f92672">from</span> Crypto.Protocol <span style="color:#f92672">import</span> KDF
+<span style="color:#f92672">from</span> google.appengine.ext <span style="color:#f92672">import</span> ndb
+<span style="color:#f92672">from</span> datetime <span style="color:#f92672">import</span> datetime</code></pre></div>
+<p>As an aside, developing with <code>Crypto</code> onto App Engine used to be <a href="https://stackoverflow.com/questions/11788508">something of a challenging</a>. This issue has, with great thanks to the App Engine developers, been resolved. The challenge of
+getting Crypto onto App Engine is why we settled on PBKDF2 instead of bcrypt or scrypt. It may be easy to get the below working for those KDFs as well, now.</p>
+<p>I am going to use a class in <a href="https://developers.google.com/appengine/docs/python/ndb/">App Engine&rsquo;s NDB</a> to store the credentials. One can reference theses credentials by a key, or making them an internal property of another NDB model, and changing them to work in another data store context should be straightforward.</p>
+<h2 id="class-credentials--definition">class Credentials – definition</h2>
+<p>Here is the opening of the class definition with the constants and stored values for each credential. Every user would have a corresponding instance of the <code>Credentials</code> class in the datastore that would be used to authenticate their identity.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Credentials</span>(ndb<span style="color:#f92672">.</span>Model):
+    <span style="color:#e6db74">&#34;&#34;&#34;Credentials to authenticate a person.
+</span><span style="color:#e6db74">    &#34;&#34;&#34;</span>
+    <span style="color:#75715e"># --- Class Variables ---</span>
+    <span style="color:#75715e"># Our pseudo-random stream - used for generating random bits for the</span>
+    <span style="color:#75715e"># salt and for iterations entropy</span>
+    _randf <span style="color:#f92672">=</span> None
+
+    <span style="color:#75715e"># --- Constants ---</span>
+    <span style="color:#75715e"># Keep track of the basic number of iterations for our derived key,</span>
+    <span style="color:#75715e"># which is stored with the key.</span>
+    ITERATIONS_2013 <span style="color:#f92672">=</span> <span style="color:#ae81ff">60000</span>
+
+    <span style="color:#75715e"># Arbitrary, constant offset, not stored with the key but in the code.</span>
+    ITER_OFFSET <span style="color:#f92672">=</span> <span style="color:#f92672">-</span><span style="color:#ae81ff">257</span>
+
+    <span style="color:#75715e"># Length of the stored key.</span>
+    DK_LEN <span style="color:#f92672">=</span> <span style="color:#ae81ff">32</span>
+
+    <span style="color:#75715e"># --- Datastore variables ---</span>
+    <span style="color:#75715e"># A derived key from e.g. PBKDF2 (or, future: scrypt)</span>
+    dk <span style="color:#f92672">=</span> ndb<span style="color:#f92672">.</span>BlobProperty(indexed<span style="color:#f92672">=</span>False)
+
+    <span style="color:#75715e"># The salt; randomly generated for each dk.</span>
+    salt <span style="color:#f92672">=</span> ndb<span style="color:#f92672">.</span>BlobProperty(indexed<span style="color:#f92672">=</span>False)
+
+    <span style="color:#75715e"># The number of KDF iterations, starting from ITERATIONS_2013 plus or</span>
+    <span style="color:#75715e"># minus a small random amount, and increasing in amount over time to</span>
+    <span style="color:#75715e"># compensate for increasing computational power.</span>
+    iterations <span style="color:#f92672">=</span> ndb<span style="color:#f92672">.</span>IntegerProperty(indexed<span style="color:#f92672">=</span>False)
+
+    <span style="color:#75715e"># --- OTHER ---</span>
+    <span style="color:#75715e"># The next couple items are not part of this article, but included</span>
+    <span style="color:#75715e"># as food for thought.</span>
+
+    <span style="color:#75715e"># We keep track of how many times a person has attempted to log in.</span>
+    failed_attempts <span style="color:#f92672">=</span> ndb<span style="color:#f92672">.</span>IntegerProperty(indexed<span style="color:#f92672">=</span>False)
+
+    <span style="color:#75715e"># Computers authorized is a map from a uuid to an object with a date</span>
+    <span style="color:#75715e"># and list of IP addresses.</span>
+    computers_authorized <span style="color:#f92672">=</span> ndb<span style="color:#f92672">.</span>JsonProperty()
+
+    <span style="color:#75715e"># Two factor authentication.</span>
+    other_factor <span style="color:#f92672">=</span> ndb<span style="color:#f92672">.</span>StringProperty(indexed<span style="color:#f92672">=</span>False)</code></pre></div>
+<p>I am not going to get into the <code>computers_authorized</code>, <code>failed_attempts</code>, or <code>other_factor</code> here, other than to note that are also worth bearing in mind in any authentication scheme.</p>
+<h2 id="string-casting-leakage">String casting leakage</h2>
+<p>We do not want our logs or any other conversion of the credentials to leak the contents of the model, so we overload the following to prevent that from happening. This is just a good practice for this sort of thing.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">    <span style="color:#66d9ef">def</span> __str__(self):
+        <span style="color:#66d9ef">return</span> unicode(self)<span style="color:#f92672">.</span>encode(<span style="color:#e6db74">&#39;utf-8&#39;</span>)
+
+    <span style="color:#66d9ef">def</span> __unicode__(self):
+        <span style="color:#66d9ef">return</span> <span style="color:#e6db74">&#34;&lt;Credentials: {}&gt;&#34;</span><span style="color:#f92672">.</span>format(dict(
+            failed_attempts<span style="color:#f92672">=</span>self<span style="color:#f92672">.</span>failed_attempts
+        ))</code></pre></div>
+<h2 id="random-string">Random string</h2>
+<p>We need to get some random data throughout the process, and this is how we do
+it here.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">    <span style="color:#a6e22e">@property</span>
+    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">random_stream</span>(self):
+        <span style="color:#66d9ef">if</span> <span style="color:#f92672">not</span> self<span style="color:#f92672">.</span>_randf:
+            self<span style="color:#f92672">.</span>_randf <span style="color:#f92672">=</span> Crypto<span style="color:#f92672">.</span>Random<span style="color:#f92672">.</span>new()
+        <span style="color:#66d9ef">return</span> self<span style="color:#f92672">.</span>_randf</code></pre></div>
+<h2 id="iterations">Iterations</h2>
+<p>We vary the number of iterations that the KDF uses in a fairly complex way. The
+strength of the KDF comes not only from a high number of iterations but from the
+number being both unpredictable and increasing over time as computation power increases.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">_multiplier</span>(self):
+        <span style="color:#e6db74">&#34;&#34;&#34;The multiplier to increase the KDF over time.
+</span><span style="color:#e6db74">
+</span><span style="color:#e6db74">        The integer returned doubles every two years from 2013.
+</span><span style="color:#e6db74">        &#34;&#34;&#34;</span>
+        start <span style="color:#f92672">=</span> datetime(<span style="color:#ae81ff">2013</span>, <span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">1</span>)
+        now <span style="color:#f92672">=</span> datetime<span style="color:#f92672">.</span>now()
+        <span style="color:#66d9ef">return</span> <span style="color:#ae81ff">2</span> <span style="color:#f92672">**</span> ((now <span style="color:#f92672">-</span> start)<span style="color:#f92672">.</span>days <span style="color:#f92672">/</span> <span style="color:#ae81ff">730.0</span>)
+
+    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">_iterations</span>(self):
+        <span style="color:#e6db74">&#34;&#34;&#34;The number of iterations for this KDF
+</span><span style="color:#e6db74">        &#34;&#34;&#34;</span>
+        <span style="color:#75715e"># Increase exponentially, to grow with computation power</span>
+        base_iters <span style="color:#f92672">=</span> int(self<span style="color:#f92672">.</span>ITERATIONS_2013 <span style="color:#f92672">*</span> self<span style="color:#f92672">.</span>_multiplier())
+
+        <span style="color:#75715e"># Entropy is an integer bound by min(65536, 6% of the base iters).</span>
+        <span style="color:#75715e"># This is like a salt, but if the there is an attack that</span>
+        <span style="color:#75715e"># reduces the size of the space for comparing derived keys</span>
+        <span style="color:#75715e"># in spite of the salts proper, this variation not be so affected,</span>
+        <span style="color:#75715e"># thus potentially increasing our resilience. While probably a rare</span>
+        <span style="color:#75715e"># case, this is cheap.</span>
+        entropy <span style="color:#f92672">=</span> int(
+            self<span style="color:#f92672">.</span>random_stream<span style="color:#f92672">.</span>read(<span style="color:#ae81ff">2</span>)<span style="color:#f92672">.</span>encode(<span style="color:#e6db74">&#39;hex&#39;</span>), <span style="color:#ae81ff">16</span>
+        ) <span style="color:#f92672">%</span> int(base_iters <span style="color:#f92672">*</span> <span style="color:#ae81ff">0.06</span>)
+
+        <span style="color:#75715e"># Return a sensible number of iterations;</span>
+        <span style="color:#66d9ef">return</span> base_iters <span style="color:#f92672">+</span> entropy</code></pre></div>
+<h2 id="generating-a-key">Generating a key</h2>
+<p>Generating a key is straightforward application of the KDF. Note that this
+would only be called internally by the <code>set_dk</code> or <code>verify</code> methods, below.</p>
+<p>Even where one may get the iterations, we use a static offset
+<code>ITER_OFFSET</code> – very slightly increasing our resilience.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">generate_dk</span>(self, token):
+        <span style="color:#e6db74">&#34;&#34;&#34;Generate a defined key for a given token in hex
+</span><span style="color:#e6db74">        &gt;&gt;&gt; c = Credentials()
+</span><span style="color:#e6db74">        &gt;&gt;&gt; c.salt = &#39;abc&#39;
+</span><span style="color:#e6db74">        &gt;&gt;&gt; c.iterations = 4
+</span><span style="color:#e6db74">        &gt;&gt;&gt; dk = c.generate_dk(&#34;password&#34;)
+</span><span style="color:#e6db74">        &gt;&gt;&gt; len(dk)
+</span><span style="color:#e6db74">        64
+</span><span style="color:#e6db74">        &#34;&#34;&#34;</span>
+        <span style="color:#66d9ef">return</span> KDF<span style="color:#f92672">.</span>PBKDF2(token, self<span style="color:#f92672">.</span>salt, dkLen<span style="color:#f92672">=</span>self<span style="color:#f92672">.</span>DK_LEN,
+                          count<span style="color:#f92672">=</span>self<span style="color:#f92672">.</span>iterations <span style="color:#f92672">+</span> self<span style="color:#f92672">.</span>ITER_OFFSET
+                          )<span style="color:#f92672">.</span>encode(<span style="color:#e6db74">&#39;hex&#39;</span>)</code></pre></div>
+<h2 id="setting-a-key">Setting a key</h2>
+<p>When a user sets their password (in this case the <code>token</code> parameter), this is the function that is called. It sets the <code>iterations</code> and <code>salt</code> to new values, and then generates a key.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">set_dk</span>(self, token):
+        <span style="color:#e6db74">&#34;&#34;&#34;Set the derived key from the given token, generating iterations
+</span><span style="color:#e6db74">        and salt as necessary.
+</span><span style="color:#e6db74">
+</span><span style="color:#e6db74">        &gt;&gt;&gt; c = Credentials()
+</span><span style="color:#e6db74">        &gt;&gt;&gt; c.set_dk(&#34;password&#34;)
+</span><span style="color:#e6db74">        &gt;&gt;&gt; len(c.dk)
+</span><span style="color:#e6db74">        64
+</span><span style="color:#e6db74">        &gt;&gt;&gt; len(c.salt)
+</span><span style="color:#e6db74">        64
+</span><span style="color:#e6db74">        &gt;&gt;&gt; c.iterations &gt;= c.ITERATIONS_2013
+</span><span style="color:#e6db74">        True
+</span><span style="color:#e6db74">        &#34;&#34;&#34;</span>
+        self<span style="color:#f92672">.</span>iterations <span style="color:#f92672">=</span> self<span style="color:#f92672">.</span>_iterations()
+        self<span style="color:#f92672">.</span>salt <span style="color:#f92672">=</span> self<span style="color:#f92672">.</span>random_stream<span style="color:#f92672">.</span>read(<span style="color:#ae81ff">32</span>)<span style="color:#f92672">.</span>encode(<span style="color:#e6db74">&#39;hex&#39;</span>)
+        self<span style="color:#f92672">.</span>dk <span style="color:#f92672">=</span> self<span style="color:#f92672">.</span>generate_dk(token)</code></pre></div>
+<h2 id="verifying-a-key">Verifying a key</h2>
+<p>When we receive a password (<code>token</code>) we run it through the algorithm with the parameters that correspond to the stored instance of the <code>Credentials</code> for the user the password is purported to belong to.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">verify</span>(self, token):
+        <span style="color:#e6db74">&#34;&#34;&#34;Determine if the given token matches the saved token
+</span><span style="color:#e6db74">        &gt;&gt;&gt; c = Credentials()
+</span><span style="color:#e6db74">
+</span><span style="color:#e6db74">        Fail when credentials have no dk
+</span><span style="color:#e6db74">        &gt;&gt;&gt; c.verify(&#34;password&#34;)
+</span><span style="color:#e6db74">
+</span><span style="color:#e6db74">        # my name is my passport, verify me
+</span><span style="color:#e6db74">        &gt;&gt;&gt; c.set_dk(&#34;password&#34;)
+</span><span style="color:#e6db74">        &gt;&gt;&gt; c.verify(&#34;password&#34;)
+</span><span style="color:#e6db74">        True
+</span><span style="color:#e6db74">
+</span><span style="color:#e6db74">        # try a bad password
+</span><span style="color:#e6db74">        &gt;&gt;&gt; c.verify(&#34;not the password&#34;)
+</span><span style="color:#e6db74">        False
+</span><span style="color:#e6db74">        &#34;&#34;&#34;</span>
+        <span style="color:#66d9ef">if</span> <span style="color:#f92672">not</span> self<span style="color:#f92672">.</span>dk:
+            <span style="color:#75715e"># If this user has no password, we cannot verify against it.</span>
+            <span style="color:#75715e"># Our return value should still be falsy.</span>
+            <span style="color:#66d9ef">return</span>
+
+        <span style="color:#66d9ef">return</span> self<span style="color:#f92672">.</span>dk <span style="color:#f92672">==</span> self<span style="color:#f92672">.</span>generate_dk(token)</code></pre></div>
+<h2 id="reservations">Reservations</h2>
+<p>Nothing is perfect. This is just a small piece of a security puzzle, and there are many other vectors one must bear in mind.</p>
+<p>This does raise the bar for the specific concern where the stored secrets are divulged, and the risk then that the authentication they represent may be disclosed.</p>
+<p>A number of improvements could be made to the above that I can think of. For example, storing the iterations and salt with the derived key partially (but not entirely) undermines their value if the database is slurped.</p>
+<p>There may be inherent flaws in the algorithms that we employ here. The risk is usually in the form of short-circuits that reduce the computation time (and memory, in the case of scrypt) needed to verify a token.</p>
+<p>Inherent issues may exist in the pseudo-random number generator that reduce the entropy of the cryptography and as a result reduce the computation time needed since the possible outcomes are significantly reduced.</p>
+<h1 id="summary">Summary</h1>
+<p>From the Wikipedia article on <a href="https://en.wikipedia.org/wiki/Kerckhoffs's_principle">Kerckoff&rsquo;s principle</a>, I quote <a href="https://www.quadibloc.com/crypto/mi0611.htm">John Savard</a>:</p>
+<blockquote>
+<p>Unlike a key, an algorithm can be studied and analyzed by experts to determine if it is likely to be secure. An algorithm that you have invented yourself and kept secret has not had the opportunity for such review.</p>
+</blockquote>
+<p>I hope that you take away from this some illumination, if not inspiration and curiosity, about some important elements of storing passwords.</p>
+<p>Any thoughts you have are most welcome!</p>
+
+  </div>
+  <div class='copyright'> &copy; 2014 </div>
+</article>
+
+  <footer>
+
+    <div class="pager">
+      <div class="list-link"><a href="/post">Go to all posts</a></div>
+      
+        <a class="prev-link" href="https://brianmhunt.github.io/post/2014-01-24-importance-of-typography/">
+          Previous post Jan 24, 2014
+          <br/><em>Importance of typography</em>
+        </a>
+      
+      
+        <a class="next-link" href="https://brianmhunt.github.io/post/2014-01-26-knockout-and-foreign-keys/">
+          Next post Jan 26, 2014
+          <br/><em>Knockout and foreign keys extender</em>
+        </a>
+      
+    </div>
+
+    <div class='license'>
+      <span xmlns:dct="http://purl.org/dc/terms/" href="http://purl.org/dc/dcmitype/Text" property="dct:title" rel="dct:type">Storing passwords using Python</span> by Brian M Hunt at <a xmlns:cc="http://creativecommons.org/ns#" href="https://brianmhunt.github.io/post/2014-01-25-strong-crypto-python-passwords/" property="cc:attributionName" rel="cc:attributionURL">https://brianmhunt.github.io/post/2014-01-25-strong-crypto-python-passwords/</a> is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License</a>.
+      <br/>
+      <a rel="license" href="http://creativecommons.org/licenses/by/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by/4.0/80x15.png" /></a> 
+    </div>
+    <div class='photo-credit'>
+      Photo credit: <a href='https://picsum.photos'>https://picsum.photos</a>
+    </div>
+  </footer>
+</body>
+</html>
+

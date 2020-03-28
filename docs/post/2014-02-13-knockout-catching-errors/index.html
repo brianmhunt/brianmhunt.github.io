@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Knockout catching errors</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Some helpful ways to isolate Knockout issues
+">
+  <meta name="generator" content="Hugo 0.68.1" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css" integrity="sha256-l85OmPOjvil/SOvVt3HnSSjzF1TUMyT9eV0c2BzEGzU=" crossorigin="anonymous" />
+  <link href="" rel="alternate" type="application/rss+xml" title="Brian M Hunt" />
+  <link href="https://brianmhunt.github.io/css/local.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://use.typekit.net/gdm7was.css">
+  
+  <script type="text/javascript" src="https://ssl.google-analytics.com/ga.js"></script>
+  <script>
+    var _gaq = _gaq || [];
+    var pluginUrl = 
+    '//www.google-analytics.com/plugins/ga/inpage_linkid.js';
+    _gaq.push(['_require', 'inpage_linkid', pluginUrl]);
+    _gaq.push(['_setAccount', 'UA-47448402-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+  
+  <link rel="alternate" type="application/rss+xml" href="https://brianmhunt.github.io/index.xml" title="Site Title">
+
+</head>
+
+<body>
+
+<header>
+  <a class='me' href='/'>Brian M Hunt</a>
+</header>
+
+<picture class='splash'>
+  <source srcset="https://picsum.photos/1600/600" media="(min-width: 1600px)">
+  <source srcset="https://picsum.photos/1200/400" media="(min-width: 1200px)">
+  <source srcset="https://picsum.photos/800/300" media="(min-width: 800px)">
+  <img class='splash' src='https://picsum.photos/600/200' alt='Splash by picsum.photos' />
+</picture>
+
+
+<article>
+  <div class="title">Knockout catching errors</div>
+  <div class="date">Feb 13, 2014</div>
+  <div class="content">
+    <h1 id="what-is-this">What is this?</h1>
+<p>A couple tips for identifying issues with Knockout.</p>
+<h1 id="why-is-it-important">Why is it important?</h1>
+<p>Error handling is one of the areas where Knockout could do with some attention. These techniques have saved me quite a bit of time, and I hope you also find them useful.</p>
+<h1 id="hows-it-work">How&rsquo;s it work?</h1>
+<p>There are two major places where you can really hook in and catch issues:</p>
+<ul>
+<li>Custom binding provider</li>
+<li>Wrapping custom bindings</li>
+</ul>
+<p>The custom binding provider is called when the bindings are first made, via <code>ko.applyBindings</code>. At this point you can catch whether the binding <code>valueAccessor</code> has any errors, and check whether there are actually any binding handlers for the node&rsquo;s <code>data-bind</code> attribute.</p>
+<p>The wrapping of custom bindings lets you track what is happening when a binding is being applied to a node with <code>binding.init</code> and <code>binding.update</code>. It can be tricky to track down where on the page these problems are occurring, and I add a custom class to bad nodes to highlight where bad bindings are cropping up.</p>
+<h2 id="any-tools-needed">Any tools needed?</h2>
+<p>I am using <a href="https://lodash.com"><code>lodash</code></a>, <a href="https://jquery.com"><code>jQuery</code></a>, on Google Chrome. I am also writing the below in Coffeescript, just for my own convenience. If you are not able to use these, I hope the following is nevertheless illustrative.</p>
+<h2 id="custom-binding-provider">Custom Binding Provider</h2>
+<p>This custom binding provider sends the console handy error messages
+that indicate what went wrong. It also adds the class <code>binding-error</code> to the
+element, highlighting which elements went awry.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-coffeescript" data-lang="coffeescript">ErrorHandlingBindingProvider = <span style="color:#a6e22e">-&gt;</span>
+  <span style="color:#75715e"># The original binding handler still does the real work; you
+</span><span style="color:#75715e"></span>  <span style="color:#75715e"># can use your own or an alternative such as knockout-secure-binding
+</span><span style="color:#75715e"></span>  <span style="color:#75715e"># here though.
+</span><span style="color:#75715e"></span>  orig = <span style="color:#66d9ef">new</span> <span style="color:#a6e22e">ko</span>.<span style="color:#a6e22e">bindingProvider</span>()
+
+  <span style="color:#75715e"># We also pass through the `nodeHasBindings` call.
+</span><span style="color:#75715e"></span>  @nodeHasBindings = <span style="color:#a6e22e">orig</span>.<span style="color:#a6e22e">nodeHasBindings</span>
+
+  <span style="color:#75715e"># This returns a map of binding names to respective handlers, given a node
+</span><span style="color:#75715e"></span>  <span style="color:#75715e"># and the bindingContext.
+</span><span style="color:#75715e"></span>  @getBindings = <span style="color:#a6e22e">(node, bindingContext) -&gt;</span>
+    <span style="color:#66d9ef">try</span>
+      <span style="color:#75715e"># The bindings_map will be `null` if there are no bindings, otherwise
+</span><span style="color:#75715e"></span>      <span style="color:#75715e"># an object mapping { name: binding }.
+</span><span style="color:#75715e"></span>      bindings_map = <span style="color:#a6e22e">orig</span>.<span style="color:#a6e22e">getBindings</span>(<span style="color:#a6e22e">node</span>, <span style="color:#a6e22e">bindingContext</span>)
+    <span style="color:#66d9ef">catch</span> <span style="color:#a6e22e">err</span>
+      <span style="color:#75715e"># When there is an error, throw out some useful context.
+</span><span style="color:#75715e"></span>      <span style="color:#a6e22e">console</span>.<span style="color:#a6e22e">error</span>(<span style="color:#e6db74">&#34;Binding error: &#34;</span>, <span style="color:#a6e22e">err</span>.<span style="color:#a6e22e">message</span>, <span style="color:#e6db74">&#34;\nNode:&#34;</span>, <span style="color:#a6e22e">node</span>,
+        <span style="color:#e6db74">&#34;\nContext:&#34;</span>, <span style="color:#a6e22e">ko</span>.<span style="color:#a6e22e">contextFor</span>(<span style="color:#a6e22e">node</span>))
+      <span style="color:#a6e22e">$</span>(<span style="color:#a6e22e">node</span>).<span style="color:#a6e22e">addClass</span>(<span style="color:#e6db74">&#34;binding-error&#34;</span>)
+
+    <span style="color:#75715e"># Pass null straight up.
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">bindings_map</span> <span style="color:#f92672">==</span> <span style="color:#66d9ef">null</span> <span style="color:#66d9ef">then</span> <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">null</span>
+
+    <span style="color:#75715e"># If there isn&#39;t at least one good binding, print some helpful
+</span><span style="color:#75715e"></span>    <span style="color:#75715e"># debugging information.
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">unless</span> <span style="color:#a6e22e">_</span>(<span style="color:#a6e22e">bindings_map</span>).<span style="color:#a6e22e">keys</span>().<span style="color:#a6e22e">any</span>(<span style="color:#a6e22e">(m) -&gt;</span> <span style="color:#a6e22e">_</span>.<span style="color:#a6e22e">has</span>(<span style="color:#a6e22e">ko</span>.<span style="color:#a6e22e">bindingHandlers</span>, <span style="color:#a6e22e">m</span>))
+      <span style="color:#a6e22e">console</span>.<span style="color:#a6e22e">error</span>(<span style="color:#e6db74">&#34;No bindings found:&#34;</span>, <span style="color:#a6e22e">bindings_map</span>, <span style="color:#e6db74">&#34;Node:&#34;</span>, <span style="color:#a6e22e">node</span>)
+      <span style="color:#a6e22e">$</span>(<span style="color:#a6e22e">node</span>).<span style="color:#a6e22e">addClass</span>(<span style="color:#e6db74">&#34;binding-error&#34;</span>)
+      <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">null</span>
+
+    <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">bindings_map</span>
+  <span style="color:#66d9ef">return</span>
+
+<span style="color:#75715e"># Replace the default Knockout binding provider.
+</span><span style="color:#75715e"></span>ko.bindingProvider.instance = <span style="color:#66d9ef">new</span> <span style="color:#a6e22e">ErrorHandlingBindingProvider</span>()</code></pre></div>
+<p>As a matter of interest this started back with <a href="https://github.com/SteveSanderson/knockout/issues/792">Knockout issue #793</a>, with the credit for this technique owing to <a href="https://www.knockmeout.net/">Ryan Niemeyer</a>. Speaking
+of which, while you are at it you may want to check out Ryan&rsquo;s post
+<a href="https://www.knockmeout.net/2013/06/knockout-debugging-strategies-plugin.html">Knockout.js Troubleshooting Strategies</a>.</p>
+<h2 id="wrapping-custom-bindings">Wrapping custom bindings</h2>
+<p>Our custom binding handlers are &ldquo;wrapped&rdquo; for the following purpose:</p>
+<ol>
+<li>make <code>this</code> into the binding object (instead of <code>window</code>);</li>
+<li>isolate any errors when <code>binding.init</code> or binding.update` are called;</li>
+<li>add class <code>binding-error</code> to any element where the binding <code>.init</code> or <code>.update</code> call fails.</li>
+</ol>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-coffeescript" data-lang="coffeescript"><span style="color:#75715e"># The `isolate_call` function wraps `binding.init` and `binding.update`
+</span><span style="color:#75715e"></span>isolate_call = <span style="color:#a6e22e">(binding, fn_name, key) -&gt;</span>
+  <span style="color:#75715e"># binding is the binding object
+</span><span style="color:#75715e"></span>  <span style="color:#75715e"># fn_name is one of `init` or `update`
+</span><span style="color:#75715e"></span>  <span style="color:#75715e"># key is the name of the binding
+</span><span style="color:#75715e"></span>
+  fn = <span style="color:#a6e22e">binding</span>[<span style="color:#a6e22e">fn_name</span>]
+  <span style="color:#66d9ef">unless</span> <span style="color:#a6e22e">fn</span> <span style="color:#66d9ef">then</span> <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">undefined</span>
+
+  <span style="color:#66d9ef">unless</span> <span style="color:#a6e22e">_</span>.<span style="color:#a6e22e">isFunction</span>(<span style="color:#a6e22e">fn</span>)
+    <span style="color:#a6e22e">console</span>.<span style="color:#a6e22e">error</span>(<span style="color:#e6db74">&#34;%cERROR%c Binding </span><span style="color:#e6db74">#{</span><span style="color:#a6e22e">key</span><span style="color:#e6db74">}</span><span style="color:#e6db74">.</span><span style="color:#e6db74">#{</span><span style="color:#a6e22e">fn_name</span><span style="color:#e6db74">}</span><span style="color:#e6db74"> is not a function&#34;</span>,
+      <span style="color:#e6db74">&#34;color:red&#34;</span>, <span style="color:#e6db74">&#34;color:black&#34;</span>, <span style="color:#a6e22e">binding</span>, <span style="color:#a6e22e">fn_name</span>, <span style="color:#a6e22e">fn</span>)
+    <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">undefined</span>
+
+  wrapped_fn = <span style="color:#a6e22e">(args...) -&gt;</span>
+    <span style="color:#66d9ef">try</span>
+      <span style="color:#75715e"># Pass-through the call to the original handler.
+</span><span style="color:#75715e"></span>      <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">fn</span>.<span style="color:#a6e22e">apply</span>(<span style="color:#a6e22e">binding</span>, <span style="color:#a6e22e">args</span>)
+    <span style="color:#66d9ef">catch</span> <span style="color:#a6e22e">e</span>
+      <span style="color:#a6e22e">console</span>.<span style="color:#a6e22e">error</span>(<span style="color:#e6db74">&#34;%cERROR%c: Binding </span><span style="color:#e6db74">#{</span><span style="color:#a6e22e">key</span><span style="color:#e6db74">}</span><span style="color:#e6db74">.</span><span style="color:#e6db74">#{</span><span style="color:#a6e22e">fn_name</span><span style="color:#e6db74">}</span><span style="color:#e6db74"> error&#34;</span>,
+        <span style="color:#e6db74">&#34;color:red&#34;</span>, <span style="color:#e6db74">&#34;color: black&#34;</span>, <span style="color:#a6e22e">args</span>[<span style="color:#ae81ff">0</span>], <span style="color:#a6e22e">e</span>, <span style="color:#a6e22e">e</span>.<span style="color:#a6e22e">stack</span>)
+
+      <span style="color:#75715e"># args = [element, valueAccessor, allBindings, view_model, context]
+</span><span style="color:#75715e"></span>      <span style="color:#75715e"># Add a class indicating an error.
+</span><span style="color:#75715e"></span>      <span style="color:#a6e22e">$</span>(<span style="color:#a6e22e">args</span>[<span style="color:#ae81ff">0</span>]).<span style="color:#a6e22e">addClass</span>(<span style="color:#e6db74">&#34;binding-error&#34;</span>)
+      <span style="color:#66d9ef">return</span>
+  <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">wrapped_fn</span>
+
+
+isolate_binding_errors = <span style="color:#a6e22e">(target, binding, key) -&gt;</span>
+
+  <span style="color:#75715e"># Expose the original binding functions.
+</span><span style="color:#75715e"></span>  binding.init_fn = <span style="color:#a6e22e">binding</span>.<span style="color:#a6e22e">init</span>
+  binding.update_fn = <span style="color:#a6e22e">binding</span>.<span style="color:#a6e22e">update_fn</span>
+
+  <span style="color:#75715e"># Add our wrapped functions.
+</span><span style="color:#75715e"></span>  binding.init = <span style="color:#a6e22e">isolate_call</span>(<span style="color:#a6e22e">binding</span>, <span style="color:#e6db74">&#39;init&#39;</span>, <span style="color:#a6e22e">key</span>)
+  binding.update = <span style="color:#a6e22e">isolate_call</span>(<span style="color:#a6e22e">binding</span>, <span style="color:#e6db74">&#39;update&#39;</span>, <span style="color:#a6e22e">key</span>)
+
+  <span style="color:#75715e"># Add this to the new to-be bindingHandlers object.
+</span><span style="color:#75715e"></span>  <span style="color:#a6e22e">target</span>[<span style="color:#a6e22e">key</span>] <span style="color:#f92672">=</span> <span style="color:#a6e22e">binding</span>
+  <span style="color:#66d9ef">return</span>
+
+
+<span style="color:#75715e"># Where `bindings` is a Javascript object containing our custom bindings
+</span><span style="color:#75715e"></span><span style="color:#a6e22e">_</span>.<span style="color:#a6e22e">extend</span>(<span style="color:#a6e22e">ko</span>.<span style="color:#a6e22e">bindingHandlers</span>, <span style="color:#a6e22e">_</span>.<span style="color:#a6e22e">transform</span>(<span style="color:#a6e22e">bindings</span>, <span style="color:#a6e22e">isolate_binding_errors</span>))</code></pre></div>
+<p>It may be worth noting that I do not wrap the built-in Knockout bindings. Though there would probably be nothing wrong with doing so, I was wary of redefining <code>this</code> on them — which ordinarily otherwise seems to just be <code>window</code>. I have been mindful of the use of <code>this</code> on my custom bindings, which I find quite convenient as one can do things like this (and beg your pardon for the tangent):</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-coffeescript" data-lang="coffeescript">custom_binding =
+  init: <span style="color:#a6e22e">(@element, @valueAccessor) -&gt;</span>
+     <span style="color:#a6e22e">@add_wrap</span>()
+
+  add_wrap: <span style="color:#a6e22e">-&gt;</span>
+    <span style="color:#a6e22e">$</span>(<span style="color:#a6e22e">@element</span>).<span style="color:#a6e22e">wrap</span>(<span style="color:#e6db74">&#34;&lt;div&gt;&#34;</span>)</code></pre></div>
+<p>Which in my mind is quite a bit more concise and semantic than <code>custom_binding.add_wrap(@element)</code>. However, I am not certain whether the Knockout built-in bindings use <code>this</code> to any effect, so out of caution I do not wrap them as above.</p>
+<h2 id="styles-for-binding-error">Styles for <code>binding-error</code></h2>
+<p>For the <code>binding-error</code> class style I have the following visually obnoxious properties:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-css" data-lang="css"><span style="color:#75715e">/* [data-bind] */</span>.<span style="color:#a6e22e">binding-error</span> {
+  <span style="color:#66d9ef">border</span>: <span style="color:#ae81ff">4</span><span style="color:#66d9ef">px</span> <span style="color:#66d9ef">dashed</span> <span style="color:#66d9ef">red</span>;
+  <span style="color:#66d9ef">background-color</span>: <span style="color:#ae81ff">#F88</span>;
+}
+
+<span style="color:#75715e">/* [data-bind] */</span>.<span style="color:#a6e22e">binding-error</span>:<span style="color:#a6e22e">after</span> {
+  <span style="color:#66d9ef">font-size</span>: <span style="color:#ae81ff">16</span><span style="color:#66d9ef">px</span>;
+  <span style="color:#66d9ef">color</span>: <span style="color:#66d9ef">red</span>;
+  <span style="color:#66d9ef">background-color</span>: <span style="color:#66d9ef">white</span>;
+  <span style="color:#66d9ef">padding</span>: <span style="color:#ae81ff">2</span><span style="color:#66d9ef">px</span> <span style="color:#ae81ff">0.5</span><span style="color:#66d9ef">em</span>;
+  <span style="color:#66d9ef">border</span>: <span style="color:#ae81ff">1</span><span style="color:#66d9ef">px</span> <span style="color:#66d9ef">solid</span> <span style="color:#66d9ef">gray</span>;
+  <span style="color:#66d9ef">font-style</span>: <span style="color:#66d9ef">italic</span>;
+  <span style="color:#66d9ef">content</span>: <span style="color:#e6db74">&#34;This item may not be working as expected.&#34;</span>;
+}</code></pre></div>
+<p>This striking visual appearance comes in handy with the <em>other techniques</em> I use to debug.</p>
+<h2 id="other-techniques">Other techniques</h2>
+<p>When elements have the <code>binding-error</code>, I often right-click them in Chrome and click &ldquo;Inspect element&rdquo;. This opens it up in the Developer Tools, and <code>$0</code> is set to the inspected node. The following commands are then particularly helpful:</p>
+<ul>
+<li><code>ko.dataFor($0)</code></li>
+<li><code>ko.contextFor($0)</code></li>
+</ul>
+<p>Alternatively, there is also the helpful <a href="https://chrome.google.com/webstore/detail/knockoutjs-context-debugg/oddcpmchholgcjgjdnfjmildmlielhof">Knockout Context Debugger</a>.</p>
+<h2 id="jsfiddle-example">jsFiddle example</h2>
+<p>Here is what it looks like when you put it all together.</p>
+<iframe width="100%" height="350" src="https://jsfiddle.net/bmh_ca/sBMs2/1/embedded/result,html,js,css,resources" allowfullscreen="allowfullscreen" frameborder="0"></iframe>
+<h2 id="summary">Summary</h2>
+<p>With the above techniques it becomes quite a bit simpler to root out and resolve issues with Knockout bindings. I hope you find the above helpful, and of course I would be grateful if you could please comment if you have other thoughts on debugging with Knockout.</p>
+
+  </div>
+  <div class='copyright'> &copy; 2014 </div>
+</article>
+
+  <footer>
+
+    <div class="pager">
+      <div class="list-link"><a href="/post">Go to all posts</a></div>
+      
+        <a class="prev-link" href="https://brianmhunt.github.io/post/2014-02-02-knockout-plus-content-security-policy/">
+          Previous post Feb 2, 2014
+          <br/><em>Knockout Secure Binding</em>
+        </a>
+      
+      
+        <a class="next-link" href="https://brianmhunt.github.io/post/2014-02-16-open-source-exposure/">
+          Next post Feb 16, 2014
+          <br/><em>Open Source Exposure</em>
+        </a>
+      
+    </div>
+
+    <div class='license'>
+      <span xmlns:dct="http://purl.org/dc/terms/" href="http://purl.org/dc/dcmitype/Text" property="dct:title" rel="dct:type">Knockout catching errors</span> by Brian M Hunt at <a xmlns:cc="http://creativecommons.org/ns#" href="https://brianmhunt.github.io/post/2014-02-13-knockout-catching-errors/" property="cc:attributionName" rel="cc:attributionURL">https://brianmhunt.github.io/post/2014-02-13-knockout-catching-errors/</a> is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License</a>.
+      <br/>
+      <a rel="license" href="http://creativecommons.org/licenses/by/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by/4.0/80x15.png" /></a> 
+    </div>
+    <div class='photo-credit'>
+      Photo credit: <a href='https://picsum.photos'>https://picsum.photos</a>
+    </div>
+  </footer>
+</body>
+</html>
+

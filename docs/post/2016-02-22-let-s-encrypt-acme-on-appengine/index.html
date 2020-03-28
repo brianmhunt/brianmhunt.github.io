@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Let&#39;s Encrypt - ACME on AppEngine</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="An example of how to mostly-automate the use of ACME TLS keys on Google App Engine
+">
+  <meta name="generator" content="Hugo 0.68.1" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css" integrity="sha256-l85OmPOjvil/SOvVt3HnSSjzF1TUMyT9eV0c2BzEGzU=" crossorigin="anonymous" />
+  <link href="" rel="alternate" type="application/rss+xml" title="Brian M Hunt" />
+  <link href="https://brianmhunt.github.io/css/local.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://use.typekit.net/gdm7was.css">
+  
+  <script type="text/javascript" src="https://ssl.google-analytics.com/ga.js"></script>
+  <script>
+    var _gaq = _gaq || [];
+    var pluginUrl = 
+    '//www.google-analytics.com/plugins/ga/inpage_linkid.js';
+    _gaq.push(['_require', 'inpage_linkid', pluginUrl]);
+    _gaq.push(['_setAccount', 'UA-47448402-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+  
+  <link rel="alternate" type="application/rss+xml" href="https://brianmhunt.github.io/index.xml" title="Site Title">
+
+</head>
+
+<body>
+
+<header>
+  <a class='me' href='/'>Brian M Hunt</a>
+</header>
+
+<picture class='splash'>
+  <source srcset="https://picsum.photos/1600/600" media="(min-width: 1600px)">
+  <source srcset="https://picsum.photos/1200/400" media="(min-width: 1200px)">
+  <source srcset="https://picsum.photos/800/300" media="(min-width: 800px)">
+  <img class='splash' src='https://picsum.photos/600/200' alt='Splash by picsum.photos' />
+</picture>
+
+
+<article>
+  <div class="title">Let&#39;s Encrypt - ACME on AppEngine</div>
+  <div class="date">Feb 22, 2016</div>
+  <div class="content">
+    <h1 id="what-is-this">What is this?</h1>
+<p>This is a bit of process that I use to get TLS keys to use on AppEngine
+using Let&rsquo;s Encrypt.</p>
+<h2 id="span-stylecolor-redupdatespan"><span style='color: red'>Update</span></h2>
+<p><em>I have a streamlined process described below,
+removing dependencies on Node and Javascript,
+and reducing the amount of user-input needed,
+as described</em> <a href="/acme-appengine-simplified/">in my next post</a>.</p>
+<h1 id="whys-it-matter">Why&rsquo;s it matter?</h1>
+<p>There are a number of quirks in Let&rsquo;s Encrypt and TLS on AppEngine that
+make it more difficult to automate the process.  This helps ease the problem,
+as best we can at the moment.</p>
+<h1 id="lets-get-started">Let&rsquo;s get started!</h1>
+<p>First of all, the limitations.  In the usual course one would run Let&rsquo;s Encrypt
+on the web-server where the certificate will be used.  This is not (yet)
+an option for AppEngine.</p>
+<p>The relevant Google Code issue for AppEngine is <a href="https://code.google.com/p/googleappengine/issues/detail?id=12535">#12535</a>.</p>
+<p>In the mean time, we can use the <code>--manual</code> process for validating a server.</p>
+<h2 id="the---manual-validation-process">The <code>--manual</code> Validation process</h2>
+<p>Running <code>letsencrypt certonly --manual ...</code> produces a response to a challenge
+that Let&rsquo;s Encrypt will perform of the web-server to verify that we, the
+ones requesting a signed TLS certificate, indeed own the server.</p>
+<p>The <code>letsencrypt</code> command above will print something like:</p>
+<blockquote>
+<p>Make sure your web server displays the following content at
+<a href="http://www.example.com/.well-known/acme-challenge/KmgmF6qZl6XCHmQMRyb4Uge-lP1-jvFF-C4LhKfxmXk">http://www.example.com/.well-known/acme-challenge/KmgmF6qZl6XCHmQMRyb4Uge-lP1-jvFF-C4LhKfxmXk</a> before continuing:</p>
+<p>KmqMF6qZl6XCHmQMRyb4Uge-rP1-jvFF-C4LhKfxmXk.7YEye9w3fzcAYQGTbPSwhDyqBumUaUCNDouAgx4Diu0</p>
+<p>&hellip;</p>
+<p>Press ENTER to continue</p>
+</blockquote>
+<p>So the challenge we have to meet to get our signed certificate is to serve the
+above file and content on our Google App Engine.</p>
+<h2 id="serving-the-challenge-response">Serving the Challenge-Response</h2>
+<p>To separate out the ACME part of our service from the rest, one can use
+<a href="https://cloud.google.com/appengine/docs/python/modules/">App Engine&rsquo;s modules</a>.</p>
+<p>By using modules we speed up the deploy process, circumvent any continuous
+integration, and minimize any exposure across the system.</p>
+<p>To set up a module, one needs a <code>dispatch.yaml</code>, something like this:</p>
+<script src="https://gist.github.com/brianmhunt/7c647dce3e43d886f1d2/b884b8486e7e299a9dfdc373c6d5a2a7abca6125.js?file=dispatch.yaml"></script>
+<p>Then one needs a <code>module.yaml</code>, something like this:</p>
+<script src="https://gist.github.com/brianmhunt/7c647dce3e43d886f1d2/b884b8486e7e299a9dfdc373c6d5a2a7abca6125.js?file=module.yaml"></script>
+<p>The directory setup looks like this:</p>
+<pre><code>dispatch.yaml
+acme/
+acme/module.yaml
+acme/challenges/
+</code></pre>
+<p>To set up the module and dispatch one must run, once,</p>
+<blockquote>
+<p>$ <code>appcfg.py update module.yaml -A appengine-example-project</code></p>
+<p>$ <code>appcfg.py update_dispatch dispatch.yaml -A appengine-example-project</code></p>
+</blockquote>
+<h2 id="getting-a-new-key">Getting a new key</h2>
+<p>So to mostly-automate the process I have created a couple <a href="http://gulpjs.com/"><code>gulp</code></a> tasks, as
+seen in the next code snippet.</p>
+<p><em>On reflection, I realized I am taking for granted familiarity with Gulp.  In
+short, it is a task runner built on javascript/node.  To get that up and
+running you&rsquo;ll need <a href="https://nodejs.org">node</a>, a <code>package.json</code> and a
+<code>gulpfile.js</code>, but that&rsquo;s beyond the scope of this article. Nonetheless I hope
+the following proves interesting and sufficiently illustrative of the intended
+task to be helpful if you are following a similar path.</em></p>
+<script src="https://gist.github.com/brianmhunt/7c647dce3e43d886f1d2/b884b8486e7e299a9dfdc373c6d5a2a7abca6125.js?file=acme.js"></script>
+<p>After making the appropriate changes to the config (which in this task is
+exposed as a global), one can obtain a signed key by following these steps:</p>
+<ol>
+<li>Run <code>gulp acme:gen -t stage</code>.</li>
+<li>Wait for the challenge (i.e. the &ldquo;<code>Press Enter to continue</code>&rdquo;</li>
+<li>Run (in another shell) <code>gulp acme:cr -t stage</code></li>
+<li>Enter the file-name and challenge and wait for deployment</li>
+<li>Press <code>Enter</code> in the <code>gen</code> terminal; the certificate and private key ought to be printed to the terminal</li>
+<li>Copy the certificate and private key into the corresponding fields of a new key in <a href="https://console.cloud.google.com/appengine/settings/certificates">App Engine&rsquo;s Cloud Console</a>.</li>
+</ol>
+<h2 id="summary">Summary</h2>
+<p>I hope the above helps shed some light on what might be a somewhat
+daunting process.</p>
+<p>Obviously it&rsquo;ll be better when AppEngine and Let&rsquo;s Encrypt
+talk directly. That requires some engineering on Google&rsquo;s side, and while
+the issue #12535 has been accepted, there&rsquo;s no indication of a timeline.</p>
+<p>In the interim, the above is a not–too–onerous process for the 90 days renewal
+that ACME requires.</p>
+
+  </div>
+  <div class='copyright'> &copy; 2016 </div>
+</article>
+
+  <footer>
+
+    <div class="pager">
+      <div class="list-link"><a href="/post">Go to all posts</a></div>
+      
+        <a class="prev-link" href="https://brianmhunt.github.io/post/2015-11-25-picking-our-roots-between-hsts-and-public-key-pins/">
+          Previous post Nov 25, 2015
+          <br/><em>Picking our roots: Between HSTS and public key pins</em>
+        </a>
+      
+      
+        <a class="next-link" href="https://brianmhunt.github.io/post/2016-03-05-acme-appengine-simplified/">
+          Next post Mar 5, 2016
+          <br/><em>ACME &#43; AppEngine ... Simplified</em>
+        </a>
+      
+    </div>
+
+    <div class='license'>
+      <span xmlns:dct="http://purl.org/dc/terms/" href="http://purl.org/dc/dcmitype/Text" property="dct:title" rel="dct:type">Let&#39;s Encrypt - ACME on AppEngine</span> by Brian M Hunt at <a xmlns:cc="http://creativecommons.org/ns#" href="https://brianmhunt.github.io/post/2016-02-22-let-s-encrypt-acme-on-appengine/" property="cc:attributionName" rel="cc:attributionURL">https://brianmhunt.github.io/post/2016-02-22-let-s-encrypt-acme-on-appengine/</a> is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License</a>.
+      <br/>
+      <a rel="license" href="http://creativecommons.org/licenses/by/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by/4.0/80x15.png" /></a> 
+    </div>
+    <div class='photo-credit'>
+      Photo credit: <a href='https://picsum.photos'>https://picsum.photos</a>
+    </div>
+  </footer>
+</body>
+</html>
+

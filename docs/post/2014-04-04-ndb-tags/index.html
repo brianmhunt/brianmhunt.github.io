@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Google App Engine tags for ndb</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="A way to add tags to ndb models via a mixin
+">
+  <meta name="generator" content="Hugo 0.68.1" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css" integrity="sha256-l85OmPOjvil/SOvVt3HnSSjzF1TUMyT9eV0c2BzEGzU=" crossorigin="anonymous" />
+  <link href="" rel="alternate" type="application/rss+xml" title="Brian M Hunt" />
+  <link href="https://brianmhunt.github.io/css/local.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://use.typekit.net/gdm7was.css">
+  
+  <script type="text/javascript" src="https://ssl.google-analytics.com/ga.js"></script>
+  <script>
+    var _gaq = _gaq || [];
+    var pluginUrl = 
+    '//www.google-analytics.com/plugins/ga/inpage_linkid.js';
+    _gaq.push(['_require', 'inpage_linkid', pluginUrl]);
+    _gaq.push(['_setAccount', 'UA-47448402-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+  
+  <link rel="alternate" type="application/rss+xml" href="https://brianmhunt.github.io/index.xml" title="Site Title">
+
+</head>
+
+<body>
+
+<header>
+  <a class='me' href='/'>Brian M Hunt</a>
+</header>
+
+<picture class='splash'>
+  <source srcset="https://picsum.photos/1600/600" media="(min-width: 1600px)">
+  <source srcset="https://picsum.photos/1200/400" media="(min-width: 1200px)">
+  <source srcset="https://picsum.photos/800/300" media="(min-width: 800px)">
+  <img class='splash' src='https://picsum.photos/600/200' alt='Splash by picsum.photos' />
+</picture>
+
+
+<article>
+  <div class="title">Google App Engine tags for ndb</div>
+  <div class="date">Apr 4, 2014</div>
+  <div class="content">
+    <h1 id="what-is-it">What is it?</h1>
+<p>This is a way to add tags functionality to classes derived from <code>ndb.Model</code> on
+Google App Engine by way of a mixin.</p>
+<h1 id="why-is-it-important">Why is it important?</h1>
+<p>Adding tags to data models is a popular phenomenon, but there does not appear to be a published way to accomplish the common functionality with <code>ndb</code>. This method ought to be reusable and performant.</p>
+<h1 id="how-does-it-work">How does it work?</h1>
+<p>Get <a href="https://gist.github.com/brianmhunt/9974822">the full gist is gist.github.com</a>.</p>
+<p>This concept has two <code>ndb.Model</code> derivates, the <code>Tag</code> and the <code>TagMixin</code>.</p>
+<h2 id="design">Design</h2>
+<p>The requirements here for me were as follows:</p>
+<ol>
+<li>The tags be stored with the model (i.e. can be accessed without &ldquo;joins&rdquo;)</li>
+<li>The <code>Tag</code> instances be updated automatically when a model is updated</li>
+<li>The updates apply only on changed <code>Tag</code> instances</li>
+<li>The update occur in parallel</li>
+</ol>
+<p>I chose to store tags on the mixin as a repeated <code>ndb.StringProperty</code>, with a separate <code>Tag</code> model whose key can be generated from the tag (i.e. the tag <code>blue</code> becomes <code>ndb.Key('Tag', 'tag__blue')</code>). The <code>Tag</code> instances are updated in parallel by <code>tasklets</code> called from <code>ndb</code> model hooks, as seem below.</p>
+<h2 id="the-tag">The <code>Tag</code></h2>
+<p>This <code>Tag</code> class that keeps track of the popularity (<code>count</code>) of a
+tag and linked items.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">from</span> google.appengine.ext <span style="color:#f92672">import</span> ndb
+
+MAX_TAGS_FOR_TAGGABLE <span style="color:#f92672">=</span> <span style="color:#ae81ff">1000</span>
+POPULAR_PAGE_SIZE <span style="color:#f92672">=</span> <span style="color:#ae81ff">30</span>
+
+
+<span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Tag</span>(ndb<span style="color:#f92672">.</span>Model):
+    <span style="color:#e6db74">&#34;&#34;&#34;Keep track of data related to a tag added with the TagMixin class.
+</span><span style="color:#e6db74">    &#34;&#34;&#34;</span>
+    tag <span style="color:#f92672">=</span> ndb<span style="color:#f92672">.</span>StringProperty(required<span style="color:#f92672">=</span>True, indexed<span style="color:#f92672">=</span>True)
+    count <span style="color:#f92672">=</span> ndb<span style="color:#f92672">.</span>IntegerProperty(default<span style="color:#f92672">=</span><span style="color:#ae81ff">0</span>, indexed<span style="color:#f92672">=</span>True)
+    linked <span style="color:#f92672">=</span> ndb<span style="color:#f92672">.</span>KeyProperty(repeated<span style="color:#f92672">=</span>True)
+    created <span style="color:#f92672">=</span> ndb<span style="color:#f92672">.</span>DateTimeProperty(auto_now_add<span style="color:#f92672">=</span>True)
+    modified <span style="color:#f92672">=</span> ndb<span style="color:#f92672">.</span>DateTimeProperty(auto_now<span style="color:#f92672">=</span>True)
+
+    <span style="color:#a6e22e">@staticmethod</span>
+    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">tag_to_keyname</span>(tag):
+        <span style="color:#66d9ef">return</span> <span style="color:#e6db74">&#34;tag__{}&#34;</span><span style="color:#f92672">.</span>format(tag<span style="color:#f92672">.</span>lower())
+
+    <span style="color:#a6e22e">@staticmethod</span>
+    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">tag_to_key</span>(tag):
+        <span style="color:#66d9ef">return</span> ndb<span style="color:#f92672">.</span>Key(<span style="color:#e6db74">&#34;Tag&#34;</span>, Tag<span style="color:#f92672">.</span>tag_to_keyname(tag))
+
+    <span style="color:#a6e22e">@classmethod</span>
+    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">get_linked_by_tag</span>(self, tag, limit<span style="color:#f92672">=</span>MAX_TAGS_FOR_TAGGABLE):
+        <span style="color:#e6db74">&#34;&#34;&#34;Return the set of keys for the given tag&#34;&#34;&#34;</span>
+        <span style="color:#66d9ef">try</span>:
+            <span style="color:#66d9ef">return</span> Tag<span style="color:#f92672">.</span>tag_to_key(tag)<span style="color:#f92672">.</span>get()<span style="color:#f92672">.</span>linked
+        <span style="color:#66d9ef">except</span> <span style="color:#a6e22e">AttributeError</span>:
+            <span style="color:#66d9ef">return</span> []
+
+    <span style="color:#a6e22e">@classmethod</span>
+    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">get_or_create_async</span>(cls, tag):
+        <span style="color:#e6db74">&#34;&#34;&#34;Return a future for a Tag instance for the given tag
+</span><span style="color:#e6db74">        &#34;&#34;&#34;</span>
+        <span style="color:#66d9ef">return</span> Tag<span style="color:#f92672">.</span>get_or_insert_async(Tag<span style="color:#f92672">.</span>tag_to_keyname(tag), tag<span style="color:#f92672">=</span>tag)
+
+    <span style="color:#a6e22e">@classmethod</span>
+    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">get_popular_query</span>(cls, page_size<span style="color:#f92672">=</span>POPULAR_PAGE_SIZE):
+        <span style="color:#66d9ef">return</span> Tag<span style="color:#f92672">.</span>query()<span style="color:#f92672">.</span>order(<span style="color:#f92672">-</span>Tag<span style="color:#f92672">.</span>count)
+
+    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">unlink_async</span>(self, key):
+        self<span style="color:#f92672">.</span>linked<span style="color:#f92672">.</span>remove(key)
+        self<span style="color:#f92672">.</span>count <span style="color:#f92672">-=</span> <span style="color:#ae81ff">1</span>
+        <span style="color:#66d9ef">return</span> self<span style="color:#f92672">.</span>put_async()
+
+    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">link_async</span>(self, key):
+        self<span style="color:#f92672">.</span>linked<span style="color:#f92672">.</span>append(key)
+        self<span style="color:#f92672">.</span>count <span style="color:#f92672">+=</span> <span style="color:#ae81ff">1</span>
+        <span style="color:#66d9ef">return</span> self<span style="color:#f92672">.</span>put_async()</code></pre></div>
+<h2 id="the-tagmixin">The <code>TagMixin</code></h2>
+<p>The mixin that one would use to add tags to models is as follows:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">TagMixin</span>(object):
+    <span style="color:#e6db74">&#34;&#34;&#34;A mixin that adds taggability to a class.
+</span><span style="color:#e6db74">
+</span><span style="color:#e6db74">    Adds a &#39;tags&#39; property.
+</span><span style="color:#e6db74">    &#34;&#34;&#34;</span>
+    tags <span style="color:#f92672">=</span> ndb<span style="color:#f92672">.</span>StringProperty(repeated<span style="color:#f92672">=</span>True, indexed<span style="color:#f92672">=</span>True,
+                              validator<span style="color:#f92672">=</span><span style="color:#66d9ef">lambda</span> p, v: v<span style="color:#f92672">.</span>lower())
+
+    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">_post_get_hook</span>(self, future):
+        <span style="color:#e6db74">&#34;&#34;&#34;Set the _tm_tags so we can compare for changes in pre_put
+</span><span style="color:#e6db74">        &#34;&#34;&#34;</span>
+        self<span style="color:#f92672">.</span>_tm_tags <span style="color:#f92672">=</span> future<span style="color:#f92672">.</span>get_result()<span style="color:#f92672">.</span>tags
+
+    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">_post_put_hook</span>(self, future):
+        <span style="color:#e6db74">&#34;&#34;&#34;Modify the associated Tag instances to reflect any updates
+</span><span style="color:#e6db74">        &#34;&#34;&#34;</span>
+        old_tagset <span style="color:#f92672">=</span> set(getattr(self, <span style="color:#e6db74">&#39;_tm_tags&#39;</span>, []))
+        new_tagset <span style="color:#f92672">=</span> set(self<span style="color:#f92672">.</span>tags)
+
+        <span style="color:#75715e"># These are tags that have changed</span>
+        added_tags <span style="color:#f92672">=</span> new_tagset <span style="color:#f92672">-</span> old_tagset
+        deleted_tags <span style="color:#f92672">=</span> old_tagset <span style="color:#f92672">-</span> new_tagset
+
+        <span style="color:#75715e"># Get the key for this post</span>
+        self_key <span style="color:#f92672">=</span> future<span style="color:#f92672">.</span>get_result()
+
+        <span style="color:#a6e22e">@ndb.transactional_tasklet</span>
+        <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">update_changed</span>(tag):
+            tag_instance <span style="color:#f92672">=</span> <span style="color:#66d9ef">yield</span> Tag<span style="color:#f92672">.</span>get_or_create_async(tag)
+            <span style="color:#66d9ef">if</span> tag <span style="color:#f92672">in</span> added_tags:
+                <span style="color:#66d9ef">yield</span> tag_instance<span style="color:#f92672">.</span>link_async(self_key)
+            <span style="color:#66d9ef">else</span>:
+                <span style="color:#66d9ef">yield</span> tag_instance<span style="color:#f92672">.</span>unlink_async(self_key)
+
+        ndb<span style="color:#f92672">.</span>Future<span style="color:#f92672">.</span>wait_all([
+            update_changed(tag) <span style="color:#66d9ef">for</span> tag <span style="color:#f92672">in</span> added_tags <span style="color:#f92672">|</span> deleted_tags
+        ])
+
+        <span style="color:#75715e"># Update for any successive puts on this model.</span>
+        self<span style="color:#f92672">.</span>_tm_tags <span style="color:#f92672">=</span> self<span style="color:#f92672">.</span>tags</code></pre></div>
+<h2 id="usage">Usage</h2>
+<p>Given a model with the mixin like this:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">&gt;&gt;&gt;</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">TagModel</span>(TagMixin, ndb<span style="color:#f92672">.</span>Model):
+<span style="color:#f92672">...</span>    name <span style="color:#f92672">=</span> ndb<span style="color:#f92672">.</span>StringProperty()  <span style="color:#75715e"># just an arbitrary property</span>
+
+<span style="color:#75715e"># And an instance, for illustration</span>
+<span style="color:#f92672">&gt;&gt;&gt;</span> tm <span style="color:#f92672">=</span> TagModel()
+
+<span style="color:#75715e"># Getting and setting tags is done as normal</span>
+<span style="color:#75715e"># for a property of an `ndb.Model`:</span>
+<span style="color:#f92672">&gt;&gt;&gt;</span> TagModel(tags<span style="color:#f92672">=</span>[<span style="color:#e6db74">&#34;new&#34;</span>, <span style="color:#e6db74">&#34;hot&#34;</span>])<span style="color:#f92672">.</span>put()
+
+<span style="color:#f92672">&gt;&gt;&gt;</span> tm<span style="color:#f92672">.</span>tags <span style="color:#f92672">=</span> [<span style="color:#e6db74">&#34;hot&#34;</span>, <span style="color:#e6db74">&#34;plasma&#34;</span>]
+<span style="color:#f92672">&gt;&gt;&gt;</span> tm<span style="color:#f92672">.</span>put()
+<span style="color:#f92672">&gt;&gt;&gt;</span> len(tm<span style="color:#f92672">.</span>tags)
+<span style="color:#ae81ff">2</span>
+
+<span style="color:#75715e"># How many tags are there? &#34;hot&#34;, &#34;new&#34;, &#34;plasma&#34;</span>
+<span style="color:#f92672">&gt;&gt;&gt;</span> Tag<span style="color:#f92672">.</span>query()<span style="color:#f92672">.</span>count()
+<span style="color:#ae81ff">3</span>
+
+<span style="color:#75715e"># Get the `ndb.Key` instances for models for a given tag:</span>
+<span style="color:#f92672">&gt;&gt;&gt;</span> Tag<span style="color:#f92672">.</span>get_linked_by_tag(<span style="color:#e6db74">&#34;plasma&#34;</span>)
+ndb<span style="color:#f92672">.</span>Key(<span style="color:#e6db74">&#39;TagModel&#39;</span>, <span style="color:#ae81ff">0</span>)
+
+<span style="color:#75715e"># Query the tags by popularity:</span>
+<span style="color:#f92672">&gt;&gt;&gt;</span> popular_tags <span style="color:#f92672">=</span> Tag<span style="color:#f92672">.</span>get_popular_query()<span style="color:#f92672">.</span>fetch(<span style="color:#ae81ff">3</span>)
+
+<span style="color:#75715e"># Convert t list of `Tag` instances to strings with e.g.</span>
+<span style="color:#f92672">&gt;&gt;&gt;</span> [t<span style="color:#f92672">.</span>tag <span style="color:#66d9ef">for</span> t <span style="color:#f92672">in</span> Tag<span style="color:#f92672">.</span>popular_tags]
+[<span style="color:#e6db74">&#39;hot&#39;</span>, <span style="color:#e6db74">&#39;plasma&#39;</span>, <span style="color:#e6db74">&#39;new&#39;</span>]</code></pre></div>
+<p>It is straightforward to add for example getting recently updated or old tags
+with: <code>Tag.query().order(-Tag.modified)</code></p>
+<p>The unit tests in <a href="https://gist.github.com/brianmhunt/9974822">the associated gist</a>
+illustrate usage and expectations in better detail.</p>
+<p><em><strong>Careful</strong></em> Be mindful that the mixin uses the hooks <code>_post_get_hook</code> and
+<code>_post_put_hook</code>. If your models also use these you will need a way to call them
+e.g. calling from your hooks the respective
+<code>self.__class__.__bases__[0]._post_{get,put}_hook</code>, where <code>0</code> corresponds to the index
+of <code>TagMixin</code> in the <code>__bases__</code>. One could call the hooks for
+all immediate ancestors with something like this:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">  <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">_post_put_hook</span>(self, future):
+    <span style="color:#75715e"># My hook stuff</span>
+    <span style="color:#66d9ef">for</span> base <span style="color:#f92672">in</span> self<span style="color:#f92672">.</span>__class__<span style="color:#f92672">.</span>bases:
+      <span style="color:#66d9ef">try</span>:
+        other_hook <span style="color:#f92672">=</span> types<span style="color:#f92672">.</span>MethodType(
+           getattr(base, <span style="color:#e6db74">&#39;_post_put_hook&#39;</span>), self, TaggedClass
+        )
+      <span style="color:#66d9ef">except</span> <span style="color:#a6e22e">AttributeError</span>:
+        <span style="color:#66d9ef">continue</span>
+      other_hook(future)</code></pre></div>
+<p>If the hooks are buried deeper than immediate ancestors one would have to recurse through <code>__class__.__bases__</code>.</p>
+<h1 id="license">License</h1>
+<p>Code above is licensed under the <a href="https://brianmhunt.mit-license.org/">MIT <a href="https://brianmhunt.mit-license.org/">https://brianmhunt.mit-license.org/</a></a> license.</p>
+<h1 id="see-also">See also</h1>
+<ul>
+<li><a href="https://github.com/bubenkoff/gae-taggable-mixin">gae-taggable-mixin for db.Model</a></li>
+<li><a href="https://blog.notdot.net/2009/10/Blogging-on-App-Engine-part-5-Tagging">Nick&rsquo;s Blog: Blogging on App Engine, part 5: Tagging</a></li>
+</ul>
+
+  </div>
+  <div class='copyright'> &copy; 2014 </div>
+</article>
+
+  <footer>
+
+    <div class="pager">
+      <div class="list-link"><a href="/post">Go to all posts</a></div>
+      
+        <a class="prev-link" href="https://brianmhunt.github.io/post/2014-02-17-catching-sinon-unmet-requests/">
+          Previous post Feb 17, 2014
+          <br/><em>Catching Sinon Unmet Requests</em>
+        </a>
+      
+      
+        <a class="next-link" href="https://brianmhunt.github.io/post/2014-07-09-pubsub-promises/">
+          Next post Jul 9, 2014
+          <br/><em>Knockout observables and Promises</em>
+        </a>
+      
+    </div>
+
+    <div class='license'>
+      <span xmlns:dct="http://purl.org/dc/terms/" href="http://purl.org/dc/dcmitype/Text" property="dct:title" rel="dct:type">Google App Engine tags for ndb</span> by Brian M Hunt at <a xmlns:cc="http://creativecommons.org/ns#" href="https://brianmhunt.github.io/post/2014-04-04-ndb-tags/" property="cc:attributionName" rel="cc:attributionURL">https://brianmhunt.github.io/post/2014-04-04-ndb-tags/</a> is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License</a>.
+      <br/>
+      <a rel="license" href="http://creativecommons.org/licenses/by/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by/4.0/80x15.png" /></a> 
+    </div>
+    <div class='photo-credit'>
+      Photo credit: <a href='https://picsum.photos'>https://picsum.photos</a>
+    </div>
+  </footer>
+</body>
+</html>
+

@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Properly Parsing HTML in HTML5</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="">
+  <meta name="generator" content="Hugo 0.68.1" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css" integrity="sha256-l85OmPOjvil/SOvVt3HnSSjzF1TUMyT9eV0c2BzEGzU=" crossorigin="anonymous" />
+  <link href="" rel="alternate" type="application/rss+xml" title="Brian M Hunt" />
+  <link href="https://brianmhunt.github.io/css/local.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://use.typekit.net/gdm7was.css">
+  
+  <script type="text/javascript" src="https://ssl.google-analytics.com/ga.js"></script>
+  <script>
+    var _gaq = _gaq || [];
+    var pluginUrl = 
+    '//www.google-analytics.com/plugins/ga/inpage_linkid.js';
+    _gaq.push(['_require', 'inpage_linkid', pluginUrl]);
+    _gaq.push(['_setAccount', 'UA-47448402-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+  
+  <link rel="alternate" type="application/rss+xml" href="https://brianmhunt.github.io/index.xml" title="Site Title">
+
+</head>
+
+<body>
+
+<header>
+  <a class='me' href='/'>Brian M Hunt</a>
+</header>
+
+<picture class='splash'>
+  <source srcset="https://picsum.photos/1600/600" media="(min-width: 1600px)">
+  <source srcset="https://picsum.photos/1200/400" media="(min-width: 1200px)">
+  <source srcset="https://picsum.photos/800/300" media="(min-width: 800px)">
+  <img class='splash' src='https://picsum.photos/600/200' alt='Splash by picsum.photos' />
+</picture>
+
+
+<article>
+  <div class="title">Properly Parsing HTML in HTML5</div>
+  <div class="date">Sep 20, 2015</div>
+  <div class="content">
+    <p>Parsing HTML in Javascript is harder than one would expect.  You would think
+that the browser, a HTML parser by its very nature, would give access to easy
+HTML parsing.  But you&rsquo;d be wrong, and here is an example of why:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-javascript" data-lang="javascript"><span style="color:#f92672">&gt;</span> <span style="color:#a6e22e">d</span> <span style="color:#f92672">=</span> document.<span style="color:#a6e22e">createElement</span>(<span style="color:#e6db74">&#39;div&#39;</span>)
+<span style="color:#f92672">&lt;</span><span style="color:#a6e22e">div</span><span style="color:#f92672">&gt;</span><span style="color:#960050;background-color:#1e0010">​</span><span style="color:#f92672">&lt;</span><span style="color:#960050;background-color:#1e0010">/div&gt;​</span>
+
+<span style="color:#f92672">&gt;</span> <span style="color:#a6e22e">d</span>.<span style="color:#a6e22e">innerHTML</span> <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;&lt;tr&gt;&lt;/tr&gt;&#39;</span>
+<span style="color:#e6db74">&#34;&lt;tr&gt;&lt;/tr&gt;&#34;</span>
+
+<span style="color:#f92672">&gt;</span> <span style="color:#a6e22e">d</span>.<span style="color:#a6e22e">innerHTML</span>
+<span style="color:#e6db74">&#34;&#34;</span>
+<span style="color:#75715e">// ^^ Uh oh.  Where&#39;d it go?
+</span></code></pre></div><p>The problem is that the <code>&lt;tr&gt;</code> tag in HTML requires a parent of <code>&lt;table&gt;</code> or
+<code>&lt;tbody&gt;</code> or <code>&lt;thead&gt;</code> or <code>&lt;tfoot&gt;</code>, according to the
+<a href="https://www.w3.org/html/wg/drafts/html/master/semantics.html#the-tr-element">W3C HTML5 spec</a>.</p>
+<p>What this means is that in HTML a <code>&lt;tr&gt;</code> is never a child of a <code>&lt;div&gt;</code>
+tag, and the browser automatically fixes this for you.</p>
+<p>The jQuery and Knockout parsers get around this by wrapping the HTML in the
+parent nodes that are required.  There are a few HTML elements that need
+parents of a specific sort: <code>area</code>, <code>thead</code>, <code>tbody</code>, <code>tr</code>, <code>td</code>, and
+<a href="https://github.com/brianmhunt/knockout/blob/1880--template-html-parser/src/utils.domManipulation.js#L11-L26">others</a>.</p>
+<p>Two popular parsing implementations, jQuery and Knockout, have problems.</p>
+<p>The <code>$.parseHTML</code> method of
+jQuery v1.11.3 and v2.1.4 incorrectly parse custom elements that start with one
+of the nodes that requires wrapping, such as <code>&lt;tr-something&gt;</code> or
+<code>&lt;area-custom-element&gt;</code>.</p>
+<p>The Knockout 3.3.0
+parser has trouble with comments that precede an element such as
+<code>&lt;!-- ... --&gt;&lt;b&gt;...</code>.  (Though we are <a href="https://github.com/knockout/knockout/pull/1881">working to fix this</a>!)</p>
+<p>These problems with <code>knockout</code> and <code>jQuery</code> are edge cases, but they can be
+difficult to debug and onerous to work around.</p>
+<p>An elegant – and arguably the “correct” – answer becomes available when a
+browser supports the <code>&lt;template&gt;</code> tag. Let&rsquo;s have a look at the example above,
+but using a template tag:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-javascript" data-lang="javascript"><span style="color:#f92672">&gt;</span> <span style="color:#a6e22e">t</span> <span style="color:#f92672">=</span> document.<span style="color:#a6e22e">createElement</span>(<span style="color:#e6db74">&#39;template&#39;</span>)
+<span style="color:#f92672">&lt;</span><span style="color:#a6e22e">template</span><span style="color:#f92672">&gt;</span><span style="color:#960050;background-color:#1e0010">​…​</span><span style="color:#f92672">&lt;</span><span style="color:#960050;background-color:#1e0010">/template&gt;​</span>
+
+<span style="color:#f92672">&gt;</span> <span style="color:#a6e22e">t</span>.<span style="color:#a6e22e">innerHTML</span> <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;&lt;tr&gt;&lt;/tr&gt;&#39;</span>
+<span style="color:#e6db74">&#34;&lt;tr&gt;&lt;/tr&gt;&#34;</span>
+
+<span style="color:#f92672">&gt;</span> <span style="color:#a6e22e">t</span>.<span style="color:#a6e22e">innerHTML</span>
+<span style="color:#e6db74">&#34;&lt;tr&gt;&lt;/tr&gt;&#34;</span>
+<span style="color:#75715e">// ^^ Happy dance?
+</span></code></pre></div><p>This works because <a href="https://www.w3.org/html/wg/drafts/html/master/semantics.html#the-template-element">the template tag spec</a>
+permits its content to be nodes of any of the elements that require us working
+around.</p>
+<p>You can get the parsed nodes by iterating over <code>t.childNodes</code>
+(if you want HTML comments and text nodes) or <code>t.children</code> (if you do not).
+You can also inject the parsed content into the document as follows, but bear in
+mind that the parental rule requirements apply after insertion.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-javascript" data-lang="javascript"><span style="color:#66d9ef">var</span> <span style="color:#a6e22e">clone</span> <span style="color:#f92672">=</span> document.<span style="color:#a6e22e">importNode</span>(<span style="color:#a6e22e">t</span>.<span style="color:#a6e22e">content</span>, <span style="color:#66d9ef">true</span>);
+document.<span style="color:#a6e22e">body</span>.<span style="color:#a6e22e">appendChild</span>(<span style="color:#a6e22e">clone</span>);
+</code></pre></div><p>The result is that you have access to the browser&rsquo;s native HTML parsing,
+without those relatively complex (and possibly
+<a href="https://github.com/knockout/knockout/issues/1880#issuecomment-141083904">slow</a>)
+workarounds that aspire to but do not quite reach parity with builtin browser parser.</p>
+<p>Most browsers in their most recent incarnations
+<a href="https://caniuse.com/#feat=template">support the template tag</a>, including
+Internet Explorer Edge 13.
+Until the latest browsers are more widespread we will have to live with some
+compromises, but the future of HTML parsing with Javascript in browsers looks
+bright.</p>
+
+  </div>
+  <div class='copyright'> &copy; 2015 </div>
+</article>
+
+  <footer>
+
+    <div class="pager">
+      <div class="list-link"><a href="/post">Go to all posts</a></div>
+      
+        <a class="prev-link" href="https://brianmhunt.github.io/post/2015-07-29-knockout-website-details/">
+          Previous post Jul 29, 2015
+          <br/><em>Details on the new Knockout Website</em>
+        </a>
+      
+      
+        <a class="next-link" href="https://brianmhunt.github.io/post/2015-11-25-picking-our-roots-between-hsts-and-public-key-pins/">
+          Next post Nov 25, 2015
+          <br/><em>Picking our roots: Between HSTS and public key pins</em>
+        </a>
+      
+    </div>
+
+    <div class='license'>
+      <span xmlns:dct="http://purl.org/dc/terms/" href="http://purl.org/dc/dcmitype/Text" property="dct:title" rel="dct:type">Properly Parsing HTML in HTML5</span> by Brian M Hunt at <a xmlns:cc="http://creativecommons.org/ns#" href="https://brianmhunt.github.io/post/2015-09-20-properly-parsing-html-in-html5/" property="cc:attributionName" rel="cc:attributionURL">https://brianmhunt.github.io/post/2015-09-20-properly-parsing-html-in-html5/</a> is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License</a>.
+      <br/>
+      <a rel="license" href="http://creativecommons.org/licenses/by/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by/4.0/80x15.png" /></a> 
+    </div>
+    <div class='photo-credit'>
+      Photo credit: <a href='https://picsum.photos'>https://picsum.photos</a>
+    </div>
+  </footer>
+</body>
+</html>
+

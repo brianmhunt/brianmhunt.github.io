@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Taming contentEditable with jQuery</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="A few utilities to make contentEditable more tolerable.
+">
+  <meta name="generator" content="Hugo 0.68.1" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css" integrity="sha256-l85OmPOjvil/SOvVt3HnSSjzF1TUMyT9eV0c2BzEGzU=" crossorigin="anonymous" />
+  <link href="" rel="alternate" type="application/rss+xml" title="Brian M Hunt" />
+  <link href="https://brianmhunt.github.io/css/local.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://use.typekit.net/gdm7was.css">
+  
+  <script type="text/javascript" src="https://ssl.google-analytics.com/ga.js"></script>
+  <script>
+    var _gaq = _gaq || [];
+    var pluginUrl = 
+    '//www.google-analytics.com/plugins/ga/inpage_linkid.js';
+    _gaq.push(['_require', 'inpage_linkid', pluginUrl]);
+    _gaq.push(['_setAccount', 'UA-47448402-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+  
+  <link rel="alternate" type="application/rss+xml" href="https://brianmhunt.github.io/index.xml" title="Site Title">
+
+</head>
+
+<body>
+
+<header>
+  <a class='me' href='/'>Brian M Hunt</a>
+</header>
+
+<picture class='splash'>
+  <source srcset="https://picsum.photos/1600/600" media="(min-width: 1600px)">
+  <source srcset="https://picsum.photos/1200/400" media="(min-width: 1200px)">
+  <source srcset="https://picsum.photos/800/300" media="(min-width: 800px)">
+  <img class='splash' src='https://picsum.photos/600/200' alt='Splash by picsum.photos' />
+</picture>
+
+
+<article>
+  <div class="title">Taming contentEditable with jQuery</div>
+  <div class="date">Jul 18, 2014</div>
+  <div class="content">
+    <h1 id="what-is-it">What is it?</h1>
+<p>This is a few examples of how one might extend jQuery to make
+the
+<a href="https://developer.mozilla.org/en-US/docs/Web/Guide/HTML/Content_Editable">contentEditable</a>
+a more manageable component of the web.</p>
+<p>For convenience I am just going to show the web-standards, so one will need
+workarounds for IE &lt; 9.</p>
+<p>A more comprehensive suite (and from whose work I derive many of my
+answers) is <a href="https://github.com/timdown/rangy">rangy.js</a> by
+<a href="https://stackoverflow.com/users/96100">Tim Down</a>.</p>
+<h1 id="why-is-it-important">Why is it important?</h1>
+<p>The <code>contentEditable</code> flag is one of the few ways to get WYSIWYG styling on the
+web. Many editors are based on it, such as
+<a href="https://mindmup.github.io/bootstrap-wysiwyg/">bootstrap-wysiwyg</a> among others.</p>
+<p>However, <code>contentEditable</code> has numerous fundamental problems, as Nick Santos
+highlights in
+<a href="https://medium.com/medium-eng/why-contenteditable-is-terrible-122d8a40e480">Why ContentEditable is Terrible Or: How the Medium Editor Works</a>.</p>
+<p>Arguably the <a href="https://www.polymer-project.org/">polymer-project</a> will provide
+us with an alternative, but we do not appear to be there yet.</p>
+<p>So for the moment we are stuck with this beast. So here are some jQuery
+functions that illustrate how it works and may make it more manageable.</p>
+<p>There is nothing limiting these examples to jQuery, of course.</p>
+<h1 id="what-is-a-contenteditable">What is a contentEditable?</h1>
+<p>One can turn a DOM element into a <code>contentEditable</code> one by setting the
+<a href="https://html5doctor.com/the-contenteditable-attribute/"><code>contentEditable</code> attribute</a>.</p>
+<p>So once you have the <code>contentEditable</code> attribute set, you can edit the
+content.</p>
+<p>This is fine if one is just entering text. The problem becomes if
+you want to interact with it.</p>
+<h1 id="the-primary-sources-of-interaction">The primary sources of interaction</h1>
+<p>The primary interface to the caret and selection of a <code>contentEditable</code>
+is through <code>window.getSelection()</code>. This function returns a
+<a href="https://developer.mozilla.org/en-US/docs/Web/API/Selection">Selection</a>.
+From this selection instance we can get one or more
+<a href="https://developer.mozilla.org/en/docs/Web/API/Range">Range</a> instances
+corresponding to a selection or caret, as shown below.</p>
+<h1 id="are-we-a-caret">Are we a caret?</h1>
+<p>First, here is how we determine if we are looking at a caret:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-coffeescript" data-lang="coffeescript">$.fn.editableIsCaret = <span style="color:#a6e22e">-&gt;</span>
+  <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">sel</span>.<span style="color:#a6e22e">rangeCount</span> <span style="color:#f92672">==</span> <span style="color:#ae81ff">1</span> <span style="color:#f92672">and</span> <span style="color:#a6e22e">sel</span>.<span style="color:#a6e22e">getRangeAt</span>(<span style="color:#ae81ff">0</span>).<span style="color:#a6e22e">collapsed</span>
+  <span style="color:#75715e"># alt test:
+</span><span style="color:#75715e"></span>  <span style="color:#960050;background-color:#1e0010">#</span> <span style="color:#66d9ef">return</span> window.<span style="color:#a6e22e">getSelection</span>().<span style="color:#a6e22e">type</span> <span style="color:#f92672">==</span> <span style="color:#e6db74">&#39;Caret&#39;</span></code></pre></div>
+<p>A range is <code>collapsed</code> if the start and end of the range are the same point.
+This is a caret.</p>
+<h1 id="where-is-the-caret">Where is the caret?</h1>
+<p>The positioning of the caret is relative to an arbitrary number of nodes (we
+are after all editing a <code>&lt;div&gt;</code>). So it is straightforward but not
+obvious how to determine where said caret is.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-coffeescript" data-lang="coffeescript">is_caret_at_start_of_node = <span style="color:#a6e22e">(node, range) -&gt;</span>
+  <span style="color:#75715e"># See: https://stackoverflow.com/questions/7451468
+</span><span style="color:#75715e"></span>  pre_range = document.<span style="color:#a6e22e">createRange</span>()
+  <span style="color:#a6e22e">pre_range</span>.<span style="color:#a6e22e">selectNodeContents</span>(<span style="color:#a6e22e">node</span>)
+  <span style="color:#a6e22e">pre_range</span>.<span style="color:#a6e22e">setEnd</span>(<span style="color:#a6e22e">range</span>.<span style="color:#a6e22e">startContainer</span>, <span style="color:#a6e22e">range</span>.<span style="color:#a6e22e">startOffset</span>)
+  <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">pre_range</span>.<span style="color:#a6e22e">toString</span>().<span style="color:#a6e22e">trim</span>().<span style="color:#a6e22e">length</span> <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span>
+
+is_caret_at_end_of_node = <span style="color:#a6e22e">(node, range) -&gt;</span>
+  post_range = document.<span style="color:#a6e22e">createRange</span>()
+  <span style="color:#a6e22e">post_range</span>.<span style="color:#a6e22e">selectNodeContents</span>(<span style="color:#a6e22e">node</span>)
+  <span style="color:#a6e22e">post_range</span>.<span style="color:#a6e22e">setStart</span>(<span style="color:#a6e22e">range</span>.<span style="color:#a6e22e">endContainer</span>, <span style="color:#a6e22e">range</span>.<span style="color:#a6e22e">endOffset</span>)
+  <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">post_range</span>.<span style="color:#a6e22e">toString</span>().<span style="color:#a6e22e">trim</span>().<span style="color:#a6e22e">length</span> <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span></code></pre></div>
+<h1 id="where-is-the-caret-1">Where is the caret?</h1>
+<p>Sometimes you want to get the <code>Range</code> that indicates where the caret is.
+For example, you may want this to restore the location after losing focus.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-coffeescript" data-lang="coffeescript">$.fn.editableRange = <span style="color:#a6e22e">-&gt;</span>
+  <span style="color:#75715e"># Return the range for the selection
+</span><span style="color:#75715e"></span>  sel = window.<span style="color:#a6e22e">getSelection</span>()
+  <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">unless</span> <span style="color:#a6e22e">sel</span>.<span style="color:#a6e22e">rangeCount</span> <span style="color:#f92672">&gt;</span> <span style="color:#ae81ff">0</span>
+  <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">sel</span>.<span style="color:#a6e22e">getRangeAt</span>(<span style="color:#ae81ff">0</span>)
+
+$.fn.editableCaretRange = <span style="color:#a6e22e">-&gt;</span>
+  <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">unless</span> <span style="color:#a6e22e">@editableIsCaret</span>()
+  <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">@editableRange</span>()</code></pre></div>
+<p>Sometimes you want to know if the Caret is at the start or at the end
+of the editable.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-coffeescript" data-lang="coffeescript">$.fn.editableCaretAtStart = <span style="color:#a6e22e">-&gt;</span>
+  range = <span style="color:#a6e22e">@editableRange</span>()
+  <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">false</span> <span style="color:#66d9ef">unless</span> <span style="color:#a6e22e">range</span>
+  <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">is_caret_at_start_of_node</span>(<span style="color:#a6e22e">@</span>[<span style="color:#ae81ff">0</span>], <span style="color:#a6e22e">range</span>)
+
+$.fn.editableCaretAtEnd = <span style="color:#a6e22e">-&gt;</span>
+  range = <span style="color:#a6e22e">@editableRange</span>()
+  <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">false</span> <span style="color:#66d9ef">unless</span> <span style="color:#a6e22e">range</span>
+  <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">is_caret_at_end_of_node</span>(<span style="color:#a6e22e">@</span>[<span style="color:#ae81ff">0</span>], <span style="color:#a6e22e">range</span>)</code></pre></div>
+<p>Other times you may want to know if the caret is on the first or last line:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-coffeescript" data-lang="coffeescript">LINE_HEIGHT = <span style="color:#ae81ff">20</span>  <span style="color:#75715e"># arbitrary, reasonable constant.
+</span><span style="color:#75715e"></span>
+$.fn.editableCaretOnFirstLine = <span style="color:#a6e22e">-&gt;</span>
+  range = <span style="color:#a6e22e">@editableRange</span>()
+  <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">false</span> <span style="color:#66d9ef">unless</span> <span style="color:#a6e22e">range</span>
+  <span style="color:#75715e"># At the start of a node, the getClientRects() is [], so we have to
+</span><span style="color:#75715e"></span>  <span style="color:#75715e"># use the getBoundingClientRect (which seems to work).
+</span><span style="color:#75715e"></span>  <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">is_caret_at_start_of_node</span>(<span style="color:#a6e22e">@</span>[<span style="color:#ae81ff">0</span>], <span style="color:#a6e22e">range</span>)
+    <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">true</span>
+  <span style="color:#66d9ef">else</span> <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">is_caret_at_end_of_node</span>(<span style="color:#a6e22e">@</span>[<span style="color:#ae81ff">0</span>], <span style="color:#a6e22e">range</span>)
+    ctop = <span style="color:#a6e22e">@</span>[<span style="color:#ae81ff">0</span>].<span style="color:#a6e22e">getBoundingClientRect</span>().<span style="color:#a6e22e">bottom</span> <span style="color:#f92672">-</span> <span style="color:#a6e22e">LINE_HEIGHT</span>
+  <span style="color:#66d9ef">else</span>
+    ctop = <span style="color:#a6e22e">range</span>.<span style="color:#a6e22e">getClientRects</span>()[<span style="color:#ae81ff">0</span>].<span style="color:#a6e22e">top</span>
+  etop = <span style="color:#a6e22e">@</span>[<span style="color:#ae81ff">0</span>].<span style="color:#a6e22e">getBoundingClientRect</span>().<span style="color:#a6e22e">top</span>
+  <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">ctop</span> <span style="color:#f92672">&lt;</span> <span style="color:#a6e22e">etop</span> <span style="color:#f92672">+</span> <span style="color:#a6e22e">LINE_HEIGHT</span>
+
+$.fn.editableCaretOnLastLine = <span style="color:#a6e22e">-&gt;</span>
+  range = <span style="color:#a6e22e">@editableRange</span>()
+  <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">false</span> <span style="color:#66d9ef">unless</span> <span style="color:#a6e22e">range</span>
+  <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">is_caret_at_end_of_node</span>(<span style="color:#a6e22e">@</span>[<span style="color:#ae81ff">0</span>], <span style="color:#a6e22e">range</span>)
+    <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">true</span>
+  <span style="color:#66d9ef">else</span> <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">is_caret_at_start_of_node</span>(<span style="color:#a6e22e">@</span>[<span style="color:#ae81ff">0</span>], <span style="color:#a6e22e">range</span>)
+    <span style="color:#75715e"># We are on the first line.
+</span><span style="color:#75715e"></span>    cbtm = <span style="color:#a6e22e">@</span>[<span style="color:#ae81ff">0</span>].<span style="color:#a6e22e">getBoundingClientRect</span>().<span style="color:#a6e22e">top</span> <span style="color:#f92672">+</span> <span style="color:#a6e22e">LINE_HEIGHT</span>
+  <span style="color:#66d9ef">else</span>
+    cbtm = <span style="color:#a6e22e">range</span>.<span style="color:#a6e22e">getClientRects</span>()[<span style="color:#ae81ff">0</span>].<span style="color:#a6e22e">bottom</span>
+  ebtm = <span style="color:#a6e22e">@</span>[<span style="color:#ae81ff">0</span>].<span style="color:#a6e22e">getBoundingClientRect</span>().<span style="color:#a6e22e">bottom</span>
+  <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">cbtm</span> <span style="color:#f92672">&gt;</span> <span style="color:#a6e22e">ebtm</span> <span style="color:#f92672">-</span> <span style="color:#a6e22e">LINE_HEIGHT</span></code></pre></div>
+<h1 id="putting-it-all-together">Putting it all together</h1>
+<p>Here it is all fiddled together:</p>
+<iframe width="100%" height="400"
+  src="https://jsfiddle.net/bmh_ca/abB6b/5/embedded/"
+  allowfullscreen="allowfullscreen" frameborder="0"></iframe>
+<h1 id="moving-the-caret-about">Moving the Caret about</h1>
+<p>Getting information out is one problem. Putting information in is another and,
+alas, beyond the scope of this article.</p>
+<p>Nonetheless, here are a few examples.</p>
+<p>We can move the caret to a given place by creating a range and
+collapsing the selection to one end of the other — creating a caret.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-coffeescript" data-lang="coffeescript">$.fn.editableFocus = <span style="color:#a6e22e">(at_start=true) -&gt;</span>
+  <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">unless</span> <span style="color:#a6e22e">@attr</span>(<span style="color:#e6db74">&#39;contenteditable&#39;</span>)
+  sel = window.<span style="color:#a6e22e">getSelection</span>()
+  <span style="color:#a6e22e">sel</span>.<span style="color:#a6e22e">removeAllRanges</span>() <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">sel</span>.<span style="color:#a6e22e">rangeCount</span> <span style="color:#f92672">&gt;</span> <span style="color:#ae81ff">0</span>
+  range = document.<span style="color:#a6e22e">createRange</span>()
+  <span style="color:#a6e22e">range</span>.<span style="color:#a6e22e">selectNodeContents</span>(<span style="color:#a6e22e">@</span>[<span style="color:#ae81ff">0</span>])
+  <span style="color:#a6e22e">range</span>.<span style="color:#a6e22e">collapse</span>(<span style="color:#a6e22e">at_start</span>)
+  <span style="color:#a6e22e">sel</span>.<span style="color:#a6e22e">addRange</span>(<span style="color:#a6e22e">range</span>)</code></pre></div>
+<p>More generally, if you have a range already:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-coffeescript" data-lang="coffeescript">$.fn.editableSetRange = <span style="color:#a6e22e">(range) -&gt;</span>
+  sel = window.<span style="color:#a6e22e">getSelection</span>()
+  <span style="color:#a6e22e">sel</span>.<span style="color:#a6e22e">removeAllRanges</span>() <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">sel</span>.<span style="color:#a6e22e">rangeCount</span> <span style="color:#f92672">&gt;</span> <span style="color:#ae81ff">0</span>
+  <span style="color:#a6e22e">sel</span>.<span style="color:#a6e22e">addRange</span>(<span style="color:#a6e22e">range</span>)</code></pre></div>
+<h1 id="conclusion">Conclusion</h1>
+<p>You can find most of the above on StackOverflow, so this is really a
+coalescence. I hope you find it helpful.</p>
+
+  </div>
+  <div class='copyright'> &copy; 2014 </div>
+</article>
+
+  <footer>
+
+    <div class="pager">
+      <div class="list-link"><a href="/post">Go to all posts</a></div>
+      
+        <a class="prev-link" href="https://brianmhunt.github.io/post/2014-07-09-pubsub-promises/">
+          Previous post Jul 9, 2014
+          <br/><em>Knockout observables and Promises</em>
+        </a>
+      
+      
+        <a class="next-link" href="https://brianmhunt.github.io/post/2014-08-13-follow-along-airconf/">
+          Next post Aug 13, 2014
+          <br/><em>Follow along at Airconf 2014</em>
+        </a>
+      
+    </div>
+
+    <div class='license'>
+      <span xmlns:dct="http://purl.org/dc/terms/" href="http://purl.org/dc/dcmitype/Text" property="dct:title" rel="dct:type">Taming contentEditable with jQuery</span> by Brian M Hunt at <a xmlns:cc="http://creativecommons.org/ns#" href="https://brianmhunt.github.io/post/2014-07-18-taming-contenteditable/" property="cc:attributionName" rel="cc:attributionURL">https://brianmhunt.github.io/post/2014-07-18-taming-contenteditable/</a> is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License</a>.
+      <br/>
+      <a rel="license" href="http://creativecommons.org/licenses/by/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by/4.0/80x15.png" /></a> 
+    </div>
+    <div class='photo-credit'>
+      Photo credit: <a href='https://picsum.photos'>https://picsum.photos</a>
+    </div>
+  </footer>
+</body>
+</html>
+

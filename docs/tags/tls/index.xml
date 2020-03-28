@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>tls on Brian M Hunt</title>
+    <link>https://brianmhunt.github.io/tags/tls/</link>
+    <description>Recent content in tls on Brian M Hunt</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Mon, 22 Feb 2016 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="https://brianmhunt.github.io/tags/tls/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Let&#39;s Encrypt - ACME on AppEngine</title>
+      <link>https://brianmhunt.github.io/post/2016-02-22-let-s-encrypt-acme-on-appengine/</link>
+      <pubDate>Mon, 22 Feb 2016 00:00:00 +0000</pubDate>
+      
+      <guid>https://brianmhunt.github.io/post/2016-02-22-let-s-encrypt-acme-on-appengine/</guid>
+      <description>What is this? This is a bit of process that I use to get TLS keys to use on AppEngine using Let&amp;rsquo;s Encrypt.
+Update I have a streamlined process described below, removing dependencies on Node and Javascript, and reducing the amount of user-input needed, as described in my next post.
+Why&amp;rsquo;s it matter? There are a number of quirks in Let&amp;rsquo;s Encrypt and TLS on AppEngine that make it more difficult to automate the process.</description>
+    </item>
+    
+  </channel>
+</rss>

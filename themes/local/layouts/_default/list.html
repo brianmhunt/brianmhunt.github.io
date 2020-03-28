@@ -1,0 +1,12 @@
+{{ template "partials/header.html" . }}
+
+
+<div class='posts-list'>
+  <div class='post-title'>{{.Title}}</div>
+  {{ range .Data.Pages }}
+  <div class='post-list-item'>
+    <a href="{{ .RelPermalink }}">{{ .Title }}</a>
+    <time class="post-time">{{ .Date.Format "Jan 2 2006" }}</time>
+  </div>
+  {{ end }}
+</div>

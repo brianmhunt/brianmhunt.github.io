@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>caching on Brian M Hunt</title>
+    <link>https://brianmhunt.github.io/tags/caching/</link>
+    <description>Recent content in caching on Brian M Hunt</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Thu, 23 Jan 2014 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="https://brianmhunt.github.io/tags/caching/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Permanent HTTP caching and busting</title>
+      <link>https://brianmhunt.github.io/post/2014-01-23-permanent-caching-and-busting/</link>
+      <pubDate>Thu, 23 Jan 2014 00:00:00 +0000</pubDate>
+      
+      <guid>https://brianmhunt.github.io/post/2014-01-23-permanent-caching-and-busting/</guid>
+      <description>What is it? Permanent caching is part of the HTTP protocol, a way to reduce server load and improve the user experience by speeding up load time.
+Why does it matter? Caches make us and users happy. We get less load on our servers, and it&amp;rsquo;s a significant speedup for load times.
+The busting is important because without it the resource may not be downloaded by a browser even though it has been updated on the server.</description>
+    </item>
+    
+  </channel>
+</rss>

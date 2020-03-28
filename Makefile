@@ -1,23 +1,12 @@
 
-jekyll-version := 3.8
-
-update:
-	docker run \
-		--rm \
-		--volume="$$PWD:/srv/jekyll" \
-		-it jekyll/jekyll:$(jekyll-version) \
-		bundle update
-
 serve:
-	docker run \
-		--rm \
-		--volume="$$PWD:/srv/jekyll" \
-		-it jekyll/jekyll:$(jekyll-version) \
-		bundle exec serve
+	# hugo server --theme=herring-cove
+	# hugo server --theme=simple-style
+	hugo server --theme=local
 
-install:
-	docker run \
-		--rm \
-		--volume="$$PWD:/srv/jekyll" \
-		-it jekyll/jekyll:$(jekyll-version) \
-		bundle install
+setup:
+	git clone https://github.com/spf13/herring-cove.git ./themes/herring-cove
+	git clone https://github.com/yanlinlin82/simple-style.git ./themes/simple-style
+
+build:
+	hugo --theme=local
