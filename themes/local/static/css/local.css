@@ -9,27 +9,28 @@ body {
     "s s s"
     ". p ."
     ". f .";
-  grid-template-rows: 30px minmax(200px, 20vh) 1fr auto;
+  grid-template-rows: 50px minmax(200px, 20vh) 1fr auto;
   grid-template-columns: 1fr minmax(auto, 60rem) 1fr;
   margin-bottom: 40px;
   text-rendering: geometricPrecision;
 }
 
 a {
-  color: #555;
+  color: #55e;
   text-decoration: none;
 }
 
 a:hover {
-  color: #444;
+  color: #44e;
+  text-decoration: underline;
 }
 
 a:visited {
-  color: #444;
+  color: #55e;
 }
 
 a:active {
-  color: #8aa;
+  color: #88e;
 }
 
 .title {
