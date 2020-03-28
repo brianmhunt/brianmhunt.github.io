@@ -58,19 +58,14 @@ estimates about the exponential growth phase of the COVID pandemic.</p>
 disease growth patterns, but can be used as an informational tool for projecting
 and observing patterns.</p>
 <h2 id="calculate-growth-rate">Calculate Growth Rate</h2>
-<p>The doubling rate is calculated with:</p>
-<code class='covid-formula'>
-  days &times; log<sub>n</sub>(2) / log<sub>n</sub>(count<sub>2</sub> / count<sub>1</sub>)
-</code>
-<p>being a <a href='https://en.wikipedia.org/wiki/Doubling_time'>doubling time</a> formula.</p>
-<h3 id="instructions">Instructions</h3>
 <p>Enter two dates where the number of cases is known, and the respective number
 of cases, then the result will be shown.</p>
-<p>For example, in
-<a href='#' data-bind='click: ontExampleClick'>Ontario May 11, 2020: 42 cases =&gt; May 23: 425 cases</a>
-indicates a doubling rate of 3.59 days.<br>
-However <a href='#' data-bind='click: ontExample2Click'>Ontario May 23, 2020: 425 cases =&gt; May 28: 994 cases</a>
-indicates a doubling rate of 4.08 days, suggesting that the doubling rate is slowing.</p>
+<p>Some examples:</p>
+<ul>
+<li><a href='#' data-bind='click: nyExampleClick'>New York May 10, 2020: 173 cases =&gt; May 25: 30811 cases</a> indicates a doubling rate of 2.01 days, however the numbers recorded on the 27th (44,635) indicate a doubling rate of closer to 3, meaning the growth is slowing.</li>
+<li><a href='#' data-bind='click: ontExampleClick'>Ontario May 11, 2020: 42 cases =&gt; May 23: 425 cases</a> indicates a doubling rate of 3.59 days.</li>
+<li><a href='#' data-bind='click: ontExample2Click'>Ontario May 23, 2020: 425 cases =&gt; May 28: 994 cases</a> indicates a doubling rate of 4.08 days, suggesting that the doubling rate is slowing.</li>
+</ul>
 <div class='covid-rate-grid'>
   <span>First date</span>
   <input type='date' data-bind='value: date1'/>
@@ -84,12 +79,6 @@ indicates a doubling rate of 4.08 days, suggesting that the doubling rate is slo
 <p>The start date and the second cases will be automatically copied into the
 estimate below.</p>
 <h2 id="estimate-future-cases">Estimate future cases</h2>
-<p>The estimate of future cases follows the formula:</p>
-<code class='covid-formula'>
-  cases &times; 2<sup>days / days-to-double</sup>
-</code>
-<p>The estimates stop at 1 billion or 365 days.</p>
-<h3 id="instructions-1">Instructions</h3>
 <p>Enter the start date, the current number of cases, and number of days
 the cases double, and estimates will be calculated in a table.</p>
 <div class='covid-estimate-grid'>
@@ -99,6 +88,9 @@ the cases double, and estimates will be calculated in a table.</p>
   <input type='text' data-bind='textInput: currentCases' />
   <span>Days to Double</span>
   <input type='text' data-bind='textInput: doublingRate' />
+  <em>Estimate Date</em>
+  <input type='date' data-bind='value: estimateDate' />
+  <span class='covid-estimate' data-bind='text: chosenEstimate'></span>
   <div class='covid-estimates'>
     <b>Days from now</b>
     <b>Date</b>
@@ -111,8 +103,20 @@ the cases double, and estimates will be calculated in a table.</p>
   </div>
 </div>
 <p>Of course these estimates are inaccurate in the very-short term, and
-they become wildly inaccurate in the very-long term since the exponential
-growth rates quickly exceed the global human population.</p>
+they become wildly inaccurate in the very-long term because the exponential
+growth rates quickly exceed the global human population, and the speed
+at which the disease propagates leaves an exponential growth phase.</p>
+<h3 id="formulas">Formulas</h3>
+<p>The doubling rate is calculated with:</p>
+<code class='covid-formula'>
+  days &times; log<sub>n</sub>(2) / log<sub>n</sub>(count<sub>2</sub> / count<sub>1</sub>)
+</code>
+<p>being a <a href='https://en.wikipedia.org/wiki/Doubling_time'>doubling time</a> formula.</p>
+<p>The estimate of future cases follows the formula:</p>
+<code class='covid-formula'>
+  cases &times; 2<sup>days / days-to-double</sup>
+</code>
+<p>The estimates stop at 1 billion or 365 days.</p>
 <script src="/covid.js"></script>
 
   </div>

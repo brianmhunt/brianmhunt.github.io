@@ -37,3 +37,9 @@
   text-align: center;
   padding: 15px;
 }
+
+
+.covid-estimate {
+  grid-column: 2/-1;
+  font-style: italic;
+}

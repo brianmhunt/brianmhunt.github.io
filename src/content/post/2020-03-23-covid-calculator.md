@@ -16,24 +16,13 @@ and observing patterns.
 
 ## Calculate Growth Rate
 
-The doubling rate is calculated with:
-
-<code class='covid-formula'>
-  days &times; log<sub>n</sub>(2) / log<sub>n</sub>(count<sub>2</sub> / count<sub>1</sub>)
-</code>
-
-being a <a href='https://en.wikipedia.org/wiki/Doubling_time'>doubling time</a> formula.
-
-### Instructions
-
 Enter two dates where the number of cases is known, and the respective number
 of cases, then the result will be shown.
 
-For example, in
-<a href='#' data-bind='click: ontExampleClick'>Ontario May 11, 2020: 42 cases => May 23: 425 cases</a>
-indicates a doubling rate of 3.59 days.  
-However <a href='#' data-bind='click: ontExample2Click'>Ontario May 23, 2020: 425 cases => May 28: 994 cases</a>
-indicates a doubling rate of 4.08 days, suggesting that the doubling rate is slowing.
+Some examples:
+- <a href='#' data-bind='click: nyExampleClick'>New York May 10, 2020: 173 cases => May 25: 30811 cases</a> indicates a doubling rate of 2.01 days, however the numbers recorded on the 27th (44,635) indicate a doubling rate of closer to 3, meaning the growth is slowing.
+- <a href='#' data-bind='click: ontExampleClick'>Ontario May 11, 2020: 42 cases => May 23: 425 cases</a> indicates a doubling rate of 3.59 days.  
+- <a href='#' data-bind='click: ontExample2Click'>Ontario May 23, 2020: 425 cases => May 28: 994 cases</a> indicates a doubling rate of 4.08 days, suggesting that the doubling rate is slowing.
 
 
 <div class='covid-rate-grid'>
@@ -53,16 +42,6 @@ estimate below.
 
 ## Estimate future cases
 
-The estimate of future cases follows the formula:
-
-<code class='covid-formula'>
-  cases &times; 2<sup>days / days-to-double</sup>
-</code>
-
-The estimates stop at 1 billion or 365 days.
-
-### Instructions
-
 Enter the start date, the current number of cases, and number of days
 the cases double, and estimates will be calculated in a table.
 
@@ -73,6 +52,9 @@ the cases double, and estimates will be calculated in a table.
   <input type='text' data-bind='textInput: currentCases' />
   <span>Days to Double</span>
   <input type='text' data-bind='textInput: doublingRate' />
+  <em>Estimate Date</em>
+  <input type='date' data-bind='value: estimateDate' />
+  <span class='covid-estimate' data-bind='text: chosenEstimate'></span>
   <div class='covid-estimates'>
     <b>Days from now</b>
     <b>Date</b>
@@ -86,7 +68,29 @@ the cases double, and estimates will be calculated in a table.
 </div>
 
 Of course these estimates are inaccurate in the very-short term, and
-they become wildly inaccurate in the very-long term since the exponential
-growth rates quickly exceed the global human population.  
+they become wildly inaccurate in the very-long term because the exponential
+growth rates quickly exceed the global human population, and the speed
+at which the disease propagates leaves an exponential growth phase.
+
+### Formulas
+
+
+
+The doubling rate is calculated with:
+
+<code class='covid-formula'>
+  days &times; log<sub>n</sub>(2) / log<sub>n</sub>(count<sub>2</sub> / count<sub>1</sub>)
+</code>
+
+being a <a href='https://en.wikipedia.org/wiki/Doubling_time'>doubling time</a> formula.
+
+The estimate of future cases follows the formula:
+
+<code class='covid-formula'>
+  cases &times; 2<sup>days / days-to-double</sup>
+</code>
+
+The estimates stop at 1 billion or 365 days.
+
 
 <script src="/covid.js"></script>

@@ -10,20 +10,19 @@ const root = window.root = {
   currentCases: ko.observable(1),
   doublingRate: ko.observable(4),
   startDate: ko.observable(new Date().toISOString().substr(0,10)),
+  estimateDate: ko.observable(),
   
-  ontExampleClick: () => {
-    root.date1('2020-03-11')
-    root.date2('2020-03-23')
-    root.count1(42)
-    root.count2(425)
-  },
+  ontExampleClick: () => setEstimate('2020-03-11', '2020-03-23', 42, 425),
+  ontExample2Click: () => setEstimate('2020-03-23', '2020-03-28', 425, 993),
+  nyExampleClick: () => setEstimate('2020-03-10', '2020-03-25', 173, 30811),
+}
 
-  ontExample2Click: () => {
-    root.date1('2020-03-23')
-    root.date2('2020-03-28')
-    root.count1(425)
-    root.count2(994)
-  },
+function setEstimate (date1, date2, count1, count2) {
+  root.date1(date1)
+  root.date2(date2)
+  root.count1(count1)
+  root.count2(count2)
+
 }
 
 root.date2.subscribe(root.startDate)
@@ -72,6 +71,18 @@ root.estimates = ko.computed(() => {
     estimate(root.currentCases(), root.doublingRate(), 120),
     estimate(root.currentCases(), root.doublingRate(), 365),
   ].filter(e => e.count < 1000000000)
+})
+
+root.chosenEstimate = ko.computed(() => {
+  if (!root.estimateDate()) {
+    return 'Choose an estimate date to predict the cases on a given date.'
+  }
+  const days = moment(root.estimateDate()).diff(root.startDate(), 'days')
+  if (days <= 0) {
+    return 'The estimate date must be after the start date.'
+  }
+  const e = estimate(root.currentCases(), root.doublingRate(), days)
+  return `Estimate: ${e.formatted} cases.`
 })
 
 ko.applyBindings(root)
